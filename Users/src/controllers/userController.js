@@ -21,8 +21,6 @@ exports.getUser = async (req, res) => {
   try {
     const { query } = req.query;
 
-    console.log(query);
-
     if (!query) {
       return res.status(400).json({
         success: false,
