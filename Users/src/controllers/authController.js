@@ -6,28 +6,72 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "2d" });
 };
 
-// // Register User
-// exports.registerUser = async (req, res) => {
-//   const { username, email, password } = req.body;
+// Register User
+exports.registerUser = async (req, res) => {
+  try {
+    const {
+      username,
+      email,
+      password,
+      profilePicture = "",
+      region = "",
+      isGoogleAuth = false,
+    } = req.body;
 
-//   try {
-//     const userExists = await User.findOne({ email });
-//     if (userExists) {
-//       return res.status(400).json({ message: "User already exists" });
-//     }
+    // Vérification de l'unicité
+    const userExists = await User.findOne({
+      $or: [{ email: email.toLowerCase() }, { username: username }],
+    });
 
-//     const user = await User.create({ username, email, password });
+    if (userExists) {
+      return res.status(400).json({
+        success: false,
+        message:
+          userExists.email === email.toLowerCase()
+            ? "Cette adresse email est déjà utilisée"
+            : "Ce nom d'utilisateur est déjà pris",
+      });
+    }
 
-//     res.status(201).json({
-//       id: user._id,
-//       username: user.username,
-//       email: user.email,
-//       token: generateToken(user._id),
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+    // Création du jeton de vérification
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    // Création de l'utilisateur
+    const user = await User.create({
+      username: username,
+      email: email,
+      password,
+      profilePicture,
+      region,
+      status: "waiting",
+      verificationToken,
+      isGoogleAuth,
+    });
+
+    // Envoi de l'email de vérification
+    // MICROSERVICE MAIL
+    // await sendVerificationEmail(user.email, verificationToken);
+
+    res.status(201).json({
+      success: true,
+      message:
+        "Inscription réussie. Veuillez vérifier votre email pour activer votre compte.",
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        status: user.status,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur lors de l'inscription:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'inscription",
+      error: error.message,
+    });
+  }
+};
 
 // // Login User
 // exports.loginUser = async (req, res) => {

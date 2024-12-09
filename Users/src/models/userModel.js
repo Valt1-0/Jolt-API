@@ -2,11 +2,18 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  },
   email: {
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
+    trim: true,
     validate: {
       validator: function (v) {
         return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v);
@@ -33,13 +40,17 @@ const UserSchema = new mongoose.Schema({
   },
   role: { type: String, default: "member" },
   region: { type: String, default: "N/A" },
-  accountStatus: { type: String, default: "waiting" },
+  status: {
+    type: String,
+    enum: ["inactive", "waiting", "active", "banned"],
+    default: "inactive",
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
 // Hash password before saving
-UserSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function(next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
