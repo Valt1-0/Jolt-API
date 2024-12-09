@@ -3,9 +3,37 @@ const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: function (v) {
+        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid email!`,
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (v) {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+          v
+        );
+      },
+      message: (props) => `${props.value} is not a valid password!`,
+    },
+  },
+  profilePicture: {
+    type: String,
+    default:
+      "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
+  },
   role: { type: String, default: "member" },
+  region: { type: String, default: "N/A" },
+  accountStatus: { type: String, default: "waiting" },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -23,4 +51,4 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("Users", UserSchema);

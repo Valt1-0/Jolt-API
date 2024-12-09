@@ -18,8 +18,8 @@ const startServer = async () => {
     app.use(bodyParser.json({ type: "application/json" }));
 
     // Routes
-    // await authRoute(app);
-    await userRoute(app);
+    // app.use("/auth", authRoute);
+    app.use("/users", userRoute);
 
     // Server listening
     app.listen(API_PORT, () => {
