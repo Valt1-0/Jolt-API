@@ -1,25 +1,50 @@
 const transporter = require("../utils/transporter");
 require("dotenv").config();
 
+const loadTemplate = async (templateName) => {
+  const templatePath = path.join(
+    __dirname,
+    "../templates",
+    `${templateName}.html`
+  );
+  return await fs.readFile(templatePath, "utf-8");
+};
+
 exports.sendRegisterConfirmationMail = async (req, res) => {
-  const { to, subject } = req.body;
+  const { to, username, verificationToken } = req.body;
 
   try {
+    // Charger le template
+    let htmlContent = await loadTemplate("registerConfirmation");
+
+    // Remplacer les variables dans le template
+    htmlContent = htmlContent
+      .replace("{{username}}", username)
+      .replace(
+        "{{confirmationLink}}",
+        `${process.env.APP_URL}/verify/${verificationToken}`
+      );
+
     const mailOptions = {
-      from: process.env.IONOS_EMAIL, // Votre adresse IONOS
-      to, // Destinataire
-      subject, // Sujet de l'e-mail
-      html: htmlContent, // Contenu HTML de l'e-mail
+      from: process.env.IONOS_EMAIL,
+      to,
+      subject: "Confirmation d'inscription",
+      html: htmlContent,
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.response);
-    res.status(200).send({ message: "Email sent successfully", info });
+    console.log("Email de confirmation envoyé:", info.response);
+    res.status(200).json({
+      success: true,
+      message: "Email de confirmation envoyé avec succès",
+    });
   } catch (error) {
-    console.error("Error sending email:", error.message);
-    res
-      .status(500)
-      .send({ message: "Error sending email", error: error.message });
+    console.error("Erreur lors de l'envoi de l'email:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'envoi de l'email de confirmation",
+      error: error.message,
+    });
   }
 };
 
@@ -44,13 +69,3 @@ exports.sendMail = async (req, res) => {
       .send({ message: "Error sending email", error: error.message });
   }
 };
-
-// const sendTestEmail = async () => {
-//   await sendMail(
-//     "contact@joltz.fr", // Destinataire valide
-//     "Test Subject", // Sujet
-//     "<h1>This is a test email</h1>" // Contenu HTML
-//   );
-// };
-
-sendTestEmail().catch(console.error); // Gérer les erreurs ici

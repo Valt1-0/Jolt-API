@@ -1,7 +1,8 @@
-// const express = require("express");
-// const router = express.Router();
-// const { sendMail } = require("../controller/mailController");
+const express = require("express");
+const router = express.Router();
+const { sendMail, sendRegisterConfirmationMail } = require("../controller/mailController");
 
-// router.post("/send", sendMail);
+router.post("/send", sendRegisterConfirmationMail);
 
-// module.exports = router;
+
+module.exports = router;
