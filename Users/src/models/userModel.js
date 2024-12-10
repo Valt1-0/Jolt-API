@@ -38,7 +38,7 @@ const UserSchema = new mongoose.Schema({
     default:
       "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
   },
-  role: { type: String, default: "member" },
+  role: { type: String, enum: ["admin", "member"], default: "member" },
   region: { type: String, default: "N/A" },
   status: {
     type: String,
@@ -50,7 +50,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-UserSchema.pre("save", async function(next) {
+UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);

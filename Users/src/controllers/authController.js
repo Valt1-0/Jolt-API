@@ -9,14 +9,7 @@ const generateToken = (id) => {
 // Register User
 exports.registerUser = async (req, res) => {
   try {
-    const {
-      username,
-      email,
-      password,
-      profilePicture = "",
-      region = "",
-      isGoogleAuth = false,
-    } = req.body;
+    const { username, email, password } = req.body;
 
     // Vérification de l'unicité
     const userExists = await User.findOne({
@@ -45,7 +38,6 @@ exports.registerUser = async (req, res) => {
       region,
       status: "waiting",
       verificationToken,
-      isGoogleAuth,
     });
 
     // Envoi de l'email de vérification
