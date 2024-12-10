@@ -1,4 +1,6 @@
 const transporter = require("../utils/transporter");
+const fs = require("fs").promises;
+const path = require("path");
 require("dotenv").config();
 
 const loadTemplate = async (templateName) => {

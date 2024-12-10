@@ -17,7 +17,7 @@ const startServer = async () => {
     app.use(bodyParser.json({ type: "application/json" }));
 
     // Routes
-    // app.use("/mail", mailRoutes);
+    app.use("/mail", mailRoutes);
 
     // Server listening
     app.listen(API_PORT, () => {
