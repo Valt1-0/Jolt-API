@@ -40,6 +40,7 @@ exports.registerUser = async (req, res, next) => {
 
     // Création du jeton de vérification
     const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 heures
 
     // Création de l'utilisateur
     const user = await User.create({
@@ -49,6 +50,7 @@ exports.registerUser = async (req, res, next) => {
       region,
       status: "waiting",
       verificationToken,
+      verificationTokenExpires,
     });
 
     // Envoi de l'email de vérification
@@ -166,5 +168,50 @@ exports.logoutAll = async (req, res) => {
       .json(successResponse.toJSON());
   } catch (error) {
     next(error);
+  }
+};
+
+//Verify Email
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOneAndUpdate(
+      {
+        verificationToken: token,
+        verificationTokenExpires: { $gte: Date.now() },
+      },
+      {
+        status: "active",
+        verificationToken: null,
+        verificationTokenExpires: null,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      throw new ValidationError("Invalid or expired verification token.");
+    }
+
+    const successResponse = new CreatedSuccess(
+      "Email verified successfully. Your account is now active.",
+      {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        status: "active",
+      }
+    );
+
+    return res.status(successResponse.statusCode).json({
+      success: successResponse.success,
+      message: successResponse.message,
+      data: successResponse.data,
+    });
+  } catch (error) {
+    console.error("Error during email verification:", error);
+    return res.status(error?.status || 500).json({
+      message: error.message,
+    });
   }
 };

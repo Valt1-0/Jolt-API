@@ -45,6 +45,8 @@ const UserSchema = new mongoose.Schema({
     enum: ["inactive", "waiting", "active", "banned"],
     default: "inactive",
   },
+  verificationToken: { type: String },
+  verificationTokenExpires: { type: Date },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
