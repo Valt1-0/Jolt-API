@@ -14,17 +14,12 @@ const bcrypt = require("bcrypt");
 const { sendVerificationEmail } = require("../utils/functions");
 const path = require("path");
 const fs = require("fs");
-const csrf = require("csrf");
 
 // Génération de tokens
 const generateAccessToken = (userId) => {
   return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "15m",
   });
-};
-
-const generateCsrfToken = () => {
-  return crypto.randomBytes(32).toString("hex");
 };
 
 
