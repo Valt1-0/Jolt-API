@@ -144,9 +144,14 @@ exports.resendVerificationEmail = async (req, res, next) => {
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 heures
 
-    user.verificationToken = verificationToken;
-    user.verificationTokenExpires = verificationTokenExpires;
-    await user.save();
+    // Mise à jour du jeton de vérification et de son expiration
+    await User.updateOne(
+      { _id: user._id },
+      {
+        verificationToken,
+        verificationTokenExpires,
+      }
+    );
 
     // Envoi de l'email de vérification
     await sendVerificationEmail(user.email, user.username, verificationToken);
