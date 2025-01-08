@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f9;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+        .container {
+          background-color: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          padding: 30px;
+          text-align: center;
+          width: 400px;
+        }
+        h1 {
+          font-size: 1.5rem;
+          color: {{headerColor}}
+        }
+        p {
+          font-size: 1rem;
+          color: #333;
+        }
+        .footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 0.8rem;
+        color: #777;
+      }
+    </style>
+    <script>
+      setTimeout(function () {
+        window.close(); // Ferme la fenêtre après 5 secondes
+      }, 5000);
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>{{message}}</h1>
+      <p>{{details}}</p>
+      <div class="footer">
+        <p>
+          &copy; Jolt. All rights reserved. Closed in
+          <span id="counter">5</span> seconds
+        </p>
+        <script>
+          let counter = 5;
+          const interval = setInterval(() => {
+            counter--;
+            document.getElementById("counter").textContent = counter;
+            if (counter === 0) {
+              clearInterval(interval);
+            }
+          }, 1000);
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
