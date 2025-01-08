@@ -92,6 +92,11 @@ exports.loginUser = async (req, res) => {
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
+    const existingSessions = await Session.find({ user_id: user._id });
+    if (existingSessions.length >= MAX_SESSIONS_ALLOWED) {
+      throw new ForbiddenError("Too many active sessions");
+    }
+
     const session = new Session({
       user_id: user._id,
       refresh_token: refreshToken,
