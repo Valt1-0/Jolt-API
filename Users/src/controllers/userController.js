@@ -1,9 +1,5 @@
 const User = require("../models/userModel");
-const {
-  ValidationError,
-  NotFoundError,
-  OkSuccess
-} = require("../utils");
+const { ValidationError, NotFoundError, OkSuccess } = require("../utils");
 
 // Get all users (admin functionality)
 exports.getAllUsers = async (req, res, next) => {

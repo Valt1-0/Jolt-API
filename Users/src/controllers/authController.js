@@ -5,7 +5,7 @@ const {
   CreatedSuccess,
   OkSuccess,
   ForbiddenError,
-  AuthorizeError, 
+  AuthorizeError,
 } = require("../utils");
 const crypto = require("crypto");
 const success = require("../utils/success");
