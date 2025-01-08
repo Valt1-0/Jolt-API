@@ -2,8 +2,7 @@ const User = require("../models/userModel");
 const {
   ValidationError,
   NotFoundError,
-  OkSuccess,
-  handleErrorWithLogger,
+  OkSuccess
 } = require("../utils");
 
 // Get all users (admin functionality)
