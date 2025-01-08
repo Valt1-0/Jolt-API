@@ -1,4 +1,9 @@
 const User = require("../models/userModel");
+const {
+  ValidationError,
+  NotFoundError,
+  OkSuccess
+} = require("../utils");
 
 // Get all users (admin functionality)
 exports.getAllUsers = async (req, res, next) => {
@@ -8,24 +13,23 @@ exports.getAllUsers = async (req, res, next) => {
       .limit(10)
       .sort({ _id: -1 });
 
-    res.status(200).json(users);
-    next();
+    const successResponse = new OkSuccess("Users fetched successfully", users);
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
   } catch (error) {
     console.error("Error in getAllUsers:", error);
-    res.status(500).send("An error occurred while fetching users");
+    next(error); // Pass the error to the error handling middleware
   }
 };
 
 // Rechercher un utilisateur par email ou pseudo
-exports.getUser = async (req, res) => {
+exports.getUser = async (req, res, next) => {
   try {
     const { query } = req.query;
 
     if (!query) {
-      return res.status(400).json({
-        success: false,
-        message: "La requête de recherche est vide",
-      });
+      throw new ValidationError("La requête de recherche est vide");
     }
 
     const user = await User.findOne({
@@ -36,24 +40,17 @@ exports.getUser = async (req, res) => {
     }).select("username email profilePicture");
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Utilisateur non trouvé",
-      });
+      throw new NotFoundError("Utilisateur non trouvé");
     }
 
-    res.status(200).json({
-      success: true,
-      data: user,
-    });
+    const successResponse = new OkSuccess("User found successfully", user);
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
   } catch (error) {
     console.error(
       `Erreur lors de la recherche de l'utilisateur: ${error.message}`
     );
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la recherche de l'utilisateur",
-      error: error.message,
-    });
+    next(error); // Pass the error to the error handling middleware
   }
 };

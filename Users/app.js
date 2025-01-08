@@ -9,6 +9,7 @@ const API_PORT =
 
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const { handleErrorWithLogger } = require("./src/utils");
 const app = express();
 
 const startServer = async () => {
@@ -20,6 +21,9 @@ const startServer = async () => {
     // Routes
     app.use("/auth", authRoute);
     app.use("/users", userRoute);
+
+    // Error handling middleware
+    app.use(handleErrorWithLogger);
 
     // Server listening
     app.listen(API_PORT, () => {
