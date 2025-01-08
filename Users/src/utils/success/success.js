@@ -8,6 +8,13 @@ class Success {
     this.data = data;
     this.statusCode = status;
   }
+  toJSON() {
+    return {
+      success: this.success,
+      message: this.message,
+      data: this.data,
+    };
+  }
 }
 
 class CreatedSuccess extends Success {
@@ -16,7 +23,14 @@ class CreatedSuccess extends Success {
   }
 }
 
+class OkSuccess extends Success {
+  constructor(description = "Ok", data = {}) {
+    super("Ok", STATUS_CODES.OK, description, data);
+  }
+}
+
 module.exports = {
   Success,
   CreatedSuccess,
+  OkSuccess,
 };

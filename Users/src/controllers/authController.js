@@ -1,6 +1,13 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-const { ValidationError, CreatedSuccess } = require("../utils");
+const {
+  ValidationError,
+  CreatedSuccess,
+  OkSuccess,
+  ForbiddenError,
+  AuthorizeError,
+  APIError,
+} = require("../utils");
 const crypto = require("crypto");
 const success = require("../utils/success");
 const Session = require("../models/sessionModel");
@@ -18,9 +25,9 @@ const generateRefreshToken = (userId) => {
 };
 
 // Register User
-exports.registerUser = async (req, res) => {
+exports.registerUser = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, region } = req.body;
 
     // Vérification de l'unicité
     const userExists = await User.findOne({
@@ -39,7 +46,7 @@ exports.registerUser = async (req, res) => {
       username: username,
       email: email,
       password,
-      region: "region",
+      region,
       status: "waiting",
       verificationToken,
     });
@@ -57,16 +64,11 @@ exports.registerUser = async (req, res) => {
       }
     );
 
-    return res.status(successResponse.statusCode).json({
-      success: successResponse.success,
-      message: successResponse.message,
-      data: successResponse.data,
-    });
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
   } catch (error) {
-    console.error("Erreur lors de l'inscription:", error);
-    return res.status(error?.status).json({
-      message: error.message,
-    });
+    next(error); // Pass the error to the error handling middleware
   }
 };
 
@@ -74,12 +76,12 @@ exports.loginUser = async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    console.log(user);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+
+    if (!user || !(await bcrypt.compare(password, user.password)))
+      throw new AuthorizeError("Invalid credentials");
+
     if (user.is_banned)
-      return res.status(403).json({ message: "User is banned" });
+      throw new ForbiddenError("User is banned", "User is banned");
 
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
@@ -98,38 +100,70 @@ exports.loginUser = async (req, res) => {
       secure: true,
       sameSite: "Strict",
     });
-    res.json({ accessToken });
+
+    const successResponse = new OkSuccess("Logged in successfully", {
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+      accessToken,
+    });
+
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
 exports.refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refresh_token;
-  if (!refreshToken)
-    return res.status(401).json({ message: "Refresh token missing" });
+  if (!refreshToken) throw new AuthorizeError("Refresh token missing");
 
   try {
     const session = await Session.findOne({ refresh_token: refreshToken });
-    if (!session) return res.status(401).json({ message: "Invalid session" });
+    if (!session) throw new AuthorizeError("Invalid session");
 
     const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const newAccessToken = generateAccessToken(payload.userId);
-    res.json({ accessToken: newAccessToken });
+
+    const successResponse = new OkSuccess("Token refreshed", {
+      accessToken: newAccessToken,
+    });
+
+    res.status(successResponse.statusCode).json(successResponse.toJSON());
   } catch (error) {
-    res.status(401).json({ message: "Invalid or expired refresh token" });
+    next(error);
   }
 };
 
 exports.logoutUser = async (req, res) => {
-  const refreshToken = req.cookies.refresh_token;
-  await Session.deleteOne({ refresh_token: refreshToken });
-  res.clearCookie("refresh_token");
-  res.json({ message: "Logged out successfully" });
+  try {
+    const refreshToken = req.cookies.refresh_token;
+    await Session.deleteOne({ refresh_token: refreshToken });
+    res.clearCookie("refresh_token");
+    const successResponse = new OkSuccess("Logged out successfully");
+
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.logoutAll = async (req, res) => {
-  await Session.deleteMany({ user_id: req.user.userId });
-  res.clearCookie("refresh_token");
-  res.json({ message: "Logged out from all devices" });
+  try {
+    await Session.deleteMany({ user_id: req.user.userId });
+    res.clearCookie("refresh_token");
+    const successResponse = new OkSuccess("Logged out from all devices");
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
 };
