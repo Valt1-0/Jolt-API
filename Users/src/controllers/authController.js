@@ -22,7 +22,6 @@ const generateAccessToken = (userId) => {
   });
 };
 
-
 const generateRefreshToken = (userId) => {
   return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET);
 };
@@ -78,8 +77,9 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
-exports.loginUser = async (req, res) => {
+exports.loginUser = async (req, res, next) => {
   const { username, password } = req.body;
+  const MAX_SESSIONS_ALLOWED = process.env.MAX_SESSIONS_ALLOWED || 5;
   try {
     const user = await User.findOne({ username });
 
@@ -130,7 +130,7 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-exports.refreshToken = async (req, res) => {
+exports.refreshToken = async (req, res, next) => {
   const refreshToken = req.cookies.refresh_token;
   if (!refreshToken) throw new AuthorizeError("Refresh token missing");
 
@@ -166,7 +166,7 @@ exports.logoutUser = async (req, res) => {
   }
 };
 
-exports.logoutAll = async (req, res) => {
+exports.logoutAll = async (req, res, next) => {
   try {
     await Session.deleteMany({ user_id: req.user.userId });
     res.clearCookie("refresh_token");
@@ -179,8 +179,8 @@ exports.logoutAll = async (req, res) => {
   }
 };
 
-//Verify Email
-exports.verifyEmail = async (req, res) => {
+// Verify Email
+exports.verifyEmail = async (req, res, next) => {
   try {
     const { token } = req.params;
 
@@ -197,22 +197,18 @@ exports.verifyEmail = async (req, res) => {
       { new: true }
     );
 
-    let responseData = {
-      title: "Email Verification",
-      message: "Verification failed",
-      details: "The verification link is invalid or expired.",
-      headerColor: "#FF0000",
-    };
-
-    if (user) {
-      responseData.message = "Email Verified Successfully!";
-      responseData.details = "Your account is now active.";
-      responseData.headerColor = "#4CAF50";
-    } else {
-      responseData.message = "Verification failed";
-      responseData.details =
-        "The verification token has expired or is invalid.";
+    if (!user) {
+      throw new NotFoundError(
+        "The verification token has expired or is invalid."
+      );
     }
+
+    const responseData = {
+      title: "Email Verification",
+      message: "Email Verified Successfully!",
+      details: "Your account is now active.",
+      headerColor: "#4CAF50",
+    };
 
     const templatePath = path.join(__dirname, "../utils/mails/template.html");
     let template = fs.readFileSync(templatePath, "utf-8");
@@ -222,12 +218,12 @@ exports.verifyEmail = async (req, res) => {
     template = template.replace("{{details}}", responseData.details);
     template = template.replace("{{headerColor}}", responseData.headerColor);
 
-    return res.send(template);
+    const successResponse = new OkSuccess(responseData.message);
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
   } catch (error) {
     console.error("Error during email verification:", error);
-
-    return res
-      .status(500)
-      .send("An error occurred during the email verification process.");
+    next(error); // Pass the error to the error handling middleware
   }
 };
