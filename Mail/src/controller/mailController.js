@@ -24,7 +24,7 @@ exports.sendRegisterConfirmationMail = async (req, res) => {
       .replace("{{username}}", username)
       .replace(
         "{{confirmationLink}}",
-        `${process.env.APP_URL}/verify/${verificationToken}`
+        `http://localhost:5001/auth/verifyEmail/${verificationToken}`
       );
 
     const mailOptions = {
