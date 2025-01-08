@@ -77,6 +77,98 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
+// Verify Email
+exports.verifyEmail = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOneAndUpdate(
+      {
+        verificationToken: token,
+        verificationTokenExpires: { $gte: Date.now() },
+      },
+      {
+        status: "active",
+        verificationToken: null,
+        verificationTokenExpires: null,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      throw new NotFoundError(
+        "The verification token has expired or is invalid."
+      );
+    }
+
+    const responseData = {
+      title: "Email Verification",
+      message: "Email Verified Successfully!",
+      details: "Your account is now active.",
+      headerColor: "#4CAF50",
+    };
+
+    const templatePath = path.join(__dirname, "../utils/mails/template.html");
+    let template = fs.readFileSync(templatePath, "utf-8");
+
+    template = template.replace("{{title}}", responseData.title);
+    template = template.replace("{{message}}", responseData.message);
+    template = template.replace("{{details}}", responseData.details);
+    template = template.replace("{{headerColor}}", responseData.headerColor);
+
+    const successResponse = new OkSuccess(responseData.message);
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error during email verification:", error);
+    next(error); // Pass the error to the error handling middleware
+  }
+};
+
+exports.resendVerificationEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    if (user.status === "active") {
+      throw new ValidationError("Account is already active");
+    }
+
+    // Régénération du jeton de vérification
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 heures
+
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpires = verificationTokenExpires;
+    await user.save();
+
+    // Envoi de l'email de vérification
+    await sendVerificationEmail(user.email, user.username, verificationToken);
+
+    const successResponse = new OkSuccess(
+      "Verification email resent successfully",
+      {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        status: user.status,
+      }
+    );
+
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error); // Pass the error to the error handling middleware
+  }
+};
+
 exports.loginUser = async (req, res, next) => {
   const { username, password } = req.body;
   const MAX_SESSIONS_ALLOWED = process.env.MAX_SESSIONS_ALLOWED || 5;
@@ -176,54 +268,5 @@ exports.logoutAll = async (req, res, next) => {
       .json(successResponse.toJSON());
   } catch (error) {
     next(error);
-  }
-};
-
-// Verify Email
-exports.verifyEmail = async (req, res, next) => {
-  try {
-    const { token } = req.params;
-
-    const user = await User.findOneAndUpdate(
-      {
-        verificationToken: token,
-        verificationTokenExpires: { $gte: Date.now() },
-      },
-      {
-        status: "active",
-        verificationToken: null,
-        verificationTokenExpires: null,
-      },
-      { new: true }
-    );
-
-    if (!user) {
-      throw new NotFoundError(
-        "The verification token has expired or is invalid."
-      );
-    }
-
-    const responseData = {
-      title: "Email Verification",
-      message: "Email Verified Successfully!",
-      details: "Your account is now active.",
-      headerColor: "#4CAF50",
-    };
-
-    const templatePath = path.join(__dirname, "../utils/mails/template.html");
-    let template = fs.readFileSync(templatePath, "utf-8");
-
-    template = template.replace("{{title}}", responseData.title);
-    template = template.replace("{{message}}", responseData.message);
-    template = template.replace("{{details}}", responseData.details);
-    template = template.replace("{{headerColor}}", responseData.headerColor);
-
-    const successResponse = new OkSuccess(responseData.message);
-    return res
-      .status(successResponse.statusCode)
-      .json(successResponse.toJSON());
-  } catch (error) {
-    console.error("Error during email verification:", error);
-    next(error); // Pass the error to the error handling middleware
   }
 };
