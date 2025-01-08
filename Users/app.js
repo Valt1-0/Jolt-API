@@ -2,7 +2,7 @@ require("./src/db/mongoConnect").connect();
 const express = require("express");
 require("dotenv").config();
 const userRoute = require("./src/routes/userRoutes");
-// const authRoute = require("./src/routes/authRoutes");
+const authRoute = require("./src/routes/authRoutes");
 
 const API_PORT =
   process.env.API_PORT || console.log("No port defined in .env file");
@@ -18,7 +18,7 @@ const startServer = async () => {
     app.use(bodyParser.json({ type: "application/json" }));
 
     // Routes
-    // app.use("/auth", authRoute);
+    app.use("/auth", authRoute);
     app.use("/users", userRoute);
 
     // Server listening
