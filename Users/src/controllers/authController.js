@@ -12,6 +12,7 @@ const crypto = require("crypto");
 const success = require("../utils/success");
 const Session = require("../models/sessionModel");
 const bcrypt = require("bcrypt");
+const { sendVerificationEmail } = require("../utils/functions");
 
 // Génération de tokens
 const generateAccessToken = (userId) => {
@@ -53,7 +54,8 @@ exports.registerUser = async (req, res, next) => {
 
     // Envoi de l'email de vérification
     // MICROSERVICE MAIL
-    // await sendVerificationEmail(user.email, verificationToken);
+    await sendVerificationEmail(user.email, user.username, verificationToken);
+
     const successResponse = new CreatedSuccess(
       "Inscription réussie. Veuillez vérifier votre email pour activer votre compte.",
       {
