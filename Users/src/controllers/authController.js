@@ -12,6 +12,8 @@ const success = require("../utils/success");
 const Session = require("../models/sessionModel");
 const bcrypt = require("bcrypt");
 const { sendVerificationEmail } = require("../utils/functions");
+const path = require("path");
+const fs = require("fs");
 const csrf = require("csrf");
 
 // Génération de tokens
@@ -204,29 +206,37 @@ exports.verifyEmail = async (req, res) => {
       { new: true }
     );
 
-    if (!user) {
-      throw new ValidationError("Invalid or expired verification token.");
+    let responseData = {
+      title: "Email Verification",
+      message: "Verification failed",
+      details: "The verification link is invalid or expired.",
+      headerColor: "#FF0000",
+    };
+
+    if (user) {
+      responseData.message = "Email Verified Successfully!";
+      responseData.details = "Your account is now active.";
+      responseData.headerColor = "#4CAF50";
+    } else {
+      responseData.message = "Verification failed";
+      responseData.details =
+        "The verification token has expired or is invalid.";
     }
 
-    const successResponse = new CreatedSuccess(
-      "Email verified successfully. Your account is now active.",
-      {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        status: "active",
-      }
-    );
+    const templatePath = path.join(__dirname, "../utils/mails/template.html");
+    let template = fs.readFileSync(templatePath, "utf-8");
 
-    return res.status(successResponse.statusCode).json({
-      success: successResponse.success,
-      message: successResponse.message,
-      data: successResponse.data,
-    });
+    template = template.replace("{{title}}", responseData.title);
+    template = template.replace("{{message}}", responseData.message);
+    template = template.replace("{{details}}", responseData.details);
+    template = template.replace("{{headerColor}}", responseData.headerColor);
+
+    return res.send(template);
   } catch (error) {
     console.error("Error during email verification:", error);
-    return res.status(error?.status || 500).json({
-      message: error.message,
-    });
+
+    return res
+      .status(500)
+      .send("An error occurred during the email verification process.");
   }
 };
