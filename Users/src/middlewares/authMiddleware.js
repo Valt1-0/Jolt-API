@@ -22,4 +22,15 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-module.exports = { authenticateToken };
+const csrfMiddleware = (req, res, next) => {
+  const csrfToken = req.headers["x-csrf-token"]; // Récupérer le token depuis l'en-tête
+  const csrfSecret = req.cookies.csrf_secret; // Récupérer le secret depuis le cookie
+
+  if (!csrfToken || !csrfSecret || !csrfTokens.verify(csrfSecret, csrfToken)) {
+    return res.status(403).json({ message: "Invalid CSRF token" });
+  }
+
+  next();
+};
+
+module.exports = { authenticateToken, csrfMiddleware };

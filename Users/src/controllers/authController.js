@@ -12,6 +12,7 @@ const success = require("../utils/success");
 const Session = require("../models/sessionModel");
 const bcrypt = require("bcrypt");
 const { sendVerificationEmail } = require("../utils/functions");
+const csrf = require("csrf");
 
 // Génération de tokens
 const generateAccessToken = (userId) => {
@@ -19,6 +20,11 @@ const generateAccessToken = (userId) => {
     expiresIn: "15m",
   });
 };
+
+const generateCsrfToken = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
 
 const generateRefreshToken = (userId) => {
   return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET);
@@ -97,6 +103,15 @@ exports.loginUser = async (req, res) => {
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
     });
     await session.save();
+
+    const csrfToken = generateCsrfToken();
+
+    res.cookie("csrf_token", csrfToken, {
+      httpOnly: false, // Accessible au JavaScript côté client
+      secure: true, // Requiert HTTPS
+      sameSite: "Strict", // Protection contre les attaques cross-site
+    });
+
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
