@@ -6,6 +6,7 @@ const {
   OkSuccess,
   ForbiddenError,
   AuthorizeError,
+  NotFoundError
 } = require("../utils");
 const crypto = require("crypto");
 const success = require("../utils/success");
