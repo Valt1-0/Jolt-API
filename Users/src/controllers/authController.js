@@ -101,15 +101,6 @@ exports.loginUser = async (req, res) => {
     });
     await session.save();
 
-    const csrfToken = generateCsrfToken();
-
-    res.cookie("csrf_token", csrfToken, {
-      httpOnly: false, // Accessible au JavaScript côté client
-      secure: true, // Requiert HTTPS
-      sameSite: "Strict", // Protection contre les attaques cross-site
-    });
-
-
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: true,
