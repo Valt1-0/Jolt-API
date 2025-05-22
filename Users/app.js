@@ -50,7 +50,7 @@ const startServer = async () => {
     
 
     // Routes
-    app.use("/auth", authRoute);
+    // app.use("/auth", authRoute);
 
 
 

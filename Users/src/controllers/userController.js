@@ -1,13 +1,20 @@
 const User = require("../models/userModel");
-const { ValidationError, NotFoundError, OkSuccess } = require("../utils");
 
+const {
+  ValidationError,
+  NotFoundError,
+  OkSuccess,
+  CreatedSuccess,
+} = require("../utils");
+const userService = require("../services/userService");
 // Get all users (admin functionality)
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find()
-      .select("-password")
-      .limit(10)
-      .sort({ _id: -1 });
+    const users = await userRepository.getAllUsers(
+      req.query.page || 1,
+      req.query.limit || 10,
+      req.query.sort || { _id: -1 }
+    );
 
     const successResponse = new OkSuccess("Users fetched successfully", users);
     return res
@@ -29,6 +36,7 @@ exports.getUser = async (req, res, next) => {
     }
 
     const user = await User.findOne({
+      
       $or: [
         { email: { $regex: query, $options: "i" } },
         { username: { $regex: query, $options: "i" } },
@@ -48,5 +56,31 @@ exports.getUser = async (req, res, next) => {
       `Erreur lors de la recherche de l'utilisateur: ${error.message}`
     );
     next(error); // Pass the error to the error handling middleware
+  }
+};
+
+exports.createUser = async (req, res, next) => {
+  try {
+    await userService.createUser(req.body);
+    const successResponse = new CreatedSuccess("User created successfully");
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in createUser:", error);
+    next(error);
+  }
+};
+
+exports.verifyUser = async (req, res, next) => {
+  try {
+    const user = await userService.verifyCredentials(req.body);
+    const successResponse = new OkSuccess("User verified successfully", user);
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in verify:", error);
+    next(error);
   }
 };
