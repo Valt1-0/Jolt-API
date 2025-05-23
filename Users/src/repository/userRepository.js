@@ -37,3 +37,28 @@ exports.verifyUserPassword = async (email, password) => {
   }
   return userData;
 };
+
+exports.findUserByVerificationToken = async (token) => {
+  const userData = await user.findOne({ verificationToken: token });
+  return userData;
+};
+
+exports.activateUserByToken = async (token) => {
+  return await user.findOneAndUpdate(
+    { verificationToken: token },
+    {
+      $set: {
+        status: "active",
+      },
+      $unset: {
+        verificationToken: "",
+        verificationTokenExpires: "",
+      },
+    },
+    { new: true }
+  );
+};
+
+exports.updateUserById = async (id, updateData) => {
+  return await user.findByIdAndUpdate(id, updateData, { new: true });
+};

@@ -9,4 +9,6 @@ router.post('/refreshToken', authController.refreshToken);
 
 router.post('/register', authController.registerUser); 
 
+router.post("/resendVerificationEmail", authController.resendVerificationEmail);
+
 module.exports = router;

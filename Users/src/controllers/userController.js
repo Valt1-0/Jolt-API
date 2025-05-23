@@ -36,7 +36,6 @@ exports.getUser = async (req, res, next) => {
     }
 
     const user = await User.findOne({
-      
       $or: [
         { email: { $regex: query, $options: "i" } },
         { username: { $regex: query, $options: "i" } },
@@ -61,9 +60,12 @@ exports.getUser = async (req, res, next) => {
 
 exports.createUser = async (req, res, next) => {
   try {
-    console.log("Request body:", req.body); // Log the request body for debugging 
-   const createdUser = await userService.createUser(req.body);
-    const successResponse = new CreatedSuccess("User created successfully",createdUser);
+    console.log("Request body:", req.body); // Log the request body for debugging
+    const createdUser = await userService.createUser(req.body);
+    const successResponse = new CreatedSuccess(
+      "User created successfully",
+      createdUser
+    );
     return res
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());
@@ -85,3 +87,49 @@ exports.verifyUser = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.verifyEmailToken = async (req, res, next) => {
+  try {
+    const { token } = req.query;
+     if (!token) {
+       throw new ValidationError("Token is required for verification");
+     }
+     console.log("Token received for verification:", token); // Log the token for debugging
+    const user = await userService.verifyEmailToken(token);
+    const successResponse = new OkSuccess("Email verified successfully", user);
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in verifyEmail:", error);
+    next(error);
+  }
+};
+
+exports.updateVerificationToken = async (req, res, next) => {
+  try {
+    console.log("test")
+    const { email, verificationToken,verificationTokenExpires } = req.body;
+    if (!email) {
+      throw new ValidationError("Email is required for verification");
+    }
+    if (!verificationToken) {
+      throw new ValidationError("Token is required for verification");
+    }
+    const user = await userService.updateVerificationToken({
+      email: email,
+      verificationToken: verificationToken,
+      verificationTokenExpires: verificationTokenExpires,
+    });
+    const successResponse = new OkSuccess(
+      "Verification token updated successfully",
+      user
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in updateVerificationToken:", error);
+    next(error);
+  }
+}

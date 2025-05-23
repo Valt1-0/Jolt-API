@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const {
   JWT_ACCESS_KEY,
   JWT_REFRESH_KEY,
@@ -6,7 +8,7 @@ const {
   JWT_REFRESH_EXPIRATION,
 } = require("../../Config");
 
-const GenerateRefreshToken = async (payload) => {
+const generateRefreshToken = async (payload) => {
   try {
     return await jwt.sign(payload, JWT_REFRESH_KEY, {
       expiresIn: JWT_REFRESH_EXPIRATION,
@@ -17,7 +19,7 @@ const GenerateRefreshToken = async (payload) => {
   }
 };
 
-const GenerateAccessToken = async (payload) => {
+const generateAccessToken = async (payload) => {
   try {
     return await jwt.sign(payload, JWT_ACCESS_KEY, {
       expiresIn: JWT_ACCESS_EXPIRATION,
@@ -28,7 +30,7 @@ const GenerateAccessToken = async (payload) => {
   }
 };
 
-const VerifyAccessToken = async (token) => {
+const verifyAccessToken = async (token) => {
   try {
     const signature = token;
     const payload = await jwt.verify(signature, JWT_ACCESS_KEY);
@@ -39,7 +41,7 @@ const VerifyAccessToken = async (token) => {
   }
 };
 
-const VerifyRefreshToken = async (token) => {
+const verifyRefreshToken = async (token) => {
   try {
     const signature = token;
     const payload = await jwt.verify(signature, JWT_REFRESH_KEY);
@@ -54,10 +56,16 @@ const hashRefreshToken = async (token) => {
   return await bcrypt.hash(token, 10);
 };
 
+
+const generateVerificationToken = () =>  {
+  return  crypto.randomBytes(32).toString("hex");
+}
+
 module.exports = {
-  GenerateRefreshToken,
-  GenerateAccessToken,
-  VerifyAccessToken,
-  VerifyRefreshToken,
+  generateRefreshToken,
+  generateAccessToken,
+  generateVerificationToken,
+  verifyAccessToken,
+  verifyRefreshToken,
   hashRefreshToken,
 };

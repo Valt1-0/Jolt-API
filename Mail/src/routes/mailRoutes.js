@@ -13,6 +13,10 @@ const channel = async () => {
     const data = JSON.parse(msg);
     sendRegisterConfirmationMail(data);
   });
+    utils.SubscribeMessage(channel, "resendConfirmationMail", (msg) => {
+        const data = JSON.parse(msg);
+        sendRegisterConfirmationMail(data);
+    });
 };
 channel();
 

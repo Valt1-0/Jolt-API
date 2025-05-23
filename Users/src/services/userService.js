@@ -36,3 +36,32 @@ exports.createUser = async (userData) => {
     );
   }
 };
+
+exports.verifyEmailToken = async (token) => {
+  const user = await userRepository.findUserByVerificationToken(token);
+  if (!user) {
+    throw new utils.NotFoundError("No user found with this token");
+  }
+  if (user.verificationTokenExpires < Date.now()) {
+    throw new utils.ValidationError("Token expired");
+  }
+  const updatedUser = await userRepository.activateUserByToken(token);
+  return updatedUser;
+};
+
+exports.updateVerificationToken = async ({ email, verificationToken, verificationTokenExpires }) => {
+  const user = await userRepository.findUserByEmail(email);
+  if (!user) {
+    throw new utils.NotFoundError("No user found with this email");
+  }
+  if (user.status === "active") {
+    throw new utils.ValidationError("Account is already active");
+  }
+
+  const updateData = {
+    verificationToken,
+    verificationTokenExpires,
+  };
+  const updatedUser = await userRepository.updateUserById(user._id, updateData);
+  return updatedUser;
+}
