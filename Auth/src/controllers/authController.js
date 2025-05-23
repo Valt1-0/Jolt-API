@@ -3,6 +3,7 @@ const utils = require("../utils");
 
 exports.getToken = async (req, res, next) => {
   try {
+    console.log("getToken called with body:", req.body);
     const { accessToken, refreshToken, user } = await authService.getToken(
       req.body
     ); 

@@ -7,13 +7,18 @@ const {
   verifyUser,
   verifyEmailToken,
   updateVerificationToken,
+  deleteUser
 } = require("../controllers/userController");
- 
+
+const { authenticateToken } = require("../middlewares/authMiddleware");
+
 router.get("/", getAllUsers);
 router.get("/get", getUser);
+router.get("/verifyEmail", verifyEmailToken);
+
 router.post("/create", createUser);
 router.post("/verify", verifyUser);
-router.get("/verifyEmail", verifyEmailToken);
 router.put("/updateVerificationToken", updateVerificationToken); 
+router.delete("/delete",authenticateToken, deleteUser);
 
 module.exports = router;

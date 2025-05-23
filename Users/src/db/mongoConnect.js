@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+const config = require("../Config");
 mongoose.set("strictQuery", false);
-require("dotenv").config();
 
-const { MONGODB_URI } = process.env;
+const MONGODB_URI = config.MONGODB_URI;
 
 exports.connect = async () => {
   await mongoose

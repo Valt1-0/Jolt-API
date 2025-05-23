@@ -62,3 +62,11 @@ exports.activateUserByToken = async (token) => {
 exports.updateUserById = async (id, updateData) => {
   return await user.findByIdAndUpdate(id, updateData, { new: true });
 };
+
+exports.deleteById = async (id) => {
+  const userData = await user.findByIdAndDelete(id);
+  if (!userData) {
+    throw new utils.NotFoundError("User not found");
+  }
+  return userData;
+}

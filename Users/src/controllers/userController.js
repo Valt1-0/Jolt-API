@@ -133,3 +133,23 @@ exports.updateVerificationToken = async (req, res, next) => {
     next(error);
   }
 }
+
+exports.deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    if (!id) {
+      throw new ValidationError("ID is required for deletion");
+    }
+    const deletedUser = await userService.deleteById(id);
+    const successResponse = new OkSuccess(
+      "User deleted successfully",
+      deletedUser
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in delete:", error);
+    next(error);
+  }
+}

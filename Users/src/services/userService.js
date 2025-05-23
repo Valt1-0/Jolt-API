@@ -6,7 +6,7 @@ exports.verifyCredentials = async ({ email, password }) => {
     throw new utils.NotFoundError("User not found");
   }
   if (existingUser.status !== "active") {
-    throw new utils.AuthorizeError("User is not active"); // renvoie une erreur HTTP appropriée
+    throw new utils.AuthorizeError("Email not verify"); // renvoie une erreur HTTP appropriée
   }
   const isPasswordValid = await existingUser.matchPassword(password);
   if (!isPasswordValid) {
@@ -64,4 +64,13 @@ exports.updateVerificationToken = async ({ email, verificationToken, verificatio
   };
   const updatedUser = await userRepository.updateUserById(user._id, updateData);
   return updatedUser;
+}
+
+exports.deleteById = async (userId) => {
+  const user = await userRepository.findUserById(userId);
+  if (!user) {
+    throw new utils.NotFoundError("User not found");
+  }
+  await userRepository.deleteById(userId);
+  return { message: "User deleted successfully" };
 }
