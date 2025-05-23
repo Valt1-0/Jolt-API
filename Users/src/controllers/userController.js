@@ -61,8 +61,9 @@ exports.getUser = async (req, res, next) => {
 
 exports.createUser = async (req, res, next) => {
   try {
-    await userService.createUser(req.body);
-    const successResponse = new CreatedSuccess("User created successfully");
+    console.log("Request body:", req.body); // Log the request body for debugging 
+   const createdUser = await userService.createUser(req.body);
+    const successResponse = new CreatedSuccess("User created successfully",createdUser);
     return res
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());

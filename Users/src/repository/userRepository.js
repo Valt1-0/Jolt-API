@@ -1,18 +1,12 @@
 const user = require("../models/userModel");
-const utils = require("../utils"); 
+const utils = require("../utils");
 
 exports.findUserByEmail = async (email) => {
   const userData = await user.findOne({ email });
-  if (!userData) {
-    throw new utils.NotFoundError("User not found");
-  }
   return userData;
 };
 exports.findUserById = async (id) => {
   const userData = await user.findById(id);
-  if (!userData) {
-    throw new utils.NotFoundError("User not found");
-  }
   return userData;
 };
 
@@ -26,15 +20,7 @@ exports.getAllUsers = async (page, limit, sort) => {
   return users;
 };
 exports.createUser = async (userData) => {
-  const { username, email, password, region } = userData;
-  const existingUser = await user.findOne({ email });
-  if (existingUser) {
-    throw new utils.ValidationError("Email already exists");
-  }
-  const newUser = new user({
-    ...userData,
-    password: password,
-  });
+  const newUser = new user(userData);
   await newUser.save();
   return newUser;
 };

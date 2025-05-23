@@ -5,6 +5,9 @@ exports.verifyCredentials = async ({ email, password }) => {
   if (!existingUser) {
     throw new utils.NotFoundError("User not found");
   }
+  if (existingUser.status !== "active") {
+    throw new utils.AuthorizeError("User is not active"); // renvoie une erreur HTTP appropriée
+  }
   const isPasswordValid = await existingUser.matchPassword(password);
   if (!isPasswordValid) {
     throw new utils.ValidationError("Invalid password");
@@ -13,15 +16,23 @@ exports.verifyCredentials = async ({ email, password }) => {
 };
 
 exports.createUser = async (userData) => {
-  const { email, password } = userData;
-  const existingUser = await userRepository.findUserByEmail(email);
-  if (existingUser) {
-    throw new utils.ValidationError("Email already exists");
+  try {
+    const createdUser = await userRepository.createUser(userData);
+    return createdUser;
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      throw new utils.ValidationError(
+        Object.values(error.errors)
+          .map((e) => e.message)
+          .join(", ")
+      );
+    }
+    if (error.code === 11000) {
+      throw new utils.ConflictError("User already exists");
+    }
+    throw new utils.APIError(
+      "An error occurred while creating the user",
+      error
+    );
   }
-  const newUser = new userRepository({
-    ...userData,
-    password: password,
-  });
-  await newUser.save();
-  return newUser;
 };

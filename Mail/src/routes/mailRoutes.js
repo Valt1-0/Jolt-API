@@ -1,8 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const { sendMail, sendRegisterConfirmationMail } = require("../controller/mailController");
+const utils = require("../utils");
+const {
+  sendMail,
+  sendRegisterConfirmationMail,
+} = require("../controller/mailController");
 
-router.post("/registerConfirmation", sendRegisterConfirmationMail);
+const channel = async () => {
+  const channel = await utils.CreateChannel();
 
+  utils.SubscribeMessage(channel, "sendMail", (msg) => {
+    const data = JSON.parse(msg);
+    sendRegisterConfirmationMail(data);
+  });
+};
+channel();
 
 module.exports = router;

@@ -3,9 +3,8 @@ const crsf = require('csrf');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const authRoute = require('./src/routes/authRoutes');
-
-const API_PORT =
-    process.env.API_PORT || console.log('No port defined in .env file');
+const config = require('./src/config');
+const API_PORT = config.API_PORT || console.log('No port defined in .env file');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { handleErrorWithLogger } = require('./src/utils');

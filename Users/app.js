@@ -22,31 +22,31 @@ const startServer = async () => {
     app.use(bodyParser.json({ type: "application/json" }));
 
     // Initialiser la protection CSRF
-    const csrfTokens = new csrf();
+    // const csrfTokens = new csrf();
 
-    // Middleware pour générer un token CSRF et l'envoyer au client
-    app.use((req, res, next) => {
-      let csrfSecret = req.cookies.csrf_secret;
+    // // Middleware pour générer un token CSRF et l'envoyer au client
+    // app.use((req, res, next) => {
+    //   let csrfSecret = req.cookies.csrf_secret;
 
-      if (!csrfSecret) {
-        csrfSecret = csrfTokens.secretSync();
-        res.cookie("csrf_secret", csrfSecret, {
-          httpOnly: true, // Protéger le secret
-          secure: true, // Requiert HTTPS
-          sameSite: "Strict", // Protéger contre les requêtes inter-sites
-        });
-      }
+    //   if (!csrfSecret) {
+    //     csrfSecret = csrfTokens.secretSync();
+    //     res.cookie("csrf_secret", csrfSecret, {
+    //       httpOnly: true, // Protéger le secret
+    //       secure: true, // Requiert HTTPS
+    //       sameSite: "Strict", // Protéger contre les requêtes inter-sites
+    //     });
+    //   }
 
-      // Générer un token basé sur le secret
-      const csrfToken = csrfTokens.create(csrfSecret);
-      res.cookie("csrf_token", csrfToken, {
-        httpOnly: false, // Accessible au JavaScript côté client
-        secure: true,
-        sameSite: "Strict",
-      });
+    //   // Générer un token basé sur le secret
+    //   const csrfToken = csrfTokens.create(csrfSecret);
+    //   res.cookie("csrf_token", csrfToken, {
+    //     httpOnly: false, // Accessible au JavaScript côté client
+    //     secure: true,
+    //     sameSite: "Strict",
+    //   });
 
-      next();
-    });
+    //   next();
+    // });
     
 
     // Routes

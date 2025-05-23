@@ -12,9 +12,9 @@ const loadTemplate = async (templateName) => {
   return await fs.readFile(templatePath, "utf-8");
 };
 
-exports.sendRegisterConfirmationMail = async (req, res) => {
-  const { to, username, verificationToken } = req.body;
-
+exports.sendRegisterConfirmationMail = async (data) => {
+  const { to, username, verificationToken } = data;
+  console.log("Data received:", data);
   try {
     // Charger le template
     let htmlContent = await loadTemplate("registerConfirmation");
@@ -36,17 +36,8 @@ exports.sendRegisterConfirmationMail = async (req, res) => {
 
     const info = await transporter.sendMail(mailOptions);
     console.log("Email de confirmation envoyé:", info.response);
-    res.status(200).json({
-      success: true,
-      message: "Email de confirmation envoyé avec succès",
-    });
   } catch (error) {
     console.error("Erreur lors de l'envoi de l'email:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de l'envoi de l'email de confirmation",
-      error: error.message,
-    });
   }
 };
 
