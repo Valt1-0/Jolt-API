@@ -16,7 +16,7 @@ const startServer = async () => {
         app.use(cookieParser());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ type: 'application/json' }));
-
+        app.set("trust proxy", true);
         // Initialiser la protection CSRF
         const csrfTokens = new crsf();
 

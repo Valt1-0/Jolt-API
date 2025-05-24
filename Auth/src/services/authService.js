@@ -1,8 +1,7 @@
 const utils = require("../utils");
 const axios = require("axios");
-const jwt = require("../utils/jwt"); 
-const redisClient = require('../utils/Redis');
-exports.getToken = async ({ email, password }) => {
+const jwt = require("../utils/jwt");
+exports.getToken = async ({ email, password },ip, device) => {
   try {
     const url = process.env.AUTH_SERVICE_URL + "/verify";
     const data = {
@@ -23,9 +22,13 @@ exports.getToken = async ({ email, password }) => {
     });
 
     // Stocker le refreshToken dans Redis
-    await redisClient.set(
+    await utils.redisClient.set(
       `refresh:${user._id}:${refreshToken}`,
-      "1",
+      JSON.stringify({
+        ip: ip, // ou l'IP récupérée côté client
+        device: device, // ou une info device envoyée par le client
+        createdAt: Date.now(),
+      }),
       { EX: 5 * 24 * 60 * 60 } // 5 jours en secondes
     );
 
@@ -44,6 +47,16 @@ exports.getToken = async ({ email, password }) => {
 exports.refreshToken = async ({ token }) => {
   try {
     const decoded = jwt.verifyRefreshToken(token);
+
+    await utils.redisClient.get(
+      `refresh:${decoded.id}:${token}`,
+      (err, result) => {
+        if (err || !result) {
+          throw new utils.AuthorizeError("Invalid token");
+        }
+      }
+    );
+
     const newToken = jwt.generateAccessToken({
       id: decoded.id,
       role: decoded.role,
@@ -104,4 +117,23 @@ exports.resendVerificationEmail = async (email) => {
     console.error("Error resending verification email:", error);
     return utils.handleAxiosError(error);
   }
+};
+
+exports.logout = async (userId, accessToken, refreshToken,ip,userAgent) => {
+  // Supprimer le refreshToken de Redis
+  await utils.redisClient.del(`refresh:${userId}:${refreshToken}`);
+  //blackList le refreshToken
+  // Par exemple dans un controller logout
+  await utils.redisClient.set(
+    `blacklist:${accessToken}`,
+    JSON.stringify({
+      user: { id: userId },
+      ip: ip, // ou l'IP récupérée côté client
+      device: userAgent, // ou une info device envoyée par le client
+      createdAt: Date.now(),
+    }),
+    { EX: 15 * 60 } // 15 minutes en secondes (durée de vie du token)
+  );
+
+  return { message: "Logout successful" };
 };

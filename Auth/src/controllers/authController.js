@@ -4,8 +4,12 @@ const utils = require("../utils");
 exports.getToken = async (req, res, next) => {
   try {
     console.log("getToken called with body:", req.body);
+    const device = req.headers["x-client-type"] || req.headers["user-agent"]; 
+   
     const { accessToken, refreshToken, user } = await authService.getToken(
-      req.body
+      req.body,
+      req.ip, // IP de l'utilisateur
+      device // Informations sur le device
     ); 
     const isMobile = req.headers["x-client-type"] === "mobile";
 
@@ -124,6 +128,40 @@ exports.resendVerificationEmail = async (req, res, next) => {
     });
     utils.PublishMessage(channel, "sendMail", msg);
   } catch (error) {
+    next(error);
+  }
+};
+exports.logout = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    // Récupérer l'accessToken depuis l'Authorization header
+    let accessToken = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      accessToken = authHeader.split(" ")[1];
+    } else if (req.cookies && req.cookies.access_token) {
+      accessToken = req.cookies.access_token;
+    }
+
+    // Récupérer le refreshToken depuis le body ou les cookies
+    const refreshToken =
+      req.body.refreshToken || (req.cookies && req.cookies.refresh_token);
+
+    if (!accessToken || !refreshToken) {
+      console.log("Access token or refresh token missing");
+      throw new utils.AuthorizeError("Tokens missing");
+    }
+
+    const device = req.headers["x-client-type"] || req.headers["user-agent"]; 
+    await authService.logout(id, accessToken, refreshToken, req.ip, device);
+
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+
+    const successResponse = new utils.OkSuccess("Logout successful");
+    res.status(successResponse.statusCode).json(successResponse.toJSON());
+  } catch (error) {
+    console.log("Error during logout:", error); 
     next(error);
   }
 };
