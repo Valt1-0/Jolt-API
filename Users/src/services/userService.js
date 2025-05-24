@@ -15,6 +15,14 @@ exports.verifyCredentials = async ({ email, password }) => {
   return existingUser;
 };
 
+exports.getUserByIdOrEmail = async (identifier) => {
+  const user = await userRepository.findUserByIdOrEmail(identifier);
+  if (!user) {
+    throw new utils.NotFoundError("User not found");
+  }
+  return user;
+}
+
 exports.createUser = async (userData) => {
   try {
     const createdUser = await userRepository.createUser(userData);

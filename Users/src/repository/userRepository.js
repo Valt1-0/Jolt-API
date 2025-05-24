@@ -10,6 +10,13 @@ exports.findUserById = async (id) => {
   return userData;
 };
 
+exports.findUserByIdOrEmail = async (identifier) => {
+  const userData = await user.findOne({
+    $or: [{ _id: identifier }, { email: identifier }],
+  });
+  return userData;
+};
+
 exports.getAllUsers = async (page, limit, sort) => {
   const users = await user
     .find()
@@ -69,4 +76,4 @@ exports.deleteById = async (id) => {
     throw new utils.NotFoundError("User not found");
   }
   return userData;
-}
+};

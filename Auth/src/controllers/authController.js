@@ -4,13 +4,13 @@ const utils = require("../utils");
 exports.getToken = async (req, res, next) => {
   try {
     console.log("getToken called with body:", req.body);
-    const device = req.headers["x-client-type"] || req.headers["user-agent"]; 
-   
+    const device = req.headers["x-client-type"] || req.headers["user-agent"];
+
     const { accessToken, refreshToken, user } = await authService.getToken(
       req.body,
       req.ip, // IP de l'utilisateur
       device // Informations sur le device
-    ); 
+    );
     const isMobile = req.headers["x-client-type"] === "mobile";
 
     if (isMobile) {
@@ -38,7 +38,7 @@ exports.getToken = async (req, res, next) => {
       });
 
       const successResponse = new utils.OkSuccess("Login successful", {
-        user: user
+        user: user,
       });
       res.status(successResponse.statusCode).json(successResponse.toJSON());
     }
@@ -56,13 +56,13 @@ exports.refreshToken = async (req, res, next) => {
       refreshToken = authHeader.split(" ")[1];
     } else if (req.cookies && req.cookies.refresh_token) {
       refreshToken = req.cookies.refresh_token;
-    }  
-
+    }
+    console.log("Refresh token received:", refreshToken);
     if (!refreshToken) {
       throw new utils.AuthorizeError("Refresh token missing");
     }
 
-    const token = await authService.refreshToken({ refreshToken });
+    const token = await authService.refreshToken( refreshToken );
     const successResponse = new utils.OkSuccess("Token refreshed", {
       accessToken: token,
     });
@@ -152,7 +152,7 @@ exports.logout = async (req, res, next) => {
       throw new utils.AuthorizeError("Tokens missing");
     }
 
-    const device = req.headers["x-client-type"] || req.headers["user-agent"]; 
+    const device = req.headers["x-client-type"] || req.headers["user-agent"];
     await authService.logout(id, accessToken, refreshToken, req.ip, device);
 
     res.clearCookie("access_token");
@@ -161,7 +161,7 @@ exports.logout = async (req, res, next) => {
     const successResponse = new utils.OkSuccess("Logout successful");
     res.status(successResponse.statusCode).json(successResponse.toJSON());
   } catch (error) {
-    console.log("Error during logout:", error); 
+    console.log("Error during logout:", error);
     next(error);
   }
 };

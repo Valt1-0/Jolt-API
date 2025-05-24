@@ -37,6 +37,8 @@ const authenticateToken = async (req, res, next) => {
       return handleErrorWithLogger(error, req, res, next);
     }
     console.log("Token verified successfully:", user);
+    
+    console.log("User data:", user);
     req.user = user; 
     next();
   });

@@ -38,8 +38,7 @@ const authenticateToken = async (req, res, next) => {
       console.error("Token verification error:", err);
       const error = new ForbiddenError("Invalid token");
       return handleErrorWithLogger(error, req, res, next);
-    }
-    console.log("Token verified successfully:", user);
+    } 
     req.user = user; 
     next();
   });

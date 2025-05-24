@@ -1,7 +1,7 @@
 const utils = require("../utils");
 const axios = require("axios");
 const jwt = require("../utils/jwt");
-exports.getToken = async ({ email, password },ip, device) => {
+exports.getToken = async ({ email, password }, ip, device) => {
   try {
     const url = process.env.AUTH_SERVICE_URL + "/verify";
     const data = {
@@ -35,7 +35,7 @@ exports.getToken = async ({ email, password },ip, device) => {
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
-      user: { pseudo: user.username, email: user.email },
+      user: { username: user.username, email: user.email },
     };
   } catch (error) {
     console.error("Error during login:", error);
@@ -44,9 +44,9 @@ exports.getToken = async ({ email, password },ip, device) => {
   }
 };
 
-exports.refreshToken = async ({ token }) => {
+exports.refreshToken = async (token) => {
   try {
-    const decoded = jwt.verifyRefreshToken(token);
+    const decoded = await jwt.verifyRefreshToken(token);
 
     await utils.redisClient.get(
       `refresh:${decoded.id}:${token}`,
@@ -56,11 +56,13 @@ exports.refreshToken = async ({ token }) => {
         }
       }
     );
-
-    const newToken = jwt.generateAccessToken({
+    console.log("decoded token", decoded);
+    // Générer un nouveau token d'accès
+    const newToken = await jwt.generateAccessToken({
       id: decoded.id,
       role: decoded.role,
     });
+    console.log("new token", newToken);
     return newToken;
   } catch (error) {
     throw new utils.AuthorizeError("Invalid token");
@@ -119,7 +121,7 @@ exports.resendVerificationEmail = async (email) => {
   }
 };
 
-exports.logout = async (userId, accessToken, refreshToken,ip,userAgent) => {
+exports.logout = async (userId, accessToken, refreshToken, ip, userAgent) => {
   // Supprimer le refreshToken de Redis
   await utils.redisClient.del(`refresh:${userId}:${refreshToken}`);
   //blackList le refreshToken

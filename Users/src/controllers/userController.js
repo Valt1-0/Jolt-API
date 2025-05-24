@@ -26,7 +26,7 @@ exports.getAllUsers = async (req, res, next) => {
   }
 };
 
-// Rechercher un utilisateur par email ou pseudo
+// Rechercher un utilisateur par email ou username
 exports.getUser = async (req, res, next) => {
   try {
     const { query } = req.query;
@@ -91,10 +91,10 @@ exports.verifyUser = async (req, res, next) => {
 exports.verifyEmailToken = async (req, res, next) => {
   try {
     const { token } = req.query;
-     if (!token) {
-       throw new ValidationError("Token is required for verification");
-     }
-     console.log("Token received for verification:", token); // Log the token for debugging
+    if (!token) {
+      throw new ValidationError("Token is required for verification");
+    }
+    console.log("Token received for verification:", token); // Log the token for debugging
     const user = await userService.verifyEmailToken(token);
     const successResponse = new OkSuccess("Email verified successfully", user);
     return res
@@ -108,8 +108,8 @@ exports.verifyEmailToken = async (req, res, next) => {
 
 exports.updateVerificationToken = async (req, res, next) => {
   try {
-    console.log("test")
-    const { email, verificationToken,verificationTokenExpires } = req.body;
+    console.log("test");
+    const { email, verificationToken, verificationTokenExpires } = req.body;
     if (!email) {
       throw new ValidationError("Email is required for verification");
     }
@@ -132,10 +132,11 @@ exports.updateVerificationToken = async (req, res, next) => {
     console.error("Error in updateVerificationToken:", error);
     next(error);
   }
-}
+};
 
 exports.deleteUser = async (req, res, next) => {
   try {
+    console.log("Request user ID:", req.user); // Log the user ID for debugging
     const { id } = req.user;
     if (!id) {
       throw new ValidationError("ID is required for deletion");
@@ -152,4 +153,4 @@ exports.deleteUser = async (req, res, next) => {
     console.error("Error in delete:", error);
     next(error);
   }
-}
+};
