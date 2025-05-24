@@ -1,7 +1,7 @@
 const utils = require("../utils");
 const axios = require("axios");
-const jwt = require("../utils/jwt");
-
+const jwt = require("../utils/jwt"); 
+const redisClient = require('../utils/Redis');
 exports.getToken = async ({ email, password }) => {
   try {
     const url = process.env.AUTH_SERVICE_URL + "/verify";
@@ -15,12 +15,19 @@ exports.getToken = async ({ email, password }) => {
     const accessToken = await jwt.generateAccessToken({
       id: user._id,
       role: user.role,
-    }); 
+    });
 
     const refreshToken = await jwt.generateRefreshToken({
       id: user._id,
       role: user.role,
     });
+
+    // Stocker le refreshToken dans Redis
+    await redisClient.set(
+      `refresh:${user._id}:${refreshToken}`,
+      "1",
+      { EX: 5 * 24 * 60 * 60 } // 5 jours en secondes
+    );
 
     return {
       accessToken: accessToken,
@@ -28,6 +35,7 @@ exports.getToken = async ({ email, password }) => {
       user: { pseudo: user.username, email: user.email },
     };
   } catch (error) {
+    console.error("Error during login:", error);
     console.log("error status ", error.response.status);
     return utils.handleAxiosError(error);
   }
@@ -35,8 +43,8 @@ exports.getToken = async ({ email, password }) => {
 
 exports.refreshToken = async ({ token }) => {
   try {
-    const decoded = jwt.verifyAccessToken(token);
-    const newToken = jwt.generateRefreshToken({
+    const decoded = jwt.verifyRefreshToken(token);
+    const newToken = jwt.generateAccessToken({
       id: decoded.id,
       role: decoded.role,
     });

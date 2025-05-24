@@ -19,4 +19,5 @@ module.exports = {
   NOTIFICATION_SERVICE: process.env.NOTIFICATION_SERVICE_QUEUE,
   USER_SERVICE: process.env.USER_SERVICE_QUEUE,
   AUTH_SERVICE: process.env.AUTH_SERVICE_QUEUE,
+  REDIS_URL : process.env.REDIS_URL,
 };

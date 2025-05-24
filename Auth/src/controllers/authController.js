@@ -45,7 +45,20 @@ exports.getToken = async (req, res, next) => {
 
 exports.refreshToken = async (req, res, next) => {
   try {
-    const token = await authService.refreshToken(req.body);
+    // Récupérer le refreshToken depuis l'en-tête Authorization ou les cookies
+    let refreshToken = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      refreshToken = authHeader.split(" ")[1];
+    } else if (req.cookies && req.cookies.refresh_token) {
+      refreshToken = req.cookies.refresh_token;
+    }  
+
+    if (!refreshToken) {
+      throw new utils.AuthorizeError("Refresh token missing");
+    }
+
+    const token = await authService.refreshToken({ refreshToken });
     const successResponse = new utils.OkSuccess("Token refreshed", {
       accessToken: token,
     });
