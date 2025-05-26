@@ -1,0 +1,191 @@
+const {
+  ValidationError,
+  NotFoundError,
+  OkSuccess,
+  CreatedSuccess,
+} = require("../utils");
+const fs = require("fs");
+const path = require("path");
+const vehicleService = require("../services/vehicleService");
+const { IMAGE_BASE_URL } = require("../config");
+// Create a new vehicle
+exports.createVehicle = async (req, res, next) => {
+  try {
+    const vehicleData = req.body;
+    const userId = req.user.id; // Assuming user ID is stored in req.user
+    if (req.file) {
+      vehicleData.image = `${IMAGE_BASE_URL}${req.file.filename}`;
+    } else {
+      // Sinon, on ne touche pas au champ image (il reste inchangé)
+      delete vehicleData.image;
+    }
+    const newVehicle = await vehicleService.createVehicle(vehicleData, userId);
+
+    const successResponse = new CreatedSuccess(
+      "Vehicle created successfully",
+      newVehicle
+    );
+
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get all vehicles for a user
+exports.getAllVehicles = async (req, res, next) => {
+  try {
+    const role = req.user.role;
+    let userId = req.user.id;
+
+    // Si admin, possibilité de filtrer par userId passé en query
+    if (role === "admin" && req.query.userId) {
+      userId = req.query.userId;
+    }
+
+    // Si membre, il ne peut récupérer que ses propres véhicules
+    if (
+      role !== "admin" &&
+      req.query.userId &&
+      req.query.userId !== req.user.id
+    ) {
+      throw new ValidationError(
+        "Vous n'avez pas le droit d'accéder à ces véhicules."
+      );
+    }
+
+    // Si admin sans userId, récupère tout
+    const vehicles = await vehicleService.getAllVehicles(
+      role === "admin" ? userId : req.user.id,
+      role
+    );
+
+    const successResponse = new OkSuccess(
+      "Vehicles fetched successfully",
+      vehicles
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get a vehicle by ID
+exports.getVehicleById = async (req, res, next) => {
+  try {
+    const vehicleId = req.params.id;
+    console.log("Vehicle ID:", vehicleId);
+    const userId = req.user.id; // Assuming user ID is stored in req.user
+    // Assuming role is stored in req.user.role
+    const role = req.user.role; // Uncomment if role is needed for permission checks
+    console.log("role:", role);
+    const vehicle = await vehicleService.getVehicleById(
+      vehicleId,
+      userId,
+      role
+    );
+    const successResponse = new OkSuccess(
+      "Vehicle fetched successfully",
+      vehicle
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update a vehicle by ID
+exports.updateVehicle = async (req, res, next) => {
+  try {
+    const vehicleId = req.params.id;
+    const vehicleData = req.body;
+    const userId = req.user.id; // Assuming user ID is stored in req.user
+
+    if (!vehicleId)
+      throw new ValidationError("Vehicle ID is required for update");
+    if (!vehicleData || Object.keys(vehicleData).length === 0) {
+      throw new ValidationError("Vehicle data is required for update");
+    }
+
+    // Récupère l'ancien véhicule pour connaître l'ancienne image
+    const oldVehicle = await vehicleService.getVehicleById(
+      vehicleId,
+      userId,
+      req.user.role
+    );
+    const imageUrl = oldVehicle.image;
+    const imagePath = imageUrl.replace(/^https?:\/\/[^/]+/, ""); // retire le domaine
+
+    const absolutePath = path.join(__dirname, "../..", imagePath);
+    console.log("Absolute path:", absolutePath);
+    // Si une nouvelle image est uploadée, on met à jour le champ image
+    if (req.file) {
+      if (
+        oldVehicle.image &&
+        !oldVehicle.image.includes("default") &&
+        fs.existsSync(absolutePath)
+      ) {
+        fs.unlinkSync(absolutePath);
+      }
+      vehicleData.image = `${IMAGE_BASE_URL}${req.file.filename}`;
+    } else {
+      delete vehicleData.image;
+    }
+    const updatedVehicle = await vehicleService.updateVehicle(
+      vehicleId,
+      vehicleData,
+      userId
+    );
+    const successResponse = new OkSuccess(
+      "Vehicle updated successfully",
+      updatedVehicle
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
+};
+// Delete a vehicle by ID
+exports.deleteVehicle = async (req, res, next) => {
+  try {
+    const vehicleId = req.params.id;
+    const userId = req.user.id; // Assuming user ID is stored in req.user
+
+    if (!vehicleId) {
+      throw new ValidationError("Vehicle ID is required for deletion");
+    }
+    // Récupère l'ancien véhicule pour connaître l'ancienne image
+    const oldVehicle = await vehicleService.getVehicleById(
+      vehicleId,
+      userId,
+      req.user.role
+    );
+    const imageUrl = oldVehicle.image;
+    const imagePath = imageUrl.replace(/^https?:\/\/[^/]+/, ""); // retire le domaine
+    const absolutePath = path.join(__dirname, "../..", imagePath);
+    // Si l'image n'est pas une image par défaut et qu'elle existe, on la supprime
+    if (
+      oldVehicle.image &&
+      !oldVehicle.image.includes("default") &&
+      fs.existsSync(absolutePath)
+    ) {
+      fs.unlinkSync(absolutePath);
+    }
+
+    await vehicleService.deleteVehicle(vehicleId, userId);
+    const successResponse = new OkSuccess("Vehicle deleted successfully");
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
+};

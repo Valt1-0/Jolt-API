@@ -15,13 +15,20 @@ exports.verifyCredentials = async ({ email, password }) => {
   return existingUser;
 };
 
+exports.getAllUsers = async (page, limit, sort, filter = {}) => {
+  const users = await userRepository.getAllUsers(page, limit, sort, filter);
+  if (!users || users.length === 0) {
+    throw new utils.NotFoundError("No users found");
+  }
+  return users;
+};
 exports.getUserByIdOrEmail = async (identifier) => {
   const user = await userRepository.findUserByIdOrEmail(identifier);
   if (!user) {
     throw new utils.NotFoundError("User not found");
   }
   return user;
-}
+};
 
 exports.createUser = async (userData) => {
   try {
@@ -57,7 +64,11 @@ exports.verifyEmailToken = async (token) => {
   return updatedUser;
 };
 
-exports.updateVerificationToken = async ({ email, verificationToken, verificationTokenExpires }) => {
+exports.updateVerificationToken = async ({
+  email,
+  verificationToken,
+  verificationTokenExpires,
+}) => {
   const user = await userRepository.findUserByEmail(email);
   if (!user) {
     throw new utils.NotFoundError("No user found with this email");
@@ -72,7 +83,7 @@ exports.updateVerificationToken = async ({ email, verificationToken, verificatio
   };
   const updatedUser = await userRepository.updateUserById(user._id, updateData);
   return updatedUser;
-}
+};
 
 exports.deleteById = async (userId) => {
   const user = await userRepository.findUserById(userId);
@@ -81,4 +92,4 @@ exports.deleteById = async (userId) => {
   }
   await userRepository.deleteById(userId);
   return { message: "User deleted successfully" };
-}
+};

@@ -5,15 +5,29 @@ const {
   NotFoundError,
   OkSuccess,
   CreatedSuccess,
+  ForbiddenError,
 } = require("../utils");
 const userService = require("../services/userService");
-// Get all users (admin functionality)
+
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await userRepository.getAllUsers(
+    
+    const { query } = req.query;
+    let filter = {};
+
+    if (query) {
+      // Supporte query = username:john ou query = email:test@test.com
+      const [key, value] = query.split(":");
+      if (key && value && (key === "username" || key === "email")) {
+        filter[key] = { $regex: value, $options: "i" };
+      }
+    }
+
+    const users = await userService.getAllUsers(
       req.query.page || 1,
       req.query.limit || 10,
-      req.query.sort || { _id: -1 }
+      req.query.sort || { _id: -1 },
+      filter // passe le filtre au service
     );
 
     const successResponse = new OkSuccess("Users fetched successfully", users);

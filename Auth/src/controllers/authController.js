@@ -3,7 +3,6 @@ const utils = require("../utils");
 
 exports.getToken = async (req, res, next) => {
   try {
-    console.log("getToken called with body:", req.body);
     const device = req.headers["x-client-type"] || req.headers["user-agent"];
 
     const { accessToken, refreshToken, user } = await authService.getToken(
@@ -62,7 +61,7 @@ exports.refreshToken = async (req, res, next) => {
       throw new utils.AuthorizeError("Refresh token missing");
     }
 
-    const token = await authService.refreshToken( refreshToken );
+    const token = await authService.refreshToken(refreshToken);
     const successResponse = new utils.OkSuccess("Token refreshed", {
       accessToken: token,
     });

@@ -17,9 +17,9 @@ exports.findUserByIdOrEmail = async (identifier) => {
   return userData;
 };
 
-exports.getAllUsers = async (page, limit, sort) => {
+exports.getAllUsers = async (page, limit, sort, filter = {}) => {
   const users = await user
-    .find()
+    .find(filter)
     .select("-password")
     .limit(limit)
     .skip((page - 1) * limit)
