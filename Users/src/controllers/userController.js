@@ -5,7 +5,6 @@ const {
   NotFoundError,
   OkSuccess,
   CreatedSuccess,
-  ForbiddenError,
 } = require("../utils");
 const userService = require("../services/userService");
 
