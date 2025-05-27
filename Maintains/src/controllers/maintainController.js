@@ -8,10 +8,10 @@ const fs = require("fs");
 const path = require("path");
 const maintainService = require("../services/maintainService");
 const maintainHistoryService = require("../services/maintainHistoryService");
-
+const {VEHICLE_SERVICE_URL} = require("../Config");
 async function getWearPercentage(vehicleId, typeId, userId, role, jwt) {
   // Récupère le véhicule
-  const response = await fetch(`http://localhost:5003/vehicle/${vehicleId}`, {
+  const response = await fetch(`${VEHICLE_SERVICE_URL}/vehicle/${vehicleId}`, {
     headers: {
       Authorization: `Bearer ${jwt}`,
     },

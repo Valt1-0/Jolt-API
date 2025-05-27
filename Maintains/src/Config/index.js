@@ -19,4 +19,5 @@ module.exports = {
   AUTH_SERVICE: process.env.AUTH_SERVICE_QUEUE,
   IMAGE_UPLOAD_PATH: process.env.IMAGE_UPLOAD_PATH,
   IMAGE_BASE_URL: process.env.IMAGE_BASE_URL,
+  VEHICLE_SERVICE_URL: process.env.VEHICLE_SERVICE_URL,
 };
