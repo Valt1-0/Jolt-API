@@ -11,10 +11,10 @@ const VehicleSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  year: {
-    type: Number,
+  firstPurchaseDate: {
+    // date de première mise en circulation
+    type: Date,
     required: true,
-    min: 2000, // à adapter selon tes besoins
   },
   mileage: {
     type: Number,

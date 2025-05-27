@@ -9,6 +9,7 @@ const MaintainTypeSchema = new mongoose.Schema({
   },
   isDefault: { type: Boolean, default: false }, // true = type global, false = type créé par l'utilisateur
   owner: { type: mongoose.Schema.Types.ObjectId, default: null }, // null si global
+  disabled: { type: Boolean, default: false },
 });
 MaintainTypeSchema.index({ name: 1, owner: 1 }, { unique: true }); // Unique constraint for name and owner
 //init defailt types

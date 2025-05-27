@@ -6,16 +6,8 @@ exports.createMaintain = async (maintainData) => {
   const createdMaintain = await newMaintain.save();
   return createdMaintain;
 };
-exports.getMaintains = async (userId, filter) => {
-  if (!userId) {
-    // For admin: return all
-    return await maintainModal.find(filter);
-  }
-  // For a user: return their maintenances
-  return await maintainModal.find({
-    $or: [{ owner: userId }, { isDefault: true }],
-    ...filter,
-  });
+exports.getMaintains = async (filter) => {
+  return await maintainModal.find(filter);
 };
 exports.getMaintainById = async (maintainId) => {
   const maintainData = await maintainModal.findOne({ _id: maintainId });

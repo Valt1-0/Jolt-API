@@ -7,6 +7,92 @@ const {
 const fs = require("fs");
 const path = require("path");
 const maintainService = require("../services/maintainService");
+const maintainHistoryService = require("../services/maintainHistoryService");
+
+async function getWearPercentage(vehicleId, typeId, userId, role, jwt) {
+  // Récupère le véhicule
+  const response = await fetch(`http://localhost:5003/vehicle/${vehicleId}`, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+  if (!response.ok) throw new NotFoundError("Vehicle not found");
+  let vehicle = await response.json();
+
+  console.log("Vehicle data:", vehicle);
+  if (!vehicle?.data) throw new NotFoundError("Vehicle data not found");
+  vehicle = vehicle.data;
+
+  console.log("Vehicle mileage:", vehicle);
+  if (!vehicleId || !typeId)
+    throw new ValidationError("Vehicle ID and Type ID are required");
+
+  const maintainType = await maintainService.getMaintainById(
+    typeId,
+    userId,
+    role
+  );
+
+  if (!maintainType) throw new NotFoundError("Maintenance type not found");
+
+  // Récupère le dernier historique pour ce véhicule et ce type
+  const histories = await maintainHistoryService.getMaintainHistories(role, {
+    vehicle: vehicleId,
+    type: typeId,
+  });
+  const lastHistory =
+    Array.isArray(histories) && histories.length > 0
+      ? histories.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+      : null;
+
+  if (!lastHistory) {
+    // Si le véhicule est neuf (mileage = 0), usure = 0
+    if (vehicle.mileage === 0) return 0;
+
+    // Sinon, calculer l'usure depuis la date d'achat et le kilométrage actuel
+    let percentKm = 0;
+    let percentDays = 0;
+
+    if (maintainType.periodicity.km) {
+      percentKm = Math.min(
+        (vehicle.mileage / maintainType.periodicity.km) * 100,
+        100
+      );
+    }
+    if (maintainType.periodicity.days) {
+      const usedDays =
+        (Date.now() - new Date(vehicle.firstPurchaseDate)) /
+        (1000 * 60 * 60 * 24);
+      percentDays = Math.min(
+        (usedDays / maintainType.periodicity.days) * 100,
+        100
+      );
+    }
+
+    // Retourne le plus élevé des deux
+    return Math.max(percentKm, percentDays);
+  }
+
+  // Pourcentage km
+  let percentKm = 0;
+  if (maintainType.periodicity.km) {
+    const usedKm = vehicle.mileage - lastHistory.mileage;
+    percentKm = Math.min((usedKm / maintainType.periodicity.km) * 100, 100);
+  }
+
+  // Pourcentage jours
+  let percentDays = 0;
+  if (maintainType.periodicity.days) {
+    const usedDays = (Date.now() - lastHistory.date) / (1000 * 60 * 60 * 24);
+    percentDays = Math.min(
+      (usedDays / maintainType.periodicity.days) * 100,
+      100
+    );
+  }
+
+  // Retourne le plus élevé ou les deux
+  return Math.max(percentKm, percentDays);
+}
 
 // Create a new maintenance
 exports.createMaintain = async (req, res, next) => {
@@ -35,57 +121,80 @@ exports.createMaintain = async (req, res, next) => {
 // Get all maintenances for a user
 exports.getMaintains = async (req, res, next) => {
   try {
+    const jwt =
+      req.headers.authorization?.split(" ")[1] || req.cookies?.access_token;
     const role = req.user.role;
-    let userId = req.user.id;
+    const vehicleId = req.query.vehicleId;
     const { query } = req.query; // Assuming query is passed in the request
+    const proId = role === "pro" ? req.user.id : null;
     let filter = {};
-    // If admin, can filter by userId passed in query
-    if (role === "admin") {
-      userId = null; // If no userId is provided, retrieve all maintenances
-    }
 
-    // if is not admin, can only retrieve their own maintenances
-    if (role !== "admin" && !req.query.userId) {
-      userId = req.user.id;
-    }
-
-    // If member, can only retrieve their own maintenances
-    if (
-      role !== "admin" &&
-      req.query.userId &&
-      req.query.userId !== req.user.id
-    ) {
-      throw new ValidationError(
-        "You do not have permission to access these maintenances."
-      );
-    }
+    const userId =
+      (role === "admin" || role === "pro") && req.query.userId
+        ? req.query.userId
+        : req.user.id;
     const stringFields = ["name", "description", "notes"]; // adapte selon ton modèle
 
     // If query is provided, parse it to filter maintenances
+
     if (query) {
-      const [key, value] = query.split(":");
-      if (key && value) {
-        if (stringFields.includes(key)) {
-          filter[key] = { $regex: value, $options: "i" };
-        } else {
-          // Pour les autres types (ex: ObjectId, Number), filtre exact
-          filter[key] = value;
+      // Découpe chaque filtre séparé par une virgule
+      const filters = query.split(",");
+      filters.forEach((item) => {
+        const [key, value] = item.split(":");
+        if (key && value) {
+          if (stringFields.includes(key)) {
+            filter[key] = { $regex: value, $options: "i" };
+          } else {
+            filter[key] = value;
+          }
         }
-      }
+      });
     }
 
     // If admin without userId, retrieve all
-    const maintains = await maintainService.getMaintains(userId, filter);
+    const maintains = await maintainService.getMaintains(
+      userId,
+      role,
+      filter,
+      proId
+    );
+    //gear wear percentage for each maintenance
+    for (const maintain of maintains) {
+      if (vehicleId && maintain._id) {
+        maintain.wearPercentage = await getWearPercentage(
+          vehicleId,
+          maintain._id,
+          userId,
+          role,
+          jwt
+        );
+        console.log(
+          "Wear percentage for maintain",
+          maintain._id,
+          "is",
+          maintain.wearPercentage
+        );
+      }
+    }
+
+    const maintainsWithWear = maintains.map((maintain) => {
+      // Convertit en objet JS simple
+      const obj = maintain.toObject ? maintain.toObject() : { ...maintain };
+      obj.wearPercentage = maintain.wearPercentage || 0;
+      return obj;
+    });
 
     const successResponse = new OkSuccess(
       "Maintenances retrieved successfully",
-      maintains
+      maintainsWithWear
     );
 
     return res
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());
   } catch (error) {
+    console.error("Error in getMaintains:", error);
     next(error);
   }
 };
@@ -124,7 +233,9 @@ exports.updateMaintain = async (req, res, next) => {
   try {
     const maintainId = req.params.id;
     const maintainData = req.body;
-    const userId = req.user.id;
+
+    const userId =
+      role === "admin" && req.query.userId ? req.query.userId : req.user.id;
 
     if (!maintainId)
       throw new ValidationError("Maintenance ID is required for update");
@@ -154,7 +265,11 @@ exports.updateMaintain = async (req, res, next) => {
 exports.deleteMaintain = async (req, res, next) => {
   try {
     const maintainId = req.params.id;
-    const userId = req.user.id;
+
+    const userId =
+      (role === "admin" || role === "pro") && req.query.userId
+        ? req.query.userId
+        : req.user.id;
 
     if (!maintainId) {
       throw new ValidationError("Maintenance ID is required for deletion");

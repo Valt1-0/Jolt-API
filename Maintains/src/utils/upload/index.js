@@ -20,7 +20,10 @@ const storage = multer.diskStorage({
 
 // Filtre pour accepter uniquement les fichiers image
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
+  if (
+    file.mimetype.startsWith("image/") ||
+    file.mimetype === "application/pdf"
+  ) {
     cb(null, true);
   } else {
     cb(new Error("This format is not authorize"), false);

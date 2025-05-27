@@ -4,6 +4,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const config = require("./src/Config");
 const maintainRoutes = require("./src/routes/maintainRoutes");
+const maintainHistoryRoutes = require("./src/routes/maintainHistoryRoutes");
 const API_PORT = config.API_PORT || console.log("No port defined in .env file");
 
 const cors = require("cors");
@@ -49,6 +50,7 @@ const startServer = async () => {
     // Routes
 
     app.use("/maintain", maintainRoutes);
+    app.use("/maintainHistory", maintainHistoryRoutes);
 
     // Error handling middleware
     app.use(handleErrorWithLogger);

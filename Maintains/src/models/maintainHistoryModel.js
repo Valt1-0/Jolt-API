@@ -7,9 +7,9 @@ const MaintenanceHistorySchema = new mongoose.Schema({
   },
   type: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "MaintenanceType",
-  }, 
-  date: { type: Date, required: true }, // date de la maintenance
+    ref: "MaintainsType",
+  },
+  date: { type: Date, default: Date.now() }, // date de la maintenance
   mileage: { type: Number, required: true }, // kilométrage au moment de la maintenance
   performedBy: { type: String, enum: ["user", "pro"], default: "user" },
   proName: { type: String }, // nom du garage/pro si applicable
