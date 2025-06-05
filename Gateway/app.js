@@ -9,7 +9,7 @@ const app = express();
 
 // Middlewares globaux
 app.use(morgan("dev"));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: "http://localhost:5000", credentials: true }));
 //app.use(express.json());
 //app.use(cookieParser());
 //app.use(bodyParser.urlencoded({ extended: true }));
@@ -60,6 +60,6 @@ app.use(
   })
 );
 //app.use(express.json());
-app.listen(3000, () => {
+app.listen(5000, () => {
   console.log("API Gateway running on port 3000");
 });
