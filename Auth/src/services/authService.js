@@ -10,6 +10,7 @@ exports.getToken = async ({ email, password }, ip, device) => {
     };
 
     const response = await axios.post(url, data);
+    console.log("reponse from auth service:", response.data);
     const user = response.data?.data;
     const accessToken = await jwt.generateAccessToken({
       id: user._id,

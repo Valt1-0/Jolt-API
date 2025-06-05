@@ -4,7 +4,7 @@ const utils = require("../utils");
 exports.getToken = async (req, res, next) => {
   try {
     const device = req.headers["x-client-type"] || req.headers["user-agent"];
-
+console.log("getTolen called with body:", req.body);
     const { accessToken, refreshToken, user } = await authService.getToken(
       req.body,
       req.ip, // IP de l'utilisateur
