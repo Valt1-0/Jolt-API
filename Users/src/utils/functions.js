@@ -1,7 +1,7 @@
 const sendVerificationEmail = async (email, username, verificationToken) => {
   try {
     const response = await fetch(
-      "http://localhost:5002/mail/registerConfirmation",
+      "http://localhost:5001/mail/registerConfirmation",
       {
         method: "POST",
         headers: {
