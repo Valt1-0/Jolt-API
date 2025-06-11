@@ -62,5 +62,5 @@ app.use(
 );
 //app.use(express.json());
 app.listen(5000, () => {
-  console.log("API Gateway running on port 3000");
+  console.log("API Gateway running on port 5000");
 });

@@ -28,7 +28,7 @@ async function getWearPercentage(vehicleOrId, typeId, userId, role, jwt) {
       throw new utils.NotFoundError("Vehicle data not found");
     vehicle = vehicleData.data;
   }
- 
+
   if (!vehicle || !typeId)
     throw new ValidationError("Vehicle ID and Type ID are required");
 
@@ -127,55 +127,29 @@ exports.createMaintain = async (req, res, next) => {
 
 exports.getMaintenanceCount = async (req, res, next) => {
   try {
+    const { vehicleIds } = req.body;
+    const userId = req.user.id;
+    const role = req.user.role;
     const jwt =
       req.headers.authorization?.split(" ")[1] || req.cookies?.access_token;
-    const role = req.user.role;
-    const vehicleId = req.query.vehicleId;
-    const userId =
-      (role === "admin" || role === "pro") && req.query.userId
-        ? req.query.userId
-        : req.user.id;
-
-    if (!vehicleId) {
-      throw new ValidationError("Vehicle ID is required");
+console.log("vehicleIds:", vehicleIds);
+    if (!Array.isArray(vehicleIds)) {
+      return res.status(400).json({ error: "vehicleIds must be an array" });
     }
 
-    // Get all maintenances for the vehicle
-    const maintains = await maintainService.getMaintains(
-      userId,
-      role,
-      {},
-      null
-    );
-
-    // Calculate wear percentage for each maintenance
-    let count = 0;
-    for (const maintain of maintains) {
-      if (maintain._id) {
-        const wearPercentage = await getWearPercentage(
-          vehicleId,
-          maintain._id,
-          userId,
-          role,
-          jwt
-        );
-        if (wearPercentage > 50) {
-          count++;
-        }
-      }
+    const results = [];
+    for (const vehicleId of vehicleIds) {
+      const count = await maintainService.getMaintenanceCountForSocket(
+        userId,
+        vehicleId,
+        role,
+        jwt
+      );
+      results.push({ vehicleId, pendingMaintenances: count });
     }
-
-    const successResponse = new OkSuccess(
-      "Maintenance count retrieved successfully",
-      { count }
-    );
-
-    return res
-      .status(successResponse.statusCode)
-      .json(successResponse.toJSON());
-  } catch (error) {
-    console.error("Error in getMaintenanceCount:", error);
-    next(error);
+    res.json(results);
+  } catch (err) {
+    next(err);
   }
 };
 

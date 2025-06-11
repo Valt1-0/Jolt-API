@@ -4,9 +4,7 @@ const vehicleRepository = require("../repository/vehicleRepository");
 exports.createVehicle = async (vehicleData, userId) => {
   try {
     vehicleData.owner = userId; // Assuming owner is the userId
-    const createdVehicle = await vehicleRepository.createVehicle(
-      vehicleData 
-    );
+    const createdVehicle = await vehicleRepository.createVehicle(vehicleData);
     return createdVehicle;
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -25,7 +23,17 @@ exports.createVehicle = async (vehicleData, userId) => {
     );
   }
 };
+exports.unsetAllFavorites = async (userId) => {
+  await vehicleRepository.updateMany(
+    { owner: userId, isFavorite: true },
+    { isFavorite: false }
+  );
+};
 
+exports.setFavorite = async (vehicleId, userId) => {
+  const vehicle = await vehicleRepository.setFavorite(vehicleId, userId);
+  return vehicle;
+};
 
 exports.getAllVehicles = async (userId, role) => {
   if (role === "admin" && !userId) {
@@ -35,20 +43,19 @@ exports.getAllVehicles = async (userId, role) => {
   // Sinon, récupère les véhicules pour un userId donné
   return await vehicleRepository.getAllVehicles(userId);
 };
-exports.getVehicleById = async (vehicleId, userId,role) => {
-    const vehicle = await vehicleRepository.getVehicleById(vehicleId);
-    console.log("Vehicle found:", vehicle);
-    if (vehicle.owner.toString() !== userId.toString() && role !== "admin") {
-      console.log("User does not have permission to access this vehicle");
-      throw new utils.ForbiddenError(
-        "You do not have permission to access this vehicle"
-      );
-    }
-    if (!vehicle) {
-      throw new utils.NotFoundError("Vehicle not found");
-    }
-    return vehicle;
-
+exports.getVehicleById = async (vehicleId, userId, role) => {
+  const vehicle = await vehicleRepository.getVehicleById(vehicleId);
+  console.log("Vehicle found:", vehicle);
+  if (vehicle.owner.toString() !== userId.toString() && role !== "admin") {
+    console.log("User does not have permission to access this vehicle");
+    throw new utils.ForbiddenError(
+      "You do not have permission to access this vehicle"
+    );
+  }
+  if (!vehicle) {
+    throw new utils.NotFoundError("Vehicle not found");
+  }
+  return vehicle;
 };
 exports.updateVehicle = async (vehicleId, vehicleData, userId) => {
   try {

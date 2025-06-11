@@ -50,3 +50,17 @@ exports.deleteVehicle = async (vehicleId, userId) => {
   }
   return deletedVehicle;
 };
+
+exports.updateMany = (filter, update) => {
+  return vehicle.updateMany(filter, update);
+};
+
+exports.setFavorite = async (vehicleId, userId) => {
+  const vehicleData = await vehicle.findOne({ _id: vehicleId, owner: userId });
+  if (!vehicleData) {
+    throw new utils.NotFoundError("Vehicle not found or you do not own it");
+  }
+  vehicleData.isFavorite = true;
+  await vehicleData.save();
+  return vehicleData;
+}

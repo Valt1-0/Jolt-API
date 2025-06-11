@@ -153,6 +153,29 @@ exports.updateVehicle = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.setFavoriteVehicle = async (req, res, next) => {
+  try {
+    const vehicleId = req.params.id;
+    const userId = req.user.id;
+
+    // 1. Mettre tous les véhicules de l'utilisateur à isFavorite: false
+    await vehicleService.unsetAllFavorites(userId);
+
+    // 2. Mettre le véhicule choisi à isFavorite: true
+    const updatedVehicle = await vehicleService.setFavorite(vehicleId, userId);
+
+    const successResponse = new OkSuccess(
+      "Favorite vehicle updated successfully",
+      updatedVehicle
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    next(error);
+  }
+};
 // Delete a vehicle by ID
 exports.deleteVehicle = async (req, res, next) => {
   try {

@@ -169,7 +169,7 @@ const { GATEWAY_URL } = require("../Config");
 // Cette fonction calcule le pourcentage d'usure pour un type de maintenance
 exports.getWearPercentage = async (vehicleOrId, typeId, userId, role, jwt) => {
   // Récupère le véhicule
-  let vehicle;
+  let vehicle = vehicleOrId;
 
   // Si on reçoit un objet véhicule, on l'utilise directement
   if (typeof vehicleOrId === "object" && vehicleOrId !== null) {
@@ -187,9 +187,10 @@ exports.getWearPercentage = async (vehicleOrId, typeId, userId, role, jwt) => {
       );
     if (response.status === 404)
       throw new utils.NotFoundError("Vehicle not found");
-    let vehicle = await response.json();
-    if (!vehicle?.data) throw new utils.NotFoundError("Vehicle data not found");
-    vehicle = vehicle.data;
+    const vehicleData = await response.json();
+    if (!vehicleData?.data)
+      throw new utils.NotFoundError("Vehicle data not found");
+    vehicle = vehicleData.data;
   }
 
   if (!vehicle || !typeId)
