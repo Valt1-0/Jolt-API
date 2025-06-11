@@ -162,3 +162,117 @@ exports.deleteMaintain = async (maintainId, userId, role) => {
     );
   }
 };
+
+const maintainHistoryService = require("../services/maintainHistoryService");
+const { GATEWAY_URL } = require("../Config");
+
+// Cette fonction calcule le pourcentage d'usure pour un type de maintenance
+exports.getWearPercentage = async (vehicleOrId, typeId, userId, role, jwt) => {
+  // Récupère le véhicule
+  let vehicle;
+
+  // Si on reçoit un objet véhicule, on l'utilise directement
+  if (typeof vehicleOrId === "object" && vehicleOrId !== null) {
+    vehicle = vehicleOrId;
+  } else {
+    const response = await fetch(`${GATEWAY_URL}/vehicle/${vehicle}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+    console.log(response);
+    if (response.status === 403)
+      throw new utils.ForbiddenError(
+        "Forbidden: you do not have access to this vehicle"
+      );
+    if (response.status === 404)
+      throw new utils.NotFoundError("Vehicle not found");
+    let vehicle = await response.json();
+    if (!vehicle?.data) throw new utils.NotFoundError("Vehicle data not found");
+    vehicle = vehicle.data;
+  }
+
+  if (!vehicle || !typeId)
+    throw new utils.ValidationError("Vehicle ID and Type ID are required");
+
+  const maintainType = await exports.getMaintainById(typeId, userId, role);
+  if (!maintainType)
+    throw new utils.NotFoundError("Maintenance type not found");
+
+  // Récupère le dernier historique pour ce véhicule et ce type
+  const histories = await maintainHistoryService.getMaintainHistories(role, {
+    vehicle: vehicle?.id || vehicle._id,
+    type: typeId,
+  });
+  const lastHistory =
+    Array.isArray(histories) && histories.length > 0
+      ? histories.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+      : null;
+
+      console.log("vehicule : ",vehicle);
+  if (!lastHistory) {
+    if (vehicle.mileage === 0) return 0;
+    let percentKm = 0;
+    let percentDays = 0;
+    if (maintainType.periodicity.km) {
+      percentKm = Math.min(
+        (vehicle.mileage / maintainType.periodicity.km) * 100,
+        100
+      );
+    }
+    if (maintainType.periodicity.days) {
+      const usedDays =
+        (Date.now() - new Date(vehicle.firstPurchaseDate)) /
+        (1000 * 60 * 60 * 24);
+      percentDays = Math.min(
+        (usedDays / maintainType.periodicity.days) * 100,
+        100
+      );
+    }
+    return Math.max(percentKm, percentDays);
+  }
+
+  let percentKm = 0;
+  if (maintainType.periodicity.km) {
+    const usedKm = vehicle.mileage - lastHistory.mileage;
+    percentKm = Math.min((usedKm / maintainType.periodicity.km) * 100, 100);
+  }
+  let percentDays = 0;
+  if (maintainType.periodicity.days) {
+    const usedDays = (Date.now() - lastHistory.date) / (1000 * 60 * 60 * 24);
+    percentDays = Math.min(
+      (usedDays / maintainType.periodicity.days) * 100,
+      100
+    );
+  }
+  return Math.max(percentKm, percentDays);
+};
+
+exports.getMaintenanceCountForSocket = async (
+  userId,
+  vehicleId,
+  role = "user",
+  jwt = null
+) => {
+  console.log(
+    `Calculating maintenance count for user ${userId}, vehicle ${vehicleId}, role ${role}, jwt ${jwt}`
+  );
+  const maintains = await exports.getMaintains(userId, role, {}, null);
+  let count = 0;
+  for (const maintain of maintains) {
+    if (maintain._id) {
+      const wearPercentage = await exports.getWearPercentage(
+        vehicleId,
+        maintain._id,
+        userId,
+        role,
+        jwt
+      );
+      if (wearPercentage > 50) {
+        count++;
+      }
+    }
+  }
+  console.log(`Maintenance count for vehicle ${vehicleId?.id} and user ${userId}:`, count);
+  return count;
+};

@@ -1,5 +1,6 @@
 require("./src/db/mongoConnect").connect();
 const express = require("express");
+const http = require("http");
 //const csrf = require("csrf");
 const cookieParser = require("cookie-parser");
 const config = require("./src/Config");
@@ -54,6 +55,13 @@ const startServer = async () => {
 
     // Error handling middleware
     app.use(handleErrorWithLogger);
+
+    const server = http.createServer(app);
+
+    require("./src/socket")(server);
+    server.listen(5005, () => {
+      console.log("Maintain service running on port 5005");
+    });
 
     // Server listening
     app.listen(API_PORT, () => {

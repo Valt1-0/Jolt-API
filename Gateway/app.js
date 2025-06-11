@@ -45,6 +45,7 @@ app.use(
     changeOrigin: true,
   })
 );
+
 app.use(
   "/maintainHistory",
   createProxyMiddleware({

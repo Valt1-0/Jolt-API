@@ -8,6 +8,7 @@ const maintainController = require("../controllers/maintainController");
 router.post("/", authenticateToken, maintainController.createMaintain);
 router.get("/", authenticateToken, maintainController.getMaintains);
 router.get("/:id", authenticateToken, maintainController.getMaintainById);
+router.get("/count", authenticateToken, maintainController.getMaintenanceCount);
 router.put("/:id", authenticateToken, maintainController.updateMaintain);
 router.delete("/:id", authenticateToken, maintainController.deleteMaintain);
 

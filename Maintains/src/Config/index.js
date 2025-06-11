@@ -20,4 +20,5 @@ module.exports = {
   IMAGE_UPLOAD_PATH: process.env.IMAGE_UPLOAD_PATH,
   IMAGE_BASE_URL: process.env.IMAGE_BASE_URL,
   VEHICLE_SERVICE_URL: process.env.VEHICLE_SERVICE_URL,
+   GATEWAY_URL: process.env.GATEWAY_URL,
 };

@@ -8,23 +8,28 @@ const fs = require("fs");
 const path = require("path");
 const maintainService = require("../services/maintainService");
 const maintainHistoryService = require("../services/maintainHistoryService");
-const {VEHICLE_SERVICE_URL} = require("../Config");
-async function getWearPercentage(vehicleId, typeId, userId, role, jwt) {
-  // Récupère le véhicule
-  const response = await fetch(`${VEHICLE_SERVICE_URL}/vehicle/${vehicleId}`, {
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  if (!response.ok) throw new NotFoundError("Vehicle not found");
-  let vehicle = await response.json();
+const { GATEWAY_URL } = require("../Config");
+async function getWearPercentage(vehicleOrId, typeId, userId, role, jwt) {
+  let vehicle;
 
-  console.log("Vehicle data:", vehicle);
-  if (!vehicle?.data) throw new NotFoundError("Vehicle data not found");
-  vehicle = vehicle.data;
-
-  console.log("Vehicle mileage:", vehicle);
-  if (!vehicleId || !typeId)
+  // Si on reçoit un objet véhicule, on l'utilise directement
+  if (typeof vehicleOrId === "object" && vehicleOrId !== null) {
+    vehicle = vehicleOrId;
+  } else {
+    // Sinon, on fait le fetch comme avant
+    const response = await fetch(`${GATEWAY_URL}/vehicle/${vehicleOrId}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+    if (!response.ok) throw new utils.NotFoundError("Vehicle not found");
+    let vehicleData = await response.json();
+    if (!vehicleData?.data)
+      throw new utils.NotFoundError("Vehicle data not found");
+    vehicle = vehicleData.data;
+  }
+ 
+  if (!vehicle || !typeId)
     throw new ValidationError("Vehicle ID and Type ID are required");
 
   const maintainType = await maintainService.getMaintainById(
@@ -37,7 +42,7 @@ async function getWearPercentage(vehicleId, typeId, userId, role, jwt) {
 
   // Récupère le dernier historique pour ce véhicule et ce type
   const histories = await maintainHistoryService.getMaintainHistories(role, {
-    vehicle: vehicleId,
+    vehicle: vehicle?.id || vehicle._id,
     type: typeId,
   });
   const lastHistory =
@@ -114,6 +119,62 @@ exports.createMaintain = async (req, res, next) => {
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());
   } catch (error) {
+    next(error);
+  }
+};
+
+//Get Maintenance Count where pourcent is Greate than 50
+
+exports.getMaintenanceCount = async (req, res, next) => {
+  try {
+    const jwt =
+      req.headers.authorization?.split(" ")[1] || req.cookies?.access_token;
+    const role = req.user.role;
+    const vehicleId = req.query.vehicleId;
+    const userId =
+      (role === "admin" || role === "pro") && req.query.userId
+        ? req.query.userId
+        : req.user.id;
+
+    if (!vehicleId) {
+      throw new ValidationError("Vehicle ID is required");
+    }
+
+    // Get all maintenances for the vehicle
+    const maintains = await maintainService.getMaintains(
+      userId,
+      role,
+      {},
+      null
+    );
+
+    // Calculate wear percentage for each maintenance
+    let count = 0;
+    for (const maintain of maintains) {
+      if (maintain._id) {
+        const wearPercentage = await getWearPercentage(
+          vehicleId,
+          maintain._id,
+          userId,
+          role,
+          jwt
+        );
+        if (wearPercentage > 50) {
+          count++;
+        }
+      }
+    }
+
+    const successResponse = new OkSuccess(
+      "Maintenance count retrieved successfully",
+      { count }
+    );
+
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in getMaintenanceCount:", error);
     next(error);
   }
 };
