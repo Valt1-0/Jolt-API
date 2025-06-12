@@ -6,10 +6,11 @@ const helmet = require("helmet");
 // const cookieParser = require("cookie-parser");
 // const bodyParser = require('body-parser')
 const app = express();
-
+  const allowedOrigins = ["http://localhost:8000", "http://localhost:5000"];
+ 
 // Middlewares globaux
 app.use(morgan("dev"));
-app.use(cors({ origin: "http://localhost:5000", credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 //app.use(express.json());
 //app.use(cookieParser());
 //app.use(bodyParser.urlencoded({ extended: true }));
