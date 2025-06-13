@@ -8,6 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const maintainHistoryService = require("../services/maintainHistoryService");
 const mongoose = require("mongoose");
+
 // Create a new maintenance history with files uploads
 exports.createMaintainHistory = async (req, res, next) => {
   try {
@@ -24,6 +25,35 @@ exports.createMaintainHistory = async (req, res, next) => {
         userId,
         filePaths
       );
+
+    // NOTIFICATION SOCKET
+
+    const io = require("../socket").getIO();
+    console.log("New maintenance history created:", io);
+    if (io) {
+      console.log("Emitting maintenanceCountUpdated event");
+      const vehicleId = newMaintainHistory.vehicle?.toString();
+      const role = req.user.role;
+      const jwt =
+        req.headers.authorization?.split(" ")[1] || req.cookies?.access_token;
+
+      if (vehicleId) {
+        const count =
+          await require("../services/maintainService").getMaintenanceCountForSocket(
+            userId,
+            vehicleId,
+            role,
+            jwt
+          );
+        console.log(
+          `Emitting maintenanceCountUpdated for vehicle ${vehicleId} with count ${count}`
+        );
+        io.to(userId).emit("maintain:update", {
+          vehicleId,
+          pendingCount: count,
+        });
+      }
+    }
 
     const successResponse = new CreatedSuccess(
       "Maintenance history created successfully",
@@ -47,7 +77,7 @@ exports.getMaintainHistories = async (req, res, next) => {
     const objectIdFields = ["vehicle", "type", "_id", "user", "vehicleId"];
     const numberFields = ["mileage"]; // Ajoute ici tous tes champs numériques
     //vehiculeId is used to filter by vehicle ID
-    if (req.query.vehicleId && role !== "admin") {
+    if (req.query.vehicleId) {
       filter.vehicle = new mongoose.Types.ObjectId(req.query.vehicleId);
     }
 
