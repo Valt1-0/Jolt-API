@@ -18,9 +18,7 @@ exports.getAllVehicles = async (userId) => {
   return await vehicle.find({ owner: userId });
 };
 exports.getVehicleById = async (vehicleId) => {
-    console.log("Fetching vehicle with ID:", vehicleId);
   const vehicleData = await vehicle.findOne({ _id: vehicleId });
-  console.log("Vehicle found:", vehicleData);
   if (!vehicleData) {
     throw new utils.NotFoundError("Vehicle not found");
   }

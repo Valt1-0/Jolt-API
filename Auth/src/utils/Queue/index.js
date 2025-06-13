@@ -24,7 +24,6 @@ const PublishMessage = (channel, routingKey, msg) => {
   channel.publish(EXCHANGE_NAME, routingKey, Buffer.from(msg), {
     persistent: true,
   });
-  console.log("Sent: ", msg);
 };
 
 const SubscribeMessage = async (channel, routingKey, onMessage) => {
@@ -38,7 +37,6 @@ const SubscribeMessage = async (channel, routingKey, onMessage) => {
       if (msg.content) {
         onMessage(msg.content.toString());
       }
-      console.log("[X] received");
     },
     { noAck: true }
   );

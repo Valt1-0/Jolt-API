@@ -4,7 +4,6 @@ const utils = require("../utils");
 exports.getToken = async (req, res, next) => {
   try {
     const device = req.headers["x-client-type"] || req.headers["user-agent"];
-console.log("getTolen called with body:", req.body);
     const { accessToken, refreshToken, user } = await authService.getToken(
       req.body,
       req.ip, // IP de l'utilisateur
@@ -56,7 +55,6 @@ exports.refreshToken = async (req, res, next) => {
     } else if (req.cookies && req.cookies.refresh_token) {
       refreshToken = req.cookies.refresh_token;
     }
-    console.log("Refresh token received:", refreshToken);
     if (!refreshToken) {
       throw new utils.AuthorizeError("Refresh token missing");
     }
@@ -95,9 +93,6 @@ exports.registerUser = async (req, res, next) => {
 exports.verifyEmail = async (req, res, next) => {
   try {
     const { token } = req.params;
-
-    console.log("Token received for verification:", token);
-    console.log("req", req.params);
     const user = await authService.verifyEmail(token);
     const successResponse = new utils.OkSuccess("Email verified", user);
     res.status(successResponse.statusCode).json(successResponse.toJSON());
@@ -147,7 +142,6 @@ exports.logout = async (req, res, next) => {
       req.body.refreshToken || (req.cookies && req.cookies.refresh_token);
 
     if (!accessToken || !refreshToken) {
-      console.log("Access token or refresh token missing");
       throw new utils.AuthorizeError("Tokens missing");
     }
 

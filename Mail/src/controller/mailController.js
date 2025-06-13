@@ -14,7 +14,6 @@ const loadTemplate = async (templateName) => {
 
 exports.sendRegisterConfirmationMail = async (data) => {
   const { to, username, verificationToken } = data;
-  console.log("Data received:", data);
   try {
     // Charger le template
     let htmlContent = await loadTemplate("registerConfirmation");
@@ -35,7 +34,6 @@ exports.sendRegisterConfirmationMail = async (data) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email de confirmation envoyé:", info.response);
   } catch (error) {
     console.error("Erreur lors de l'envoi de l'email:", error.message);
   }
@@ -53,7 +51,6 @@ exports.sendMail = async (req, res) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.response);
     res.status(200).send({ message: "Email sent successfully", info });
   } catch (error) {
     console.error("Error sending email:", error.message);

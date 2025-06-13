@@ -8,15 +8,16 @@ exports.createMaintainHistory = async (maintainHistoryData) => {
 };
 exports.getMaintainHistories = async ( role, query) => {
   if (role === "admin") {
-    return await maintainHistoryModal.find(query);
+    return await maintainHistoryModal.find(query).populate("type");
   }
-  console.log("query",query)
-  return await maintainHistoryModal.find({ ...query });
+  return await maintainHistoryModal.find({ ...query }).populate("type");
 };
 exports.getMaintainHistoryById = async (maintainHistoryId) => {
-  const maintainHistoryData = await maintainHistoryModal.findOne({
-    _id: maintainHistoryId,
-  });
+  const maintainHistoryData = await maintainHistoryModal
+    .findOne({
+      _id: maintainHistoryId,
+    })
+    .populate("type");
   if (!maintainHistoryData) {
     throw new utils.NotFoundError("Maintenance history not found");
   }

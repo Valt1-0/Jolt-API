@@ -98,7 +98,6 @@ exports.getMaintainHistoryById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    console.log("id", id);
     const maintainHistory = await maintainHistoryService.getMaintainHistoryById(
       id,
       userId

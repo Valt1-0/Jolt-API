@@ -73,7 +73,6 @@ exports.getUser = async (req, res, next) => {
 
 exports.createUser = async (req, res, next) => {
   try {
-    console.log("Request body:", req.body); // Log the request body for debugging
     const createdUser = await userService.createUser(req.body);
     const successResponse = new CreatedSuccess(
       "User created successfully",
@@ -107,7 +106,6 @@ exports.verifyEmailToken = async (req, res, next) => {
     if (!token) {
       throw new ValidationError("Token is required for verification");
     }
-    console.log("Token received for verification:", token); // Log the token for debugging
     const user = await userService.verifyEmailToken(token);
     const successResponse = new OkSuccess("Email verified successfully", user);
     return res
@@ -121,7 +119,6 @@ exports.verifyEmailToken = async (req, res, next) => {
 
 exports.updateVerificationToken = async (req, res, next) => {
   try {
-    console.log("test");
     const { email, verificationToken, verificationTokenExpires } = req.body;
     if (!email) {
       throw new ValidationError("Email is required for verification");
@@ -149,7 +146,6 @@ exports.updateVerificationToken = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   try {
-    console.log("Request user ID:", req.user); // Log the user ID for debugging
     const { id } = req.user;
     if (!id) {
       throw new ValidationError("ID is required for deletion");

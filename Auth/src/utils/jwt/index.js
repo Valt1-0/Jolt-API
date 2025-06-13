@@ -14,7 +14,7 @@ const generateRefreshToken = async (payload) => {
       expiresIn: JWT_REFRESH_EXPIRATION,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return error;
   }
 };
@@ -25,7 +25,7 @@ const generateAccessToken = async (payload) => {
       expiresIn: JWT_ACCESS_EXPIRATION,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return error;
   }
 };
@@ -36,7 +36,7 @@ const verifyAccessToken = async (token) => {
     const payload = await jwt.verify(signature, JWT_ACCESS_KEY);
     return payload;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 };
@@ -47,7 +47,7 @@ const verifyRefreshToken = async (token) => {
     const payload = await jwt.verify(signature, JWT_REFRESH_KEY);
     return payload;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return null;
   }
 };

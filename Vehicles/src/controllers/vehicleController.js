@@ -13,6 +13,7 @@ exports.createVehicle = async (req, res, next) => {
   try {
     const vehicleData = req.body;
     const userId = req.user.id; // Assuming user ID is stored in req.user
+    console.log("User ID:", userId, "vehicleImage:", req.file); 
     if (req.file) {
       vehicleData.image = `${IMAGE_BASE_URL}${req.file.filename}`;
     } else {
@@ -78,11 +79,9 @@ exports.getAllVehicles = async (req, res, next) => {
 exports.getVehicleById = async (req, res, next) => {
   try {
     const vehicleId = req.params.id;
-    console.log("Vehicle ID:", vehicleId);
     const userId = req.user.id; // Assuming user ID is stored in req.user
     // Assuming role is stored in req.user.role
     const role = req.user.role; // Uncomment if role is needed for permission checks
-    console.log("role:", role);
     const vehicle = await vehicleService.getVehicleById(
       vehicleId,
       userId,
@@ -168,11 +167,12 @@ exports.setFavoriteVehicle = async (req, res, next) => {
     const successResponse = new OkSuccess(
       "Favorite vehicle updated successfully",
       updatedVehicle
-    );
+    ); 
     return res
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());
   } catch (error) {
+    console.error("Error in setFavoriteVehicle:", error);
     next(error);
   }
 };

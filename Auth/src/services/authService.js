@@ -10,7 +10,6 @@ exports.getToken = async ({ email, password }, ip, device) => {
     };
 
     const response = await axios.post(url, data);
-    console.log("reponse from auth service:", response.data);
     const user = response.data?.data;
     const accessToken = await jwt.generateAccessToken({
       id: user._id,
@@ -40,7 +39,6 @@ exports.getToken = async ({ email, password }, ip, device) => {
     };
   } catch (error) {
     console.error("Error during login:", error);
-    console.log("error status ", error.response.status);
     return utils.handleAxiosError(error);
   }
 };
@@ -57,13 +55,11 @@ exports.refreshToken = async (token) => {
         }
       }
     );
-    console.log("decoded token", decoded);
     // Générer un nouveau token d'accès
     const newToken = await jwt.generateAccessToken({
       id: decoded.id,
       role: decoded.role,
     });
-    console.log("new token", newToken);
     return newToken;
   } catch (error) {
     throw new utils.AuthorizeError("Invalid token");
@@ -84,7 +80,6 @@ exports.registerUser = async (userData) => {
     };
 
     const response = await axios.post(url, payload);
-    console.log("User registered successfully:", response);
     const user = response.data?.data;
     return user;
   } catch (error) {
@@ -96,7 +91,6 @@ exports.verifyEmail = async (token) => {
   const url = process.env.AUTH_SERVICE_URL + "/verifyEmail/" + token;
   try {
     const response = await axios.get(url);
-    console.log("Email verified successfully:", response);
     return response.data?.data;
   } catch (error) {
     return utils.handleAxiosError(error);
@@ -114,7 +108,6 @@ exports.resendVerificationEmail = async (email) => {
       verificationToken,
       verificationTokenExpires,
     });
-    console.log("Verification email resent successfully:", response);
     return response.data?.data;
   } catch (error) {
     console.error("Error resending verification email:", error);

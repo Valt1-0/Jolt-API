@@ -65,7 +65,7 @@ const startServer = async () => {
 
     return app;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

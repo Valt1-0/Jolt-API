@@ -12,9 +12,7 @@ const authenticateToken = async (req, res, next) => {
   const JWT_ACCESS_KEY = config.JWT_ACCESS_KEY;
   // Récupérer le token depuis l'en-tête Authorization ou les cookies
   let token = null;
-  console.log("Authenticating token...");
-  console.log("Headers:", req.headers);
-  console.log("Cookies:", req.cookies);
+
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];

@@ -9,15 +9,10 @@ exports.connect = async () => {
   await mongoose
     .connect(MONGODB_URI)
     .then(async () => {
-      console.log(
-        "Successfully connected to database " + mongoose.connection.name
-      );
        // Initialiser les types par défaut ici
-       await MaintainsType.initDefaultTypes();
-       console.log("Types de maintenance par défaut initialisés");
+       await MaintainsType.initDefaultTypes(); 
     })
-    .catch((error) => {
-      console.log("database connection failed. exiting now...");
+    .catch((error) => { 
       console.error(error);
       process.exit(1);
     });

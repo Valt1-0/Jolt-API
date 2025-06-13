@@ -180,7 +180,6 @@ exports.getWearPercentage = async (vehicleOrId, typeId, userId, role, jwt) => {
         Authorization: `Bearer ${jwt}`,
       },
     });
-    console.log(response);
     if (response.status === 403)
       throw new utils.ForbiddenError(
         "Forbidden: you do not have access to this vehicle"
@@ -210,7 +209,6 @@ exports.getWearPercentage = async (vehicleOrId, typeId, userId, role, jwt) => {
       ? histories.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
       : null;
 
-      console.log("vehicule : ",vehicle);
   if (!lastHistory) {
     if (vehicle.mileage === 0) return 0;
     let percentKm = 0;
@@ -255,9 +253,6 @@ exports.getMaintenanceCountForSocket = async (
   role = "user",
   jwt = null
 ) => {
-  console.log(
-    `Calculating maintenance count for user ${userId}, vehicle ${vehicleId}, role ${role}, jwt ${jwt}`
-  );
   const maintains = await exports.getMaintains(userId, role, {}, null);
   let count = 0;
   for (const maintain of maintains) {
@@ -274,6 +269,5 @@ exports.getMaintenanceCountForSocket = async (
       }
     }
   }
-  console.log(`Maintenance count for vehicle ${vehicleId?.id} and user ${userId}:`, count);
   return count;
 };

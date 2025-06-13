@@ -45,7 +45,6 @@ exports.getAllVehicles = async (userId, role) => {
 };
 exports.getVehicleById = async (vehicleId, userId, role) => {
   const vehicle = await vehicleRepository.getVehicleById(vehicleId);
-  console.log("Vehicle found:", vehicle);
   if (vehicle.owner.toString() !== userId.toString() && role !== "admin") {
     console.log("User does not have permission to access this vehicle");
     throw new utils.ForbiddenError(

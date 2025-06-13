@@ -6,8 +6,13 @@ const helmet = require("helmet");
 // const cookieParser = require("cookie-parser");
 // const bodyParser = require('body-parser')
 const app = express();
-  const allowedOrigins = ["http://localhost:8000", "http://localhost:5000"];
- 
+const allowedOrigins = [
+  "http://localhost:8000",
+  "http://localhost:5000",
+  "http://192.168.1.88:5000",
+];
+// Ajoute ce middleware AVANT tes routes/proxy
+
 // Middlewares globaux
 app.use(morgan("dev"));
 app.use(cors({ origin: allowedOrigins, credentials: true }));
@@ -16,6 +21,16 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 //app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(bodyParser.json({ type: "application/json" }));
 app.use(helmet());
+
+app.use("/vehicle", (req, res, next) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
+});
 
 // Proxy vers les microservices (remplacez les URL par celles de vos load balancers ou services)
 app.use(
@@ -32,6 +47,7 @@ app.use(
     changeOrigin: true,
   })
 );
+
 app.use(
   "/vehicle",
   createProxyMiddleware({

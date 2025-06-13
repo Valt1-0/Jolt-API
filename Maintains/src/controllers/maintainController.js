@@ -132,7 +132,7 @@ exports.getMaintenanceCount = async (req, res, next) => {
     const role = req.user.role;
     const jwt =
       req.headers.authorization?.split(" ")[1] || req.cookies?.access_token;
-console.log("vehicleIds:", vehicleIds);
+
     if (!Array.isArray(vehicleIds)) {
       return res.status(400).json({ error: "vehicleIds must be an array" });
     }
@@ -204,12 +204,7 @@ exports.getMaintains = async (req, res, next) => {
           role,
           jwt
         );
-        console.log(
-          "Wear percentage for maintain",
-          maintain._id,
-          "is",
-          maintain.wearPercentage
-        );
+
       }
     }
 
