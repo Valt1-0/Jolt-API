@@ -13,7 +13,7 @@ const app = express();
 
 const startServer = async () => {
   try {
-    app.use(cors());
+    //app.use(cors());
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json({ type: "application/json" }));

@@ -11,11 +11,22 @@ const allowedOrigins = [
   "http://localhost:5000",
   "http://192.168.1.88:5000",
 ];
-// Ajoute ce middleware AVANT tes routes/proxy
-
+ 
 // Middlewares globaux
 app.use(morgan("dev"));
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Autorise les requêtes sans origin (ex: curl, mobile) ou si l'origin est dans la liste
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, origin);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 //app.use(express.json());
 //app.use(cookieParser());
 //app.use(bodyParser.urlencoded({ extended: true }));
