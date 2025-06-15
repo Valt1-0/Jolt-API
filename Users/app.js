@@ -4,7 +4,6 @@ const csrf = require("csrf");
 const cookieParser = require("cookie-parser");
 const config = require('./src/Config')
 const userRoute = require("./src/routes/userRoutes");
-const authRoute = require("./src/routes/authRoutes");
 
 const API_PORT = config.API_PORT || console.log("No port defined in .env file");
 
@@ -49,7 +48,6 @@ const startServer = async () => {
     
 
     // Routes
-    // app.use("/auth", authRoute);
 
 
 
