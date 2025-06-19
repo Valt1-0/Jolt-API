@@ -88,6 +88,21 @@ app.use(
     changeOrigin: true,
   })
 );
+
+app.use(
+  "/navigate",
+  createProxyMiddleware({
+    target: "http://localhost:5006/navigate", // Navigate service
+    changeOrigin: true,
+  })
+);
+app.use(
+  "/favorite-addresses",
+  createProxyMiddleware({
+    target: "http://localhost:5006/favorite-addresses", // Favorite addresses service
+    changeOrigin: true,
+  })
+);
 //app.use(express.json());
 app.listen(5000, () => {
   console.log("API Gateway running on port 5000");
