@@ -15,13 +15,13 @@ jobs:
     strategy:
       matrix:
         service:
-          - Mail
-          - Auth
-          - Users
-          - Gateway
-          - Vehicles
-          - Maintains
-          - Navigate
+          - mail
+          - auth
+          - users
+          - gateway
+          - vehicles
+          - maintains
+          - navigate
 
     steps:
       - name: Checkout code
@@ -43,4 +43,4 @@ jobs:
           context: ./${{ matrix.service }}
           file: ./${{ matrix.service }}/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.service | toLower }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
