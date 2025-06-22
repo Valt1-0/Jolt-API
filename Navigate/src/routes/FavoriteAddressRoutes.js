@@ -7,5 +7,9 @@ router.post("/", authenticateToken, controller.addFavorite);
 router.get("/", authenticateToken, controller.getFavorites);
 router.delete("/:id", authenticateToken, controller.deleteFavorite);
 router.put("/:id", authenticateToken, controller.updateFavorite);
-
+router.patch(
+  "/:id/position",
+  authenticateToken,
+  controller.updateFavoritePosition
+);
 module.exports = router;

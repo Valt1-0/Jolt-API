@@ -52,3 +52,16 @@ exports.updateFavorite = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.updateFavoritePosition = async (req, res, next) => {
+  try {
+    const fav = await FavoriteAddressService.updateFavoritePosition(
+      req.user.id,
+      req.params.id,
+      req.body.position
+    );
+    res.json(fav);
+  } catch (err) {
+    next(err);
+  }
+};
