@@ -45,3 +45,12 @@ exports.joinGroupNavigation = async (userId, id) => {
 exports.searchNavigations = async (lat, lon, radius = 5000) => {
   return await NavigateRepository.findGroupInRadius(lat, lon, radius);
 };
+
+exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
+  if (role === "admin" && filter.userId !== userId) {
+    // Admin if no userId is provided, get all navigations
+    return await NavigateRepository.findAll(filter, page, limit);
+  }
+  // Otherwise, get navigations for a given userId
+  return await NavigateRepository.findByUserId(userId, filter, page, limit);
+};

@@ -48,4 +48,10 @@ router.get(
   navigationController.searchNavigations
 );
 
+router.get(
+  '/',
+  authenticateToken,
+  navigationController.getAllNavigations
+)
+
 module.exports = router;

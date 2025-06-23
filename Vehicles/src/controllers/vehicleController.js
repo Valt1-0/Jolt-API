@@ -153,6 +153,38 @@ exports.updateVehicle = async (req, res, next) => {
   }
 };
 
+exports.updateVehicleMileage = async (req, res, next) => {
+  try {
+    const vehicleId = req.params.id;
+    const userId = req.user.id; 
+    const { mileage } = req.body; 
+
+    if (!vehicleId) {
+      throw new ValidationError("Vehicle ID is required for update");
+    }
+    if (typeof mileage !== "number") {
+      throw new ValidationError("mileage must be a number");
+    }
+
+    const updatedVehicle = await vehicleService.updateVehicleMileage(
+      vehicleId,
+      mileage,
+      userId
+    );
+
+    const successResponse = new OkSuccess(
+      "Vehicle mileage updated successfully",
+      updatedVehicle
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in updateVehicleMileage:", error);
+    next(error);
+  }
+}
+
 exports.setFavoriteVehicle = async (req, res, next) => {
   try {
     const vehicleId = req.params.id;

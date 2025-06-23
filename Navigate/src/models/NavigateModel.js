@@ -6,7 +6,9 @@ const NavigationSchema = new mongoose.Schema({
   isPublic: { type: Boolean, default: false },
   isGroup: { type: Boolean, default: false },
   groupMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  gpxPoints: [{ lat: Number, lon: Number, alt: Number, time: Date }], // pour GPX
+  gpxPoints: [
+    { lat: Number, lon: Number, alt: Number, time: Date, speed: Number },
+  ],
   startTime: { type: Date, required: true },
   endTime: { type: Date },
   altitude: { type: Number },

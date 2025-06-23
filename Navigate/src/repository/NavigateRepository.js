@@ -4,6 +4,12 @@ exports.create = (data) => Navigation.create(data);
 
 exports.findById = (id) => Navigation.findById(id);
 
+exports.findByUserId = (userId, filter = {}, page = 1, limit = 10) =>
+  Navigation.find({ owner: userId, ...filter })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
 exports.save = (navigation) => navigation.save();
 
 exports.findGroupById = (id) => Navigation.findOne({ _id: id, isGroup: true });

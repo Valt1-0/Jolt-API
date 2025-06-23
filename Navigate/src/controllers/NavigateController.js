@@ -122,3 +122,32 @@ exports.searchNavigations = async (req, res, next) => {
     next(err);
   }
 };
+
+// Get all navigations for the authenticated user and filter by count, date, or visibility
+exports.getAllNavigations = async (req, res, next) => {
+  try {
+    const { count, date, visibility } = req.query;
+
+    const filter = {};
+    if (date) filter.date = new Date(date);
+    if (visibility) filter.visibility = visibility === "true";
+
+    const navigations = await NavigateService.getAllNavigations(
+      req.user.id,
+      req.user.role,
+      req.query.page || 1,
+      req.query.limit || 10,
+      req.query.filter || filter
+    );
+
+    const successResponse = new OkSuccess(
+      "Navigations retrieved successfully",
+      navigations
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (err) {
+    next(err);
+  }
+};

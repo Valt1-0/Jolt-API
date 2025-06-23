@@ -74,6 +74,33 @@ exports.updateVehicle = async (vehicleId, vehicleData, userId) => {
     );
   }
 };
+
+exports.updateVehicleMileage = async (vehicleId, mileage, userId) => {
+  try {
+    if (!vehicleId) {
+      throw new utils.ValidationError("Vehicle ID is required");
+    }
+    if (typeof mileage !== "number") {
+      throw new utils.ValidationError("mileage must be a number");
+    }
+
+    const updatedVehicle = await vehicleRepository.updateVehicle(
+      vehicleId,
+      { mileage },
+      userId
+    );
+    if (!updatedVehicle) {
+      throw new utils.NotFoundError("Vehicle not found");
+    }
+    return updatedVehicle;
+  } catch (error) {
+    throw new utils.APIError(
+      "An error occurred while updating the vehicle counter",
+      error
+    );
+  }
+};
+
 exports.deleteVehicle = async (vehicleId, userId) => {
   try {
     const deletedVehicle = await vehicleRepository.deleteVehicle(
