@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { authenticateToken } = require("../middlewares/authMiddleware");
+const {
+  authenticateToken,
+  optionalAuthenticateToken,
+} = require("../middlewares/authMiddleware");
 const navigationController = require("../controllers/NavigateController");
 
 // Enregistrer un trajet (privé ou public)
@@ -49,10 +52,10 @@ router.get(
 );
 
 router.get(
-  '/',
-  authenticateToken,
+  "/",
+  optionalAuthenticateToken,
   navigationController.getAllNavigation
-)
+);
 
 router.delete(
   "/:id",

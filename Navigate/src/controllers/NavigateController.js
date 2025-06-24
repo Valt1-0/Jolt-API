@@ -127,18 +127,18 @@ exports.searchNavigations = async (req, res, next) => {
 // Get all navigations for the authenticated user and filter by count, date, or visibility
 exports.getAllNavigation = async (req, res, next) => {
   try {
-    const { count, date, visibility } = req.query;
+    const { page = 1, limit = 10, ...filter } = req.query;
 
-    const filter = {};
-    if (date) filter.date = new Date(date);
-    if (visibility) filter.visibility = visibility === "true";
+
+    // if (date) filter.date = new Date(date);
+    // if (visibility) filter.visibility = visibility === "true";
 
     const navigations = await NavigateService.getAllNavigations(
       req.user.id,
       req.user.role,
-      req.query.page || 1,
-      req.query.limit || 10,
-      req.query.filter || filter
+      parseInt(page),
+      parseInt(limit),
+      filter
     );
 
     const successResponse = new OkSuccess(

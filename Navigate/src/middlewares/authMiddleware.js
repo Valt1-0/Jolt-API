@@ -52,4 +52,41 @@ const csrfMiddleware = (req, res, next) => {
   next();
 };
 
-module.exports = { authenticateToken, csrfMiddleware };
+
+const optionalAuthenticateToken = async (req, res, next) => {
+  const JWT_ACCESS_KEY = config.JWT_ACCESS_KEY;
+  let token = null;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (req.cookies && req.cookies.access_token) {
+    token = req.cookies.access_token;
+  }
+
+  if (!token) {
+    // Pas de token, on continue sans erreur
+    return next();
+  }
+
+  const isBlacklisted = await redisClient.get(`blacklist:${token}`);
+  if (isBlacklisted) {
+    // Token révoqué, on continue sans user
+    return next();
+  }
+
+  jwt.verify(token, JWT_ACCESS_KEY, (err, user) => {
+    if (!err) {
+      req.user = user;
+    }
+    // En cas d'erreur, on continue sans user
+    next();
+  });
+};
+
+
+module.exports = {
+  authenticateToken,
+
+  optionalAuthenticateToken,
+  csrfMiddleware,
+};

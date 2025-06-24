@@ -11,7 +11,7 @@ exports.deleteNavigation = async (userId, id) => {
     return { error: "Forbidden", status: 403 };
   await NavigateRepository.delete(id);
   return { message: "Navigation deleted successfully" };
-}
+};
 
 exports.updateVisibility = async (userId, id) => {
   const navigation = await NavigateRepository.findById(id);
@@ -56,15 +56,29 @@ exports.searchNavigations = async (lat, lon, radius = 5000) => {
 };
 
 exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
-  if (role === "admin" && filter.userId !== userId) {
-    // Admin if no userId is provided, get all navigations
-    const { total, navigations } = await NavigateRepository.findAll(
-      filter,
-      page,
-      limit
-    );
-    return { total, navigations };
+  // Exclure les navigations de l'utilisateur courant si demandé
+  if (filter.excludeSelf && userId) {
+    filter.owner = { $ne: userId };
+    delete filter.excludeSelf;
   }
-  // Otherwise, get navigations for a given userId
-  return await NavigateRepository.findByUserId(userId, filter, page, limit);
+
+  // Si pas connecté (userId absent), on ne retourne que les navigations publiques
+  if (!userId) {
+    filter.isPublic = true;
+    return await NavigateRepository.findAll(filter, page, limit);
+  }
+
+  // Si admin
+  if (role === "admin") {
+    return await NavigateRepository.findAll(filter, page, limit);
+  }
+
+  // Utilisateur connecté non admin
+  if (!filter.owner) {
+    filter.owner = userId;
+  } else if (filter.owner !== userId) {
+    filter.isPublic = true;
+  }
+
+  return await NavigateRepository.findAll(filter, page, limit);
 };
