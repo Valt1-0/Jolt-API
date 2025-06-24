@@ -51,7 +51,7 @@ router.get(
 router.get(
   '/',
   authenticateToken,
-  navigationController.getAllNavigations
+  navigationController.getAllNavigation
 )
 
 module.exports = router;

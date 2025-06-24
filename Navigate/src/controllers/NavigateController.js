@@ -124,7 +124,7 @@ exports.searchNavigations = async (req, res, next) => {
 };
 
 // Get all navigations for the authenticated user and filter by count, date, or visibility
-exports.getAllNavigations = async (req, res, next) => {
+exports.getAllNavigation = async (req, res, next) => {
   try {
     const { count, date, visibility } = req.query;
 

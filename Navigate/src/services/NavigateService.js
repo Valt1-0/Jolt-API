@@ -49,7 +49,12 @@ exports.searchNavigations = async (lat, lon, radius = 5000) => {
 exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
   if (role === "admin" && filter.userId !== userId) {
     // Admin if no userId is provided, get all navigations
-    return await NavigateRepository.findAll(filter, page, limit);
+    const { total, navigations } = await NavigateRepository.findAll(
+      filter,
+      page,
+      limit
+    );
+    return { total, navigations };
   }
   // Otherwise, get navigations for a given userId
   return await NavigateRepository.findByUserId(userId, filter, page, limit);
