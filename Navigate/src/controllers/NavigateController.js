@@ -134,8 +134,8 @@ exports.getAllNavigation = async (req, res, next) => {
     // if (visibility) filter.visibility = visibility === "true";
 
     const navigations = await NavigateService.getAllNavigations(
-      req.user.id,
-      req.user.role,
+      req.user?.id,
+      req.user?.role,
       parseInt(page),
       parseInt(limit),
       filter

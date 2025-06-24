@@ -57,8 +57,10 @@ exports.searchNavigations = async (lat, lon, radius = 5000) => {
 
 exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
   // Exclure les navigations de l'utilisateur courant si demandé
-  if (filter.excludeSelf && userId) {
-    filter.owner = { $ne: userId };
+  if (filter.excludeSelf) {
+    if (userId) {
+      filter.owner = { $ne: userId };
+    }
     delete filter.excludeSelf;
   }
 
