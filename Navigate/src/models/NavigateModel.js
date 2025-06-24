@@ -9,6 +9,10 @@ const NavigationSchema = new mongoose.Schema({
   gpxPoints: [
     { lat: Number, lon: Number, alt: Number, time: Date, speed: Number },
   ],
+  startLocation: {
+    type: { type: String, enum: ["Point"], default: "Point" },
+    coordinates: { type: [Number], default: undefined }, // [lon, lat]
+  },
   startTime: { type: Date, required: true },
   endTime: { type: Date },
   altitude: { type: Number },
@@ -16,11 +20,11 @@ const NavigationSchema = new mongoose.Schema({
   speedMax: { type: Number }, // en km/h
   notes: [
     {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      user: { type: mongoose.Schema.Types.ObjectId },
       rating: { type: Number, min: 1, max: 5 },
     },
   ],
   createdAt: { type: Date, default: Date.now },
 });
-
+NavigationSchema.index({ startLocation: "2dsphere" });
 module.exports = mongoose.model("Navigation", NavigationSchema);
