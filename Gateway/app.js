@@ -11,7 +11,7 @@ const allowedOrigins = [
   "http://localhost:5000",
   "http://192.168.1.88",
 ];
- 
+
 // Middlewares globaux
 app.use(morgan("dev"));
 app.use(
@@ -89,6 +89,16 @@ app.use(
   })
 );
 
+app.use("/navigate", (req, res, next) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
+});
+
 app.use(
   "/navigate",
   createProxyMiddleware({
@@ -96,6 +106,16 @@ app.use(
     changeOrigin: true,
   })
 );
+app.use("/favorite-addressese", (req, res, next) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
+});
+
 app.use(
   "/favorite-addresses",
   createProxyMiddleware({
