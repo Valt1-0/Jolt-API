@@ -4,6 +4,15 @@ exports.createNavigation = async (userId, data) => {
   return await NavigateRepository.create({ ...data, owner: userId });
 };
 
+exports.deleteNavigation = async (userId, id) => {
+  const navigation = await NavigateRepository.findById(id);
+  if (!navigation) return { error: "Not found", status: 404 };
+  if (navigation.owner.toString() !== userId)
+    return { error: "Forbidden", status: 403 };
+  await NavigateRepository.delete(id);
+  return { message: "Navigation deleted successfully" };
+}
+
 exports.updateVisibility = async (userId, id) => {
   const navigation = await NavigateRepository.findById(id);
   if (!navigation) return { error: "Not found", status: 404 };

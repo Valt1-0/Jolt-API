@@ -54,4 +54,10 @@ router.get(
   navigationController.getAllNavigation
 )
 
+router.delete(
+  "/:id",
+  authenticateToken,
+  navigationController.deleteNavigation
+);
+
 module.exports = router;

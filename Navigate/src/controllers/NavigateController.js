@@ -5,6 +5,7 @@ const {
   CreatedSuccess,
 } = require("../utils");
 const NavigateService = require("../services/NavigateService");
+const e = require("express");
 
 exports.createNavigation = async (req, res, next) => {
   try {
@@ -143,6 +144,25 @@ exports.getAllNavigation = async (req, res, next) => {
     const successResponse = new OkSuccess(
       "Navigations retrieved successfully",
       navigations
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteNavigation = async (req, res, next) => {
+  try {
+    const navigation = await NavigateService.deleteNavigation(
+      req.user.id,
+      req.params.id
+    );
+
+    const successResponse = new OkSuccess(
+      "Navigation deleted successfully",
+      navigation
     );
     return res
       .status(successResponse.statusCode)

@@ -4,7 +4,6 @@ exports.create = (data) => Navigation.create(data);
 
 exports.findById = (id) => Navigation.findById(id);
 
-
 exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   const [total, navigations] = await Promise.all([
     Navigation.countDocuments(filter),
@@ -15,8 +14,6 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   ]);
   return { total, navigations };
 };
-
-
 
 exports.findByUserId = (userId, filter = {}, page = 1, limit = 10) =>
   Navigation.find({ owner: userId, ...filter })
@@ -40,3 +37,5 @@ exports.findGroupInRadius = (lat, lon, radius) =>
       },
     },
   });
+
+exports.delete = (id) => Navigation.findByIdAndDelete(id);
