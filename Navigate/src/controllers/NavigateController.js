@@ -129,7 +129,6 @@ exports.getAllNavigation = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, ...filter } = req.query;
 
-
     // if (date) filter.date = new Date(date);
     // if (visibility) filter.visibility = visibility === "true";
 
@@ -156,10 +155,11 @@ exports.getAllNavigation = async (req, res, next) => {
 exports.getNavigationById = async (req, res, next) => {
   try {
     const navigation = await NavigateService.getNavigationById(
+      req.params.id,
       req.user?.id,
-      req.user?.role,
-      req.params.id
+      req.user?.role
     );
+
     if (!navigation) {
       throw new NotFoundError("Navigation not found");
     }
@@ -173,8 +173,7 @@ exports.getNavigationById = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-}
-
+};
 
 exports.deleteNavigation = async (req, res, next) => {
   try {
