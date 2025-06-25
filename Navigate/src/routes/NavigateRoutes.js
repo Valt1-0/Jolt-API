@@ -56,6 +56,11 @@ router.get(
   optionalAuthenticateToken,
   navigationController.getAllNavigation
 );
+router.get(
+  "/:id",
+  optionalAuthenticateToken,
+  navigationController.getNavigationById
+);
 
 router.delete(
   "/:id",

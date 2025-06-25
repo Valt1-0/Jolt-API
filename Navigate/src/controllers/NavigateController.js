@@ -153,6 +153,29 @@ exports.getAllNavigation = async (req, res, next) => {
   }
 };
 
+exports.getNavigationById = async (req, res, next) => {
+  try {
+    const navigation = await NavigateService.getNavigationById(
+      req.user?.id,
+      req.user?.role,
+      req.params.id
+    );
+    if (!navigation) {
+      throw new NotFoundError("Navigation not found");
+    }
+    const successResponse = new OkSuccess(
+      "Navigation retrieved successfully",
+      navigation
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 exports.deleteNavigation = async (req, res, next) => {
   try {
     const navigation = await NavigateService.deleteNavigation(

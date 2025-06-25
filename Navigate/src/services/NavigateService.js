@@ -3,8 +3,8 @@ const NavigateRepository = require("../repository/NavigateRepository");
 exports.createNavigation = async (userId, data) => {
   const firstPoint =
     data.gpxPoints && data.gpxPoints.length > 0 ? data.gpxPoints[0] : null;
- 
-    return await NavigateRepository.create({
+
+  return await NavigateRepository.create({
     ...data,
     startLocation: {
       type: "Point",
@@ -114,4 +114,23 @@ exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
   }
 
   return await NavigateRepository.findAll(filter, page, limit);
+};
+
+exports.getNavigationById = async (id, userId, role) => {
+  const navigation = await NavigateRepository.findById(id);
+  if (!navigation) return { error: "Not found", status: 404 };
+
+  // Si l'utilisateur n'est pas connecté, on ne retourne que les navigations publiques
+  if (!userId && !navigation.isPublic) {
+    return { error: "Forbidden", status: 403 };
+  }
+
+  // Si l'utilisateur est connecté mais n'est pas le propriétaire et n'est pas admin
+  if (userId && navigation.owner.toString() !== userId && role !== "admin") {
+    if (!navigation.isPublic) {
+      return { error: "Forbidden", status: 403 };
+    }
+  }
+
+  return navigation;
 };
