@@ -131,6 +131,29 @@ exports.getNavigationById = async (id, userId, role) => {
       return { error: "Forbidden", status: 403 };
     }
   }
+  const isOwner = userId && navigation.owner.toString() === userId;
+
+  return {
+    ...navigation.toObject(),
+    isOwner,
+  };
+};
+
+exports.updateNavigation = async (userId, id, data) => {
+  const navigation = await NavigateRepository.findById(id);
+  if (!navigation) return { error: "Not found", status: 404 };
+  console.log(navigation.owner.toString(), userId);
+
+  if (navigation.owner.toString() !== userId)
+    return { error: "Forbidden", status: 403 };
+
+  Object.keys(data).forEach((key) => {
+    if (key !== "owner" && key !== "_id") {
+      navigation[key] = data[key];
+    }
+  });
+
+  await NavigateRepository.save(navigation);
 
   return navigation;
 };

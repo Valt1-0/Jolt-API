@@ -39,3 +39,6 @@ exports.findGroupInRadius = (lat, lon, radius) =>
   });
 
 exports.delete = (id) => Navigation.findByIdAndDelete(id);
+
+exports.update = (id, data) =>
+  Navigation.findByIdAndUpdate(id, data, { new: true, runValidators: true });

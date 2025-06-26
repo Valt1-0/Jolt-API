@@ -163,10 +163,12 @@ exports.getNavigationById = async (req, res, next) => {
     if (!navigation) {
       throw new NotFoundError("Navigation not found");
     }
+
     const successResponse = new OkSuccess(
       "Navigation retrieved successfully",
       navigation
     );
+
     return res
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());
@@ -184,6 +186,30 @@ exports.deleteNavigation = async (req, res, next) => {
 
     const successResponse = new OkSuccess(
       "Navigation deleted successfully",
+      navigation
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.updateNavigation = async (req, res, next) => {
+  try {
+    const navigation = await NavigateService.updateNavigation(
+      req.user.id,
+      req.params.id,
+      req.body
+    );
+
+    if (!navigation) {
+      throw new NotFoundError("Navigation not found");
+    }
+
+    const successResponse = new OkSuccess(
+      "Navigation updated successfully",
       navigation
     );
     return res

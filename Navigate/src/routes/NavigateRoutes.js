@@ -62,10 +62,11 @@ router.get(
   navigationController.getNavigationById
 );
 
-router.delete(
-  "/:id",
-  authenticateToken,
-  navigationController.deleteNavigation
-);
+router.put("/:id", authenticateToken, navigationController.updateNavigation);
+
+router.delete("/:id", authenticateToken, navigationController.deleteNavigation);
+
+// Update un trajet
+router.put("/:id", authenticateToken, navigationController.updateNavigation);
 
 module.exports = router;
