@@ -37,12 +37,7 @@ router.post(
   navigationController.joinGroupNavigation
 );
 
-// // Suivi temps réel (socket, pas REST mais pour info)
-// router.get(
-//   "/group/:id/live",
-//   authenticateToken,
-//   navigationController.getGroupLiveInfo
-// );
+
 
 // Lister les trajets publics ou de groupe dans un rayon
 router.get(

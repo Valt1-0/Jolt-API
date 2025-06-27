@@ -31,10 +31,10 @@ const startServer = async () => {
 
     const server = http.createServer(app);
 
-    // require("./src/socket")(server);
-    // server.listen(5005, () => {
-    //   console.log("Maintain service running on port 5005");
-    // });
+    require("./src/socket")(server);
+    server.listen(5006, () => {
+      console.log("Maintain service running on port 5005");
+    });
 
     // Server listening
     app.listen(API_PORT, () => {

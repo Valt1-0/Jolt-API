@@ -10,7 +10,6 @@ const userService = require("../services/userService");
 
 exports.getAllUsers = async (req, res, next) => {
   try {
-    
     const { query } = req.query;
     let filter = {};
 
@@ -47,13 +46,7 @@ exports.getUser = async (req, res, next) => {
     if (!query) {
       throw new ValidationError("La requête de recherche est vide");
     }
-
-    const user = await User.findOne({
-      $or: [
-        { email: { $regex: query, $options: "i" } },
-        { username: { $regex: query, $options: "i" } },
-      ],
-    }).select("username email profilePicture");
+    const user = await userService.getUserByIdOrEmail(query);
 
     if (!user) {
       throw new NotFoundError("Utilisateur non trouvé");

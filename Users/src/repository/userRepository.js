@@ -1,26 +1,37 @@
+const { default: mongoose } = require("mongoose");
 const user = require("../models/userModel");
 const utils = require("../utils");
 
 exports.findUserByEmail = async (email) => {
-  const userData = await user.findOne({ email });
+  const userData = await user
+    .findOne({ email })
+    .select("_id username email profilePicture role region");
   return userData;
 };
 exports.findUserById = async (id) => {
-  const userData = await user.findById(id);
+  const userData = await user
+    .findById(id)
+    .select("_id username email profilePicture role region");
   return userData;
 };
 
 exports.findUserByIdOrEmail = async (identifier) => {
-  const userData = await user.findOne({
-    $or: [{ _id: identifier }, { email: identifier }],
-  });
+  const orQuery = [];
+  if (mongoose.Types.ObjectId.isValid(identifier)) {
+    orQuery.push({ _id: identifier });
+  }
+  orQuery.push({ email: identifier });
+
+  const userData = await user
+    .findOne({ $or: orQuery })
+    .select("_id username email profilePicture role region");
   return userData;
 };
 
 exports.getAllUsers = async (page, limit, sort, filter = {}) => {
   const users = await user
     .find(filter)
-    .select("-password")
+    .select("_id username email profilePicture role region")
     .limit(limit)
     .skip((page - 1) * limit)
     .sort(sort);
@@ -67,7 +78,9 @@ exports.activateUserByToken = async (token) => {
 };
 
 exports.updateUserById = async (id, updateData) => {
-  return await user.findByIdAndUpdate(id, updateData, { new: true });
+  return await user
+    .findByIdAndUpdate(id, updateData, { new: true })
+    .select("_id username email profilePicture role region");
 };
 
 exports.deleteById = async (id) => {
