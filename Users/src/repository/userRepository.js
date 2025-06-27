@@ -5,13 +5,13 @@ const utils = require("../utils");
 exports.findUserByEmail = async (email) => {
   const userData = await user
     .findOne({ email })
-    .select("_id username email profilePicture role region");
+    .select("_id username email profilePicture role region status password");
   return userData;
 };
 exports.findUserById = async (id) => {
   const userData = await user
     .findById(id)
-    .select("_id username email profilePicture role region");
+    .select("_id username email profilePicture role region status");
   return userData;
 };
 
@@ -24,14 +24,14 @@ exports.findUserByIdOrEmail = async (identifier) => {
 
   const userData = await user
     .findOne({ $or: orQuery })
-    .select("_id username email profilePicture role region");
+    .select("_id username email profilePicture role region status");
   return userData;
 };
 
 exports.getAllUsers = async (page, limit, sort, filter = {}) => {
   const users = await user
     .find(filter)
-    .select("_id username email profilePicture role region")
+    .select("_id username email profilePicture role region status")
     .limit(limit)
     .skip((page - 1) * limit)
     .sort(sort);
