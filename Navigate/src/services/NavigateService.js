@@ -4,14 +4,22 @@ exports.createNavigation = async (userId, data) => {
   const firstPoint =
     data.gpxPoints && data.gpxPoints.length > 0 ? data.gpxPoints[0] : null;
 
-  return await NavigateRepository.create({
+  const navigationData = {
     ...data,
-    startLocation: {
-      type: "Point",
-      coordinates: firstPoint ? [firstPoint.lon, firstPoint.lat] : null,
-    },
     owner: userId,
-  });
+  };
+
+  if (firstPoint && firstPoint.lon != null && firstPoint.lat != null) {
+    navigationData.startLocation = {
+      type: "Point",
+      coordinates: [firstPoint.lon, firstPoint.lat],
+    };
+  } else {
+    // Soit tu ne mets pas startLocation, soit tu mets coordinates: []
+    navigationData.startLocation = undefined;
+  }
+
+  return await NavigateRepository.create(navigationData);
 };
 
 exports.deleteNavigation = async (userId, id) => {

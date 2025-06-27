@@ -13,7 +13,7 @@ const NavigationSchema = new mongoose.Schema({
     type: { type: String, enum: ["Point"], default: "Point" },
     coordinates: { type: [Number], default: undefined }, // [lon, lat]
   },
-  startTime: { type: Date, required: true },
+  startTime: { type: Date, required: false },
   endTime: { type: Date },
   altitude: { type: Number },
   totalDistance: { type: Number }, // en mètres

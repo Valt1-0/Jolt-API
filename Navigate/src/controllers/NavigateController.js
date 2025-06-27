@@ -62,6 +62,39 @@ exports.rateNavigation = async (req, res, next) => {
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());
   } catch (err) {
+    console.error("Error in rateNavigation:", err);
+    next(err);
+  }
+};
+
+exports.createGroupFromExisting = async (req, res, next) => {
+  try {
+    const original = await NavigateService.getNavigationById(
+      req.params.id,
+      req.user.id,
+      req.user.role
+    );
+    if (!original || original.error)
+      return res.status(404).json({ error: "Trajet original introuvable" });
+
+    // On duplique les données utiles
+    const groupData = {
+      ...original,
+      _id: undefined,
+      owner: req.user.id,
+      isGroup: true,
+      groupMembers: [req.user.id],
+      startTime: req.body.startTime || undefined, // Permet de reprogrammer
+      createdAt: undefined,
+      notes: [],
+    };
+
+    const groupNav = await NavigateService.createGroupNavigation(
+      req.user.id,
+      groupData
+    );
+    return res.status(201).json(groupNav);
+  } catch (err) {
     next(err);
   }
 };
