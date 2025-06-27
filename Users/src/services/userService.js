@@ -12,7 +12,14 @@ exports.verifyCredentials = async ({ email, password }) => {
   if (!isPasswordValid) {
     throw new utils.ValidationError("Invalid password");
   }
-  return existingUser;
+
+  // Supprime le mot de passe de l'objet retourné
+  const userObj = existingUser.toObject
+    ? existingUser.toObject()
+    : { ...existingUser };
+  delete userObj.password;
+
+  return userObj;
 };
 
 exports.getAllUsers = async (page, limit, sort, filter = {}) => {
