@@ -57,7 +57,9 @@ exports.verifyUserPassword = async (email, password) => {
 };
 
 exports.findUserByVerificationToken = async (token) => {
-  const userData = await user.findOne({ verificationToken: token });
+  const userData = await user
+    .findOne({ verificationToken: token })
+    .select("-password");
   return userData;
 };
 
