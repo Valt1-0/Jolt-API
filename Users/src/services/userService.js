@@ -29,6 +29,7 @@ exports.getAllUsers = async (page, limit, sort, filter = {}) => {
   }
   return users;
 };
+
 exports.getUserByIdOrEmail = async (identifier) => {
   const user = await userRepository.findUserByIdOrEmail(identifier);
   if (!user) {
@@ -99,4 +100,13 @@ exports.deleteById = async (userId) => {
   }
   await userRepository.deleteById(userId);
   return { message: "User deleted successfully" };
+};
+
+exports.updateUser = async (userId) => {
+  const user = await userRepository.findUserById(userId);
+  if (!user) {
+    throw new utils.NotFoundError("User not found");
+  }
+  const updatedUser = await userRepository.updateUserById(userId, userData);
+  return updatedUser;
 };

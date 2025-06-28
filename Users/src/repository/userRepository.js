@@ -5,13 +5,13 @@ const utils = require("../utils");
 exports.findUserByEmail = async (email) => {
   const userData = await user
     .findOne({ email })
-    .select("_id username email profilePicture role region status password");
+    .select("_id username email profilePicture role region status password createdAt");
   return userData;
 };
 exports.findUserById = async (id) => {
   const userData = await user
     .findById(id)
-    .select("_id username email profilePicture role region status");
+    .select("_id username email profilePicture role region status createdAt");
   return userData;
 };
 
@@ -24,19 +24,20 @@ exports.findUserByIdOrEmail = async (identifier) => {
 
   const userData = await user
     .findOne({ $or: orQuery })
-    .select("_id username email profilePicture role region status");
+    .select("_id username email profilePicture role region status createdAt");
   return userData;
 };
 
 exports.getAllUsers = async (page, limit, sort, filter = {}) => {
   const users = await user
     .find(filter)
-    .select("_id username email profilePicture role region status")
+    .select("_id username email profilePicture role region status createdAt")
     .limit(limit)
     .skip((page - 1) * limit)
     .sort(sort);
   return users;
 };
+
 exports.createUser = async (userData) => {
   const newUser = new user(userData);
   await newUser.save();
@@ -82,7 +83,7 @@ exports.activateUserByToken = async (token) => {
 exports.updateUserById = async (id, updateData) => {
   return await user
     .findByIdAndUpdate(id, updateData, { new: true })
-    .select("_id username email profilePicture role region");
+    .select("_id username email profilePicture role region status createdAt");
 };
 
 exports.deleteById = async (id) => {

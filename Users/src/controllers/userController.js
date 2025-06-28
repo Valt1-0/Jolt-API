@@ -140,10 +140,18 @@ exports.updateVerificationToken = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const { id } = req.user;
-    if (!id) {
-      throw new ValidationError("ID is required for deletion");
+    const { userId } = req.body; // L'ID de l'utilisateur à supprimer doit être fourni dans le body
+
+    if (!userId) {
+      throw new ValidationError("User ID is required for deletion");
     }
-    const deletedUser = await userService.deleteById(id);
+    if (id === userId) {
+      throw new ValidationError(
+        "Vous ne pouvez pas supprimer votre propre compte"
+      );
+    }
+
+    const deletedUser = await userService.deleteById(userId);
     const successResponse = new OkSuccess(
       "User deleted successfully",
       deletedUser
@@ -153,6 +161,26 @@ exports.deleteUser = async (req, res, next) => {
       .json(successResponse.toJSON());
   } catch (error) {
     console.error("Error in delete:", error);
+    next(error);
+  }
+};
+
+exports.updateUser = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    if (!id) {
+      throw new ValidationError("ID is required for update");
+    }
+    const updatedUser = await userService.updateUserById(id, req.body);
+    const successResponse = new OkSuccess(
+      "User updated successfully",
+      updatedUser
+    );
+    return res
+      .status(successResponse.statusCode)
+      .json(successResponse.toJSON());
+  } catch (error) {
+    console.error("Error in update:", error);
     next(error);
   }
 };
