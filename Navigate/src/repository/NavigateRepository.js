@@ -6,44 +6,89 @@ exports.findById = (id) => Navigation.findById(id);
 
 exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   const pipeline = [];
-console.log("Recherche de navigations avec les filtres :", filter);
-  // Si filtre géo
+
+  console.log("Recherche de navigations avec les filtres :", filter);
+
   if (filter.lat && filter.lon && filter.radius) {
     const { lat, lon, radius } = filter;
     const radiusInMeters = parseFloat(radius) * 1000;
-    console.log("Recherche dans un rayon de", radiusInMeters, "m autour de", lat, lon);
+
+    console.log(
+      "Recherche dans un rayon de",
+      radiusInMeters,
+      "m autour de",
+      lat,
+      lon
+    );
+
     pipeline.push({
       $geoNear: {
         near: {
           type: "Point",
           coordinates: [parseFloat(lon), parseFloat(lat)],
         },
-        distanceField: "distance", // champ ajouté dans le résultat
-        maxDistance: radiusInMeters, // en mètres
+        distanceField: "distance",
+        maxDistance: radiusInMeters,
         spherical: true,
       },
     });
 
-    // Retire les propriétés pour ne pas les filtrer ensuite
     delete filter.lat;
     delete filter.lon;
     delete filter.radius;
   }
 
-  // Autres filtres éventuels
   if (Object.keys(filter).length > 0) {
     pipeline.push({ $match: filter });
   }
 
-  // Comptage total
-  const countPipeline = [...pipeline, { $count: "total" }];
+  pipeline.push(
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "ownerInfo",
+      },
+    },
+    {
+      $unwind: {
+        path: "$ownerInfo",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    // Ici on garde tous les champs
+    {
+      $project: {
+        // Inclure tous les champs du document principal
+        _id: 1,
+        owner: 1,
+        name: 1,
+        createdAt: 1,
+        totalDistance: 1,
+        isPublic: 1,
+        isGroup: 1,
+        note: 1,
+        gpxPoints: 1,
+        startLocation: 1,
+        startTime: 1,
+        ownerInfo: {
+          _id: 1,
+          username: 1,
+          email: 1,
+          role: 1,
+        },
+      },
+    }
+  );
 
-  // Pagination
   pipeline.push(
     { $sort: { createdAt: -1 } },
     { $skip: (page - 1) * limit },
     { $limit: limit }
   );
+
+  const countPipeline = [...pipeline, { $count: "total" }];
 
   const [results, totalResult] = await Promise.all([
     Navigation.aggregate(pipeline),

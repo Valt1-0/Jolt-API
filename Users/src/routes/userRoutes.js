@@ -21,6 +21,6 @@ router.post("/create", createUser); // Create a new user
 router.post("/verify", verifyUser); // Verify user credentials
 router.put("/updateVerificationToken", updateVerificationToken); // Update verification token (mail)
 router.delete("/delete", authenticateToken, deleteUser);
-router.patch("/update", authenticateToken, updateUser);
+router.patch("/update/:id", authenticateToken, updateUser);
 
 module.exports = router;

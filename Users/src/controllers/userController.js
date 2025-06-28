@@ -167,11 +167,11 @@ exports.deleteUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const { id } = req.user;
+    const { id } = req.params;
     if (!id) {
       throw new ValidationError("ID is required for update");
     }
-    const updatedUser = await userService.updateUserById(id, req.body);
+    const updatedUser = await userService.updateUser(id, req.body);
     const successResponse = new OkSuccess(
       "User updated successfully",
       updatedUser
