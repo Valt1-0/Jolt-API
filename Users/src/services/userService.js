@@ -57,6 +57,7 @@ exports.createUser = async (userData) => {
       "An error occurred while creating the user",
       error
     );
+    
   }
 };
 

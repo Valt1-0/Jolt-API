@@ -6,6 +6,8 @@ const {
 } = require("../middlewares/authMiddleware");
 const navigationController = require("../controllers/NavigateController");
 
+
+
 // Enregistrer un trajet (privé ou public)
 router.post("/", authenticateToken, navigationController.createNavigation);
 

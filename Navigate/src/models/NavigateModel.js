@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const NavigationSchema = new mongoose.Schema({
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, required: true },
   name: { type: String, required: true },
   isPublic: { type: Boolean, default: false },
   isGroup: { type: Boolean, default: false },
-  groupMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  groupMembers: [{ type: mongoose.Schema.Types.ObjectId }],
   gpxPoints: [
     { lat: Number, lon: Number, alt: Number, time: Date, speed: Number },
   ],

@@ -45,8 +45,8 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   pipeline.push(
     {
       $lookup: {
-        from: "users",
-        localField: "owner",
+        from: "UserProjection",
+        localField: "_id",
         foreignField: "_id",
         as: "ownerInfo",
       },

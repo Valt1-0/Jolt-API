@@ -4,7 +4,7 @@ const http = require("http");
 //const csrf = require("csrf");
 const cookieParser = require("cookie-parser");
 const config = require("./src/Config");
-const navigateRoutes = require("./src/routes/NavigateRoutes"); 
+const navigateRoutes = require("./src/routes/NavigateRoutes");
 const FavoriteAddressRoutes = require("./src/routes/FavoriteAddressRoutes"); // Assuming you have a FavoriteAddressRoutes.js file
 const API_PORT = config.API_PORT || console.log("No port defined in .env file");
 
@@ -12,18 +12,20 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { handleErrorWithLogger } = require("./src/utils");
 const app = express();
+const userProjectionQueue = require("./src/routes/UserProjectionRoutes");
 
 const startServer = async () => {
   try {
-  //  app.use(cors());
+    //  app.use(cors());
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json({ type: "application/json" }));
- 
-     
+
+    // Queue
+    userProjectionQueue();
     // Routes
 
-    app.use("/navigate", navigateRoutes); 
+    app.use("/navigate", navigateRoutes);
     app.use("/favorite-addresses", FavoriteAddressRoutes); // Assuming you have a FavoriteAddressRoutes.js file
 
     // Error handling middleware

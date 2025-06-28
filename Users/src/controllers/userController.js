@@ -7,6 +7,8 @@ const {
   CreatedSuccess,
 } = require("../utils");
 const userService = require("../services/userService");
+const utils = require("../utils");
+const { profile } = require("winston");
 
 exports.getAllUsers = async (req, res, next) => {
   try {
@@ -67,6 +69,19 @@ exports.getUser = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
   try {
     const createdUser = await userService.createUser(req.body);
+
+    if (createdUser) {
+      const channel = await utils.getChannel();
+
+      if (channel) {
+        const userData = {
+          _id: createdUser._id,
+          username: createdUser.username,
+          profilePicture: createdUser.profilePicture,
+        };
+        utils.PublishMessage(channel, "user_created", JSON.stringify(userData));
+      }
+    }
     const successResponse = new CreatedSuccess(
       "User created successfully",
       createdUser
