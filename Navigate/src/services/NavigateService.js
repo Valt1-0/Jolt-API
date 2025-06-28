@@ -75,25 +75,7 @@ exports.searchNavigations = async (lat, lon, radius = 5000) => {
 
 exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
   // Filtre géographique si lat/lon/radius présents
-
-  if (filter.lat && filter.lon && filter.radius) {
-    const lat = parseFloat(filter.lat);
-    const lon = parseFloat(filter.lon);
-    const radius = parseFloat(filter.radius);
-
-    filter.startLocation = {
-      $geoWithin: {
-        $centerSphere: [
-          [lon, lat],
-          radius / 6378137, // rayon en radians
-        ],
-      },
-    };
-
-    delete filter.lat;
-    delete filter.lon;
-    delete filter.radius;
-  }
+  
 
   // Exclure les navigations de l'utilisateur courant si demandé
   if (filter.excludeSelf) {
