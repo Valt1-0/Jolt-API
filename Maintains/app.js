@@ -3,7 +3,7 @@ const express = require("express");
 const http = require("http");
 //const csrf = require("csrf");
 const cookieParser = require("cookie-parser");
-const config = require("./src/Config");
+const config = require("./src/config");
 const maintainRoutes = require("./src/routes/maintainRoutes");
 const maintainHistoryRoutes = require("./src/routes/maintainHistoryRoutes");
 const API_PORT = config.API_PORT || console.log("No port defined in .env file");
@@ -15,7 +15,7 @@ const app = express();
 
 const startServer = async () => {
   try {
-   // app.use(cors());
+    // app.use(cors());
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json({ type: "application/json" }));
@@ -55,13 +55,6 @@ const startServer = async () => {
 
     // Error handling middleware
     app.use(handleErrorWithLogger);
-
-    const server = http.createServer(app);
-
-    require("./src/socket")(server);
-    server.listen(5005, () => {
-      console.log("Maintain service running on port 5005");
-    });
 
     // Server listening
     app.listen(API_PORT, () => {

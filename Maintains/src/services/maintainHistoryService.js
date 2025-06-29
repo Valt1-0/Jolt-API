@@ -8,7 +8,9 @@ exports.createMaintainHistory = async (
   try {
     maintainHistoryData.owner = userId; // Assuming owner is the userId
     maintainHistoryData.files = filePaths;
-
+    maintainHistoryData.invoiceUrl = filePaths.map((p) =>
+      p.replace(/\\/g, "/")
+    );
     const createdMaintainHistory =
       await maintainHistoryRepository.createMaintainHistory(
         maintainHistoryData
@@ -32,12 +34,8 @@ exports.createMaintainHistory = async (
   }
 };
 
-exports.getMaintainHistories = async (  role, query) => {
-  
-  return await maintainHistoryRepository.getMaintainHistories(
-    role,
-    query
-  );
+exports.getMaintainHistories = async (role, query) => {
+  return await maintainHistoryRepository.getMaintainHistories(role, query);
 };
 exports.getMaintainHistoryById = async (maintainHistoryId, userId, role) => {
   const maintainHistory =
@@ -49,7 +47,6 @@ exports.getMaintainHistoryById = async (maintainHistoryId, userId, role) => {
   return maintainHistory;
 };
 
-
 //TODO : verify userID = owner of vehicle
 exports.updateMaintainHistory = async (
   maintainHistoryId,
@@ -59,8 +56,6 @@ exports.updateMaintainHistory = async (
 ) => {
   try {
     maintainHistoryData.files = filePaths;
-
-  
 
     const updatedMaintainHistory =
       await maintainHistoryRepository.updateMaintainHistory(

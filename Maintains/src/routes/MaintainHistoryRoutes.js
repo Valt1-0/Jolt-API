@@ -9,7 +9,7 @@ const maintainHistoryController = require("../controllers/maintainHistoryControl
 router.post(
   "/",
   authenticateToken,
-  upload.array("files", 10),
+  upload.fields([{ name: "files", maxCount: 10 }]),
   maintainHistoryController.createMaintainHistory
 );
 router.get(
