@@ -9,6 +9,7 @@ const path = require("path");
 const maintainService = require("../services/maintainService");
 const maintainHistoryService = require("../services/maintainHistoryService");
 const { GATEWAY_URL } = require("../Config");
+
 async function getWearPercentage(vehicleOrId, typeId, userId, role, jwt) {
   let vehicle;
 

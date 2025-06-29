@@ -253,12 +253,36 @@ exports.getMaintenanceCountForSocket = async (
   role = "user",
   jwt = null
 ) => {
+  // Récupère le véhicule une seule fois
+  let vehicle;
+  try {
+    const response = await fetch(`${GATEWAY_URL}/vehicle/${vehicleId}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+    if (response.status === 403)
+      throw new utils.ForbiddenError(
+        "Forbidden: you do not have access to this vehicle"
+      );
+    if (response.status === 404)
+      throw new utils.NotFoundError("Vehicle not found");
+    const vehicleData = await response.json();
+    if (!vehicleData?.data)
+      throw new utils.NotFoundError("Vehicle data not found");
+    vehicle = vehicleData.data;
+  } catch (err) {
+    throw err;
+  }
+
+  // Récupère toutes les maintenances
   const maintains = await exports.getMaintains(userId, role, {}, null);
   let count = 0;
   for (const maintain of maintains) {
     if (maintain._id) {
+      // Passe l'objet véhicule déjà récupéré
       const wearPercentage = await exports.getWearPercentage(
-        vehicleId,
+        vehicle, // objet véhicule
         maintain._id,
         userId,
         role,
