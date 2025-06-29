@@ -13,47 +13,23 @@ const mongoose = require("mongoose");
 exports.createMaintainHistory = async (req, res, next) => {
   try {
     const maintainHistoryData = req.body;
-    const userId = req.user.id; // Assuming user ID is stored in req.user
-
-    // Handle file uploads
-    const files = req.files || [];
+    const userId = req.user.id;
+    const files = req.files?.files || [];
     const filePaths = files.map((file) => file.path);
+
+    const invoiceUrls =
+      filePaths.length > 0
+        ? filePaths
+        : maintainHistoryData.invoiceUrl
+        ? [maintainHistoryData.invoiceUrl.trim()]
+        : [];
 
     const newMaintainHistory =
       await maintainHistoryService.createMaintainHistory(
         maintainHistoryData,
         userId,
-        filePaths
+        invoiceUrls
       );
-
-    // NOTIFICATION SOCKET
-
-    const io = require("../socket").getIO();
-    console.log("New maintenance history created:", io);
-    if (io) {
-      console.log("Emitting maintenanceCountUpdated event");
-      const vehicleId = newMaintainHistory.vehicle?.toString();
-      const role = req.user.role;
-      const jwt =
-        req.headers.authorization?.split(" ")[1] || req.cookies?.access_token;
-
-      if (vehicleId) {
-        const count =
-          await require("../services/maintainService").getMaintenanceCountForSocket(
-            userId,
-            vehicleId,
-            role,
-            jwt
-          );
-        console.log(
-          `Emitting maintenanceCountUpdated for vehicle ${vehicleId} with count ${count}`
-        );
-        io.to(userId).emit("maintain:update", {
-          vehicleId,
-          pendingCount: count,
-        });
-      }
-    }
 
     const successResponse = new CreatedSuccess(
       "Maintenance history created successfully",

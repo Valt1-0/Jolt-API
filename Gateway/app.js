@@ -3,6 +3,9 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
+
+const http = require("http");
+
 // const cookieParser = require("cookie-parser");
 // const bodyParser = require('body-parser')
 const app = express();
@@ -73,6 +76,38 @@ app.use(
     changeOrigin: true,
   })
 );
+
+app.get("/uploads/maintains/:filename", (req, res) => {
+  const { filename } = req.params;
+  const options = {
+    hostname: "localhost",
+    port: 5005,
+    path: `/uploads/maintains/${filename}`,
+    method: "GET",
+  };
+
+  const proxyReq = http.request(options, (proxyRes) => {
+    if (proxyRes.statusCode !== 200) {
+      res.status(proxyRes.statusCode).send("Fichier non trouvé");
+      return;
+    }
+
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+
+    proxyRes.pipe(res);
+  });
+
+  proxyReq.on("error", (err) => {
+    console.error("Erreur proxy fichier:", err);
+    res.status(500).send("Erreur serveur");
+  });
+
+  proxyReq.end();
+});
+
+app.listen(5000, () => {
+  console.log("Gateway en écoute sur le port 5000");
+});
 
 app.use(
   "/maintainHistory",

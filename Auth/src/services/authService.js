@@ -35,7 +35,7 @@ exports.getToken = async ({ email, password }, ip, device) => {
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
-      user: { username: user.username, email: user.email,id: user._id, role: user.role },
+      user: { username: user.username, email: user.email,id: user._id, role: user.role, profilePicture: user.profilePicture },
     };
   } catch (error) {
     console.error("Error during login:", error);
