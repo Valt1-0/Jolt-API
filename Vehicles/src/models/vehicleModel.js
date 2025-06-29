@@ -23,7 +23,7 @@ const VehicleSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: "https://cdn-icons-png.flaticon.com/512/3062/3062634.png", // image par défaut
+    default: "https://cdn-icons-png.flaticon.com/512/2641/2641824.png", // image par défaut
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
