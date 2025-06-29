@@ -63,7 +63,7 @@ exports.refreshToken = async (req, res, next) => {
     const successResponse = new utils.OkSuccess("Token refreshed", {
       accessToken: token,
     });
-    res.cookie("access_token", accessToken, {
+    res.cookie("access_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
