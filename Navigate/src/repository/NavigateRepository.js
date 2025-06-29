@@ -8,19 +8,9 @@ exports.findById = (id) => Navigation.findById(id);
 exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   const pipeline = [];
 
-  const results1 = await Navigation.aggregate([{ $match: { isGroup: true } }]);
-  console.log(results1);
   if (filter.lat && filter.lon && filter.radius) {
     const { lat, lon, radius } = filter;
     const radiusInMeters = parseFloat(radius) * 1000;
-
-    console.log(
-      "Recherche dans un rayon de",
-      radiusInMeters,
-      "m autour de",
-      lat,
-      lon
-    );
 
     pipeline.push({
       $geoNear: {
@@ -43,13 +33,13 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
     typeof filter.owner === "string" &&
     mongoose.Types.ObjectId.isValid(filter.owner)
   ) {
-    filter.owner = new  mongoose.Types.ObjectId(filter.owner);
+    filter.owner = new mongoose.Types.ObjectId(filter.owner);
   }
-  
-if (typeof filter.isGroup === "string") {
-  filter.isGroup = filter.isGroup === "true";
-}
-console.log("Filtre géographique", filter);
+
+  if (typeof filter.isGroup === "string") {
+    filter.isGroup = filter.isGroup === "true";
+  }
+  console.log("Filtre géographique", filter);
   if (Object.keys(filter).length > 0) {
     pipeline.push({ $match: filter });
   }
