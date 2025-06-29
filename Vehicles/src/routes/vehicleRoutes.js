@@ -31,6 +31,4 @@ router.put(
 );
 router.delete("/:id", authenticateToken, vehicleController.deleteVehicle);
 
-router.patch("/:id", authenticateToken, vehicleController.updateVehicle);
-
 module.exports = router;
