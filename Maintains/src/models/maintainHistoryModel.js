@@ -17,4 +17,4 @@ const MaintenanceHistorySchema = new mongoose.Schema({
   notes: { type: String },
 });
 
-module.exports = mongoose.model("MaintenanceHistory", MaintenanceHistorySchema);
+module.exports = mongoose.model("MaintainsHistory", MaintenanceHistorySchema);
