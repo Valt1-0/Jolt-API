@@ -63,6 +63,12 @@ exports.refreshToken = async (req, res, next) => {
     const successResponse = new utils.OkSuccess("Token refreshed", {
       accessToken: token,
     });
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
     res.status(successResponse.statusCode).json(successResponse.toJSON());
   } catch (error) {
     next(error);
