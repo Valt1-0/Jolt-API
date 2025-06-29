@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Navigation = require("../models/NavigateModel");
 
 exports.create = (data) => Navigation.create(data);
@@ -7,8 +8,8 @@ exports.findById = (id) => Navigation.findById(id);
 exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   const pipeline = [];
 
-  console.log("Recherche de navigations avec les filtres :", filter);
-
+  const results1 = await Navigation.aggregate([{ $match: { isGroup: true } }]);
+  console.log(results1);
   if (filter.lat && filter.lon && filter.radius) {
     const { lat, lon, radius } = filter;
     const radiusInMeters = parseFloat(radius) * 1000;
@@ -37,7 +38,18 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
     delete filter.lon;
     delete filter.radius;
   }
-
+  if (
+    filter?.owner &&
+    typeof filter.owner === "string" &&
+    mongoose.Types.ObjectId.isValid(filter.owner)
+  ) {
+    filter.owner = new  mongoose.Types.ObjectId(filter.owner);
+  }
+  
+if (typeof filter.isGroup === "string") {
+  filter.isGroup = filter.isGroup === "true";
+}
+console.log("Filtre géographique", filter);
   if (Object.keys(filter).length > 0) {
     pipeline.push({ $match: filter });
   }
@@ -71,6 +83,7 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
         gpxPoints: 1,
         startLocation: 1,
         startTime: 1,
+        endTime: 1,
         ownerInfo: {
           _id: 1,
           username: 1,
