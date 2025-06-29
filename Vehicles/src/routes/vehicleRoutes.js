@@ -23,7 +23,7 @@ router.put(
   vehicleController.updateVehicleMileage
 );
 
-router.put(
+router.patch(
   "/:id",
   authenticateToken,
   upload.single("image"),
