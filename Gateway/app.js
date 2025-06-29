@@ -33,15 +33,15 @@ app.use(
 //app.use(bodyParser.json({ type: "application/json" }));
 app.use(helmet());
 
-app.use("/vehicle", (req, res, next) => {
-  res.setHeader(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate"
-  );
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  next();
-});
+// app.use("/vehicle", (req, res, next) => {
+//   res.setHeader(
+//     "Cache-Control",
+//     "no-store, no-cache, must-revalidate, proxy-revalidate"
+//   );
+//   res.setHeader("Pragma", "no-cache");
+//   res.setHeader("Expires", "0");
+//   next();
+// });
 
 // Proxy vers les microservices (remplacez les URL par celles de vos load balancers ou services)
 app.use(
