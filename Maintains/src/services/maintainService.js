@@ -164,7 +164,7 @@ exports.deleteMaintain = async (maintainId, userId, role) => {
 };
 
 const maintainHistoryService = require("../services/maintainHistoryService");
-const { GATEWAY_URL } = require("../Config");
+const { GATEWAY_URL } = require("../config");
 
 // Cette fonction calcule le pourcentage d'usure pour un type de maintenance
 exports.getWearPercentage = async (vehicleOrId, typeId, userId, role, jwt) => {

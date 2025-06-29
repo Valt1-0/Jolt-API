@@ -38,7 +38,7 @@ const UserSchema = new mongoose.Schema({
     default:
       "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
   },
-  role: { type: String, enum: ["admin", "member"], default: "member" },
+  role: { type: String, enum: ["admin", "pro", "member"], default: "member" },
   region: { type: String, default: "N/A" },
   status: {
     type: String,

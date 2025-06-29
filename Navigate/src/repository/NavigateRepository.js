@@ -45,8 +45,8 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   pipeline.push(
     {
       $lookup: {
-        from: "UserProjection",
-        localField: "_id",
+        from: "userprojections",
+        localField: "owner",
         foreignField: "_id",
         as: "ownerInfo",
       },
@@ -57,7 +57,6 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
         preserveNullAndEmptyArrays: true,
       },
     },
-    // Ici on garde tous les champs
     {
       $project: {
         // Inclure tous les champs du document principal
@@ -75,7 +74,7 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
         ownerInfo: {
           _id: 1,
           username: 1,
-          email: 1,
+          profilePicture: 1,
           role: 1,
         },
       },

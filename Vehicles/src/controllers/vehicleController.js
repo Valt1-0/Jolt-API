@@ -13,7 +13,7 @@ exports.createVehicle = async (req, res, next) => {
   try {
     const vehicleData = req.body;
     const userId = req.user.id; // Assuming user ID is stored in req.user
-    console.log("User ID:", userId, "vehicleImage:", req.file); 
+    console.log("User ID:", userId, "vehicleImage:", req.file);
     if (req.file) {
       vehicleData.image = `${IMAGE_BASE_URL}${req.file.filename}`;
     } else {
@@ -39,16 +39,15 @@ exports.createVehicle = async (req, res, next) => {
 exports.getAllVehicles = async (req, res, next) => {
   try {
     const role = req.user.role;
-    let userId = req.user.id;
+    let userId;
 
-    // Si admin, possibilité de filtrer par userId passé en query
-    if (role === "admin" && req.query.userId) {
+    // Si admin ou pro et userId fourni, filtrer
+    if ((role === "admin" || role === "pro") && req.query.userId) {
       userId = req.query.userId;
     }
-
-    // Si membre, il ne peut récupérer que ses propres véhicules
-    if (
-      role !== "admin" &&
+    // Si membre, vérifier qu'il ne demande pas autre chose que lui-même
+    else if (
+      role === "member" &&
       req.query.userId &&
       req.query.userId !== req.user.id
     ) {
@@ -56,12 +55,16 @@ exports.getAllVehicles = async (req, res, next) => {
         "Vous n'avez pas le droit d'accéder à ces véhicules."
       );
     }
+    // Si membre ou pro sans query, utiliser son propre id
+    else if (role !== "admin") {
+      userId = req.user.id;
+    }
+    // Si admin sans query, récupérer tout
+    else {
+      userId = undefined; // Pour getAllVehicles => tout
+    }
 
-    // Si admin sans userId, récupère tout
-    const vehicles = await vehicleService.getAllVehicles(
-      role === "admin" ? userId : req.user.id,
-      role
-    );
+    const vehicles = await vehicleService.getAllVehicles(userId, role);
 
     const successResponse = new OkSuccess(
       "Vehicles fetched successfully",
@@ -156,8 +159,8 @@ exports.updateVehicle = async (req, res, next) => {
 exports.updateVehicleMileage = async (req, res, next) => {
   try {
     const vehicleId = req.params.id;
-    const userId = req.user.id; 
-    const { mileage } = req.body; 
+    const userId = req.user.id;
+    const { mileage } = req.body;
 
     if (!vehicleId) {
       throw new ValidationError("Vehicle ID is required for update");
@@ -183,7 +186,7 @@ exports.updateVehicleMileage = async (req, res, next) => {
     console.error("Error in updateVehicleMileage:", error);
     next(error);
   }
-}
+};
 
 exports.setFavoriteVehicle = async (req, res, next) => {
   try {
@@ -199,7 +202,7 @@ exports.setFavoriteVehicle = async (req, res, next) => {
     const successResponse = new OkSuccess(
       "Favorite vehicle updated successfully",
       updatedVehicle
-    ); 
+    );
     return res
       .status(successResponse.statusCode)
       .json(successResponse.toJSON());

@@ -6,7 +6,7 @@ const {
   redisClient,
 } = require("../utils");
 
-const config = require("../Config");
+const config = require("../config");
 
 const authenticateToken = async (req, res, next) => {
   const JWT_ACCESS_KEY = config.JWT_ACCESS_KEY;

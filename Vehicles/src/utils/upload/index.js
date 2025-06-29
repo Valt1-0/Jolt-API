@@ -1,7 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { IMAGE_UPLOAD_PATH } = require("../../Config");
+const { IMAGE_UPLOAD_PATH } = require("../../config");
 
 // Configuration du stockage
 const storage = multer.diskStorage({

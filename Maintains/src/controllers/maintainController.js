@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const maintainService = require("../services/maintainService");
 const maintainHistoryService = require("../services/maintainHistoryService");
-const { GATEWAY_URL } = require("../Config");
+const { GATEWAY_URL } = require("../config");
 async function getWearPercentage(vehicleOrId, typeId, userId, role, jwt) {
   let vehicle;
 
@@ -204,7 +204,6 @@ exports.getMaintains = async (req, res, next) => {
           role,
           jwt
         );
-
       }
     }
 

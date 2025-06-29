@@ -1,5 +1,5 @@
 const { createClient } = require("redis");
-const config = require("../../Config");
+const config = require("../../config");
 
 const redisClient = createClient({
   url: config.REDIS_URL || "redis://localhost:6379",
