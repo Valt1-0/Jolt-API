@@ -5859,7 +5859,7 @@
     "/maintainHistory/": {
       "post": {
         "tags": [
-          "maintainHistory"
+          "MaintainHistory"
         ],
         "summary": "Créer un historique de maintenance",
         "description": "",
@@ -6138,7 +6138,7 @@
       },
       "get": {
         "tags": [
-          "maintainHistory"
+          "MaintainHistory"
         ],
         "summary": "Récupérer l\\'historique des maintenances",
         "description": "",
@@ -6375,7 +6375,7 @@
     "/maintainHistory/{id}": {
       "get": {
         "tags": [
-          "maintainHistory"
+          "MaintainHistory"
         ],
         "summary": "Récupérer un historique de maintenance par ID",
         "description": "",
@@ -6614,7 +6614,7 @@
       },
       "put": {
         "tags": [
-          "maintainHistory"
+          "MaintainHistory"
         ],
         "summary": "Mettre à jour un historique de maintenance",
         "description": "",
@@ -6887,7 +6887,7 @@
       },
       "delete": {
         "tags": [
-          "maintainHistory"
+          "MaintainHistory"
         ],
         "summary": "Supprimer un historique de maintenance",
         "description": "",
@@ -8099,6 +8099,86 @@
             }
           }
         }
+      }
+    },
+    "/navigate/trip": {
+      "get": {
+        "tags": [
+          "Navigate"
+        ],
+        "summary": "Ouvrir la page de navigation",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "ID de la navigation",
+            "required": true,
+            "example": "685b09d9ffd2373e1d9993ab",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page de navigation ouverte",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<!DOCTYPE html><html><head><title>Navigation</title></head><body>...</body></html>"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de la navigation requis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ID de la navigation requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ID de la navigation requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/navigate/": {

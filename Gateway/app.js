@@ -11,7 +11,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:8000",
   "http://localhost:5000",
-  "http://192.168.1.88",
+  "http://192.168.1.88:5000",
 ];
 
 // Middlewares globaux
@@ -28,7 +28,11 @@ app.use(
     credentials: true,
   })
 );
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 // Swagger docs
 app.use("/api-docs", (req, res, next) => {
@@ -139,7 +143,6 @@ app.get("/uploads/maintains/:filename", (req, res) => {
 
   proxyReq.end();
 });
-
 
 app.listen(5000, () => {
   console.log("API Gateway running on port 5000");

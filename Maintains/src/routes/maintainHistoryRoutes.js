@@ -8,7 +8,7 @@ const maintainHistoryController = require("../controllers/maintainHistoryControl
 router.post(
   "/",
   /* 
-    #swagger.tags = ['maintainHistory']
+    #swagger.tags = ['MaintainHistory']
     #swagger.summary = 'Créer un historique de maintenance'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.consumes = ['multipart/form-data']
@@ -84,7 +84,7 @@ router.post(
 router.get(
   "/",
   /* 
-    #swagger.tags = ['maintainHistory']
+    #swagger.tags = ['MaintainHistory']
     #swagger.summary = 'Récupérer l\'historique des maintenances'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['vehicle'] = {
@@ -135,7 +135,7 @@ router.get(
 router.get(
   "/:id",
   /* 
-    #swagger.tags = ['maintainHistory']
+    #swagger.tags = ['MaintainHistory']
     #swagger.summary = 'Récupérer un historique de maintenance par ID'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {
@@ -177,7 +177,7 @@ router.get(
 router.put(
   "/:id",
   /* 
-    #swagger.tags = ['maintainHistory']
+    #swagger.tags = ['MaintainHistory']
     #swagger.summary = 'Mettre à jour un historique de maintenance'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {
@@ -229,7 +229,7 @@ router.put(
 router.delete(
   "/:id",
   /* 
-    #swagger.tags = ['maintainHistory']
+    #swagger.tags = ['MaintainHistory']
     #swagger.summary = 'Supprimer un historique de maintenance'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {

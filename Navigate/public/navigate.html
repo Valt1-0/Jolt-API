@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirection vers Jolt App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            display: inline-block;
+            max-width: 500px;
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .debug {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Redirection vers Jolt...</h1>
+        <div class="spinner"></div>
+        <p>Si l'application ne s'ouvre pas automatiquement, utilisez les liens ci-dessous.</p>
+        <div id="debug" class="debug"></div>
+        <div id="links"></div>
+    </div>
+
+    <script>
+        // Récupère l'ID depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tripId = urlParams.get('id');
+        
+        const debugEl = document.getElementById('debug');
+        const linksEl = document.getElementById('links');
+        
+        console.log("🗺️ Trip ID:", tripId);
+        console.log("🌐 URL complète:", window.location.href);
+        console.log("📱 User Agent:", navigator.userAgent);
+        
+        if (tripId) {
+            // ✅ Différents types de liens selon l'environnement
+            const deepLinks = {
+                // Deep link custom (si configuré dans l'app)
+                custom: `jolt://navigate/trip?id=${tripId}`,
+                
+                // Expo development
+                expoDev: `exp://192.168.1.88:8081/--/navigate/trip/${tripId}`,
+                
+                // Expo Go avec tunnel/LAN
+                expoGo: `exp://exp.host/@anonymous/jolt-mobile/--/navigate/trip/${tripId}`,
+                
+                // Universal link (future)
+                universal: `https://jolt-app.com/navigate/trip/${tripId}`
+            };
+            
+            debugEl.innerHTML = `
+                <strong>Debug Info:</strong><br>
+                Trip ID: ${tripId}<br>
+                Platform: ${getPlatform()}<br>
+                Time: ${new Date().toLocaleString()}
+            `;
+            
+            // ✅ Création des liens de test
+            linksEl.innerHTML = `
+                <h3>🔗 Liens disponibles :</h3>
+                <a href="${deepLinks.expoDev}" class="button">📱 Expo Dev (LAN)</a><br>
+                <a href="${deepLinks.expoGo}" class="button">🌐 Expo Go (Tunnel)</a><br>
+                <a href="${deepLinks.custom}" class="button">⚡ Jolt App</a><br>
+                <a href="#" onclick="openStore()" class="button">🏪 App Store</a>
+            `;
+            
+            // ✅ Tentative automatique d'ouverture
+            tryOpenApp();
+            
+        } else {
+            // Erreur : pas d'ID
+            document.querySelector('.container').innerHTML = `
+                <h1>❌ Erreur</h1>
+                <p>ID de trajet manquant dans l'URL</p>
+                <p><strong>Format attendu:</strong> <code>/navigate/trip?id=TRIP_ID</code></p>
+                <p><strong>Exemple:</strong> <code>/navigate/trip?id=677f8a5bf4b24ee29b70b123</code></p>
+                <a href="/navigate/trip?id=test123" class="button">🧪 Tester avec ID factice</a>
+            `;
+        }
+        
+        function getPlatform() {
+            if (/iPhone|iPad|iPod/.test(navigator.userAgent)) return 'iOS';
+            if (/Android/.test(navigator.userAgent)) return 'Android';
+            if (/Mac/.test(navigator.userAgent)) return 'macOS';
+            if (/Win/.test(navigator.userAgent)) return 'Windows';
+            return 'Desktop';
+        }
+        
+        function tryOpenApp() {
+            const platform = getPlatform();
+            let primaryLink;
+            
+            // ✅ Stratégie selon la plateforme
+            if (platform === 'iOS' || platform === 'Android') {
+                // Mobile : essaie Expo Go en premier
+                primaryLink = `exp://192.168.1.88:8081/--/navigate/trip/${tripId}`;
+            } else {
+                // Desktop : essaie le lien custom
+                primaryLink = `jolt://navigate/trip?id=${tripId}`;
+            }
+            
+            console.log("🔗 Tentative primaire:", primaryLink);
+            
+            // Iframe trick pour éviter l'erreur Safari
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = primaryLink;
+            document.body.appendChild(iframe);
+            
+            // Alternative : tentative directe après un délai
+            setTimeout(() => {
+                try {
+                    window.location.href = primaryLink;
+                } catch (e) {
+                    console.error("❌ Erreur deep link:", e);
+                }
+            }, 1000);
+            
+            // ✅ Fallback intelligent après 5 secondes
+            setTimeout(() => {
+                console.log("⏰ Activation du fallback...");
+                showFallbackOptions();
+            }, 5000);
+        }
+        
+        function showFallbackOptions() {
+            const spinner = document.querySelector('.spinner');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+            
+            linksEl.innerHTML += `
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <h4>🤔 L'app ne s'est pas ouverte ?</h4>
+                    <p style="font-size: 14px;">Essayez ces alternatives :</p>
+                    <a href="exp://192.168.1.88:8081" class="button">📱 Ouvrir Expo Go</a>
+                    <a href="#" onclick="copyToClipboard('${tripId}')" class="button">📋 Copier l'ID</a>
+                </div>
+            `;
+        }
+        
+        function openStore() {
+            const platform = getPlatform();
+            
+            if (platform === 'iOS') {
+                window.open('https://apps.apple.com/app/expo-go/id982107779', '_blank');
+            } else if (platform === 'Android') {
+                window.open('https://play.google.com/store/apps/details?id=host.exp.exponent', '_blank');
+            } else {
+                alert('📱 Installez Expo Go sur votre mobile pour tester l\'application');
+            }
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert(`✅ ID copié : ${text}`);
+            }).catch(() => {
+                alert(`📋 ID à copier manuellement : ${text}`);
+            });
+        }
+    </script>
+</body>
+</html>

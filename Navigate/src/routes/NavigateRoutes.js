@@ -5,8 +5,50 @@ const {
   optionalAuthenticateToken,
 } = require("../middlewares/authMiddleware");
 const navigationController = require("../controllers/NavigateController");
+const path = require("path");
 
+//retourne le fichier navigate.html pour ouvrir directement dans l'application
+router.get(
+  "/trip",
+  /*
+    #swagger.tags = ['Navigate']
+    #swagger.summary = 'Ouvrir la page de navigation'
+    #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['id'] = {
+      in: 'query',
+      description: 'ID de la navigation',
+      required: true,
+      type: 'string',
+      example: '685b09d9ffd2373e1d9993ab'
+    }
+    #swagger.responses[200] = {
+      description: 'Page de navigation ouverte',
+      content: {
+        'text/html': {
+          schema: {
+            type: 'string', 
+            example: '<!DOCTYPE html><html><head><title>Navigation</title></head><body>...</body></html>'
+          }
+        }
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'ID de la navigation requis',
+      schema: { success: false, message: 'ID de la navigation requis' }
+    }
+  */
 
+  (req, res) => {
+    const tripId = req.query.id;
+    if (!tripId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ID de la navigation requis" });
+    }
+
+    res.sendFile(path.join(__dirname, "public", "navigate.html"));
+  }
+);
 router.post(
   "/",
   /* 
@@ -121,7 +163,6 @@ router.get(
   navigationController.getAllNavigation
 );
 
-
 router.post(
   "/group",
   /* 
@@ -164,7 +205,6 @@ router.post(
   navigationController.createGroupNavigation
 );
 
-
 router.post(
   "/group/:id/join",
   /* 
@@ -200,7 +240,6 @@ router.post(
   authenticateToken,
   navigationController.joinGroupNavigation
 );
-
 
 router.get(
   "/:id",
@@ -332,7 +371,6 @@ router.delete(
   authenticateToken,
   navigationController.deleteNavigation
 );
-
 
 router.patch(
   "/:id/visibility",

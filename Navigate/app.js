@@ -13,6 +13,7 @@ const bodyParser = require("body-parser");
 const { handleErrorWithLogger } = require("./src/utils");
 const app = express();
 const userProjectionQueue = require("./src/routes/UserProjectionRoutes");
+const path = require("path");
 
 const startServer = async () => {
   try {
@@ -31,11 +32,13 @@ const startServer = async () => {
     // Error handling middleware
     app.use(handleErrorWithLogger);
 
-    const server = http.createServer(app);
 
+
+    const server = http.createServer(app);
     require("./src/socket")(server);
+    
     server.listen(5006, () => {
-      console.log("Maintain service running on port 5005");
+      console.log("Maintain service running on port 5006");
     });
 
     // Server listening
