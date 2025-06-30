@@ -69,7 +69,7 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
         totalDistance: 1,
         isPublic: 1,
         isGroup: 1,
-        note: 1,
+        notes: 1,
         gpxPoints: 1,
         startLocation: 1,
         startTime: 1,

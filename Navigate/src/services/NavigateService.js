@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const NavigateRepository = require("../repository/NavigateRepository");
 
 exports.createNavigation = async (userId, data) => {
@@ -81,8 +82,9 @@ exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
   }
   // Exclure les navigations de l'utilisateur courant si demandé
   if (filter.excludeSelf) {
+    console.log("Excluding self navigations",userId);
     if (userId) {
-      filter.owner = { $ne: userId };
+      filter.owner = { $ne: new mongoose.Types.ObjectId(userId) };
     }
     delete filter.excludeSelf;
   }
@@ -100,7 +102,7 @@ exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
 
   // Utilisateur connecté non admin
   if (!filter.owner) {
-    filter.owner = userId;
+    filter.owner = new mongoose.Types.ObjectId(userId);
   } else if (filter.owner !== userId && !filter.isPublic) {
     filter.isPublic = true;
   }
