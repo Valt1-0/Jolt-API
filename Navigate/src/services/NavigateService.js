@@ -16,7 +16,6 @@ exports.createNavigation = async (userId, data) => {
       coordinates: [firstPoint.lon, firstPoint.lat],
     };
   } else {
-    // Soit tu ne mets pas startLocation, soit tu mets coordinates: []
     navigationData.startLocation = undefined;
   }
 
@@ -82,7 +81,6 @@ exports.getAllNavigations = async (userId, role, page, limit, filter = {}) => {
   }
   // Exclure les navigations de l'utilisateur courant si demandé
   if (filter.excludeSelf) {
-    console.log("Excluding self navigations",userId);
     if (userId) {
       filter.owner = { $ne: new mongoose.Types.ObjectId(userId) };
     }
@@ -136,7 +134,6 @@ exports.getNavigationById = async (id, userId, role) => {
 exports.updateNavigation = async (userId, id, data) => {
   const navigation = await NavigateRepository.findById(id);
   if (!navigation) return { error: "Not found", status: 404 };
-  console.log(navigation.owner.toString(), userId);
 
   if (navigation.owner.toString() !== userId)
     return { error: "Forbidden", status: 403 };

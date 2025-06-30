@@ -37,7 +37,6 @@ module.exports = (server) => {
     });
     // Réception de la position d'un utilisateur et broadcast aux autres
     socket.on("position", ({ roomId, userId, position, profilePicture }) => {
-      console.log(`User ${userId} position in room ${roomId}:`, position);
       // Envoie à tous les autres utilisateurs de la room SAUF l'émetteur
       socket.to(roomId).emit("userPosition", {
         userId,

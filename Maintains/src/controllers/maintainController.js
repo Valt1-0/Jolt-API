@@ -103,7 +103,7 @@ async function getWearPercentage(vehicleOrId, typeId, userId, role, jwt) {
 exports.createMaintain = async (req, res, next) => {
   try {
     const maintainData = req.body;
-    const userId = req.user.id; // Assuming user ID is stored in req.user
+    const userId = req.user.id;
 
     const newMaintain = await maintainService.createMaintain(
       maintainData,
@@ -160,7 +160,7 @@ exports.getMaintains = async (req, res, next) => {
       req.headers.authorization?.split(" ")[1] || req.cookies?.access_token;
     const role = req.user.role;
     const vehicleId = req.query.vehicleId;
-    const { query } = req.query; // Assuming query is passed in the request
+    const { query } = req.query; 
     const proId = role === "pro" ? req.user.id : null;
     let filter = {};
 
@@ -168,9 +168,8 @@ exports.getMaintains = async (req, res, next) => {
       (role === "admin" || role === "pro") && req.query.userId
         ? req.query.userId
         : req.user.id;
-    const stringFields = ["name", "description", "notes"]; // adapte selon ton modèle
+    const stringFields = ["name", "description", "notes"]; 
 
-    // If query is provided, parse it to filter maintenances
 
     if (query) {
       // Découpe chaque filtre séparé par une virgule
@@ -208,7 +207,6 @@ exports.getMaintains = async (req, res, next) => {
     }
 
     const maintainsWithWear = maintains.map((maintain) => {
-      // Convertit en objet JS simple
       const obj = maintain.toObject ? maintain.toObject() : { ...maintain };
       obj.wearPercentage = maintain.wearPercentage || 0;
       return obj;
@@ -232,8 +230,8 @@ exports.getMaintains = async (req, res, next) => {
 exports.getMaintainById = async (req, res, next) => {
   try {
     const maintainId = req.params.id;
-    const userId = req.user.id; // Assuming user ID is stored in req.user
-    const role = req.user.role; // Assuming role is stored in req.user
+    const userId = req.user.id; 
+    const role = req.user.role; 
 
     const maintain = await maintainService.getMaintainById(
       maintainId,

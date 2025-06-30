@@ -48,7 +48,7 @@ exports.getMaintainHistories = async (req, res, next) => {
   try {
     const role = req.user.role;
     let userId = req.user.id;
-    const { query } = req.query; // Assuming query is passed in the request
+    const { query } = req.query;
     let filter = {};
     const objectIdFields = ["vehicle", "type", "_id", "user", "vehicleId"];
     const numberFields = ["mileage"]; // Ajoute ici tous tes champs numériques

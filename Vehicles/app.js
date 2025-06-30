@@ -2,7 +2,7 @@ require("./src/db/mongoConnect").connect();
 const express = require("express");
 //const csrf = require("csrf");
 const cookieParser = require("cookie-parser");
-const config = require("./src/Config");
+const config = require("./src/config");
 const vehicleRoutes = require("./src/routes/vehicleRoutes");
 const API_PORT = config.API_PORT || console.log("No port defined in .env file");
 
@@ -61,7 +61,7 @@ const startServer = async () => {
 
     return app;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

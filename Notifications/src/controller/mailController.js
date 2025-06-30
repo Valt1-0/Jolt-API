@@ -44,7 +44,7 @@ exports.sendMail = async (req, res) => {
 
   try {
     const mailOptions = {
-      from: process.env.IONOS_EMAIL, // Votre adresse IONOS
+      from: process.env.IONOS_EMAIL, // adresse IONOS
       to, // Destinataire
       subject, // Sujet de l'e-mail
       html: htmlContent, // Contenu HTML de l'e-mail

@@ -140,7 +140,7 @@ app.get("/uploads/maintains/:filename", (req, res) => {
   proxyReq.end();
 });
 
-// ✅ UN SEUL app.listen
+
 app.listen(5000, () => {
   console.log("API Gateway running on port 5000");
 });

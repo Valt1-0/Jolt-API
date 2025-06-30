@@ -6,7 +6,6 @@ exports.create = (data) => Navigation.create(data);
 exports.findById = (id) => Navigation.findById(id);
 
 exports.findAll = async (filter = {}, page = 1, limit = 10) => {
-  console.log("Filtre géographique", filter);
   const pipeline = [];
 
   if (filter.lat && filter.lon && filter.radius) {
@@ -99,7 +98,6 @@ exports.findAll = async (filter = {}, page = 1, limit = 10) => {
   ]);
 
   const total = totalResult[0] ? totalResult[0].total : 0;
-console.log("Total navigations:", total,results);
   return { total, navigations: results };
 };
 
