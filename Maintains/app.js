@@ -4,8 +4,8 @@ const http = require("http");
 //const csrf = require("csrf");
 const cookieParser = require("cookie-parser");
 const config = require("./src/config");
-const maintainRoutes = require("./src/routes/maintainRoutes");
-const maintainHistoryRoutes = require("./src/routes/maintainHistoryRoutes");
+const maintainRoutes = require("./src/routes/MaintainRoutes.tmp");
+const maintainHistoryRoutes = require("./src/routes/MaintainHistoryRoutes.tmp");
 const API_PORT = config.API_PORT || console.log("No port defined in .env file");
 
 const cors = require("cors");

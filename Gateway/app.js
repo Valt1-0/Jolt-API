@@ -3,15 +3,13 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
-
 const http = require("http");
-
-// const cookieParser = require("cookie-parser");
-// const bodyParser = require('body-parser')
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger-output.json");
 const app = express();
 const allowedOrigins = [
   "http://localhost:8000",
-  "http://localhost:5000",
+  "http://localhost:5000", 
   "http://192.168.1.88",
 ];
 
@@ -30,25 +28,15 @@ app.use(
     credentials: true,
   })
 );
-//app.use(express.json());
-//app.use(cookieParser());
-//app.use(bodyParser.urlencoded({ extended: true }));
-//app.use(bodyParser.json({ type: "application/json" }));
 app.use(helmet());
-
-// app.use("/vehicle", (req, res, next) => {
-//   res.setHeader(
-//     "Cache-Control",
-//     "no-store, no-cache, must-revalidate, proxy-revalidate"
-//   );
-//   res.setHeader("Pragma", "no-cache");
-//   res.setHeader("Expires", "0");
-//   next();
-// });
-
-// Proxy vers les microservices (remplacez les URL par celles de vos load balancers ou services)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+// Proxy vers les microservices
 app.use(
   "/auth",
+  /* 
+    #swagger.tags = ['Auth']
+    #swagger.summary = 'Routes d’authentification'
+  */
   createProxyMiddleware({
     target: "http://localhost:5002/auth", // Auth service
     changeOrigin: true,
@@ -56,6 +44,10 @@ app.use(
 );
 app.use(
   "/users",
+  /* 
+    #swagger.tags = ['Users']
+    #swagger.summary = 'Routes des utilisateurs'
+  */
   createProxyMiddleware({
     target: "http://localhost:5003/users", // Users service
     changeOrigin: true,
@@ -64,6 +56,10 @@ app.use(
 
 app.use(
   "/vehicle",
+  /* 
+    #swagger.tags = ['Vehicle']
+    #swagger.summary = 'Routes des véhicules'
+  */
   createProxyMiddleware({
     target: "http://localhost:5004/vehicle", // Vehicle service
     changeOrigin: true,
@@ -71,6 +67,10 @@ app.use(
 );
 app.use(
   "/maintain",
+  /* 
+    #swagger.tags = ['Maintain']
+    #swagger.summary = 'Routes de maintenance'
+  */
   createProxyMiddleware({
     target: "http://localhost:5005/maintain",
     changeOrigin: true,
@@ -111,6 +111,10 @@ app.listen(5000, () => {
 
 app.use(
   "/maintainHistory",
+  /* 
+    #swagger.tags = ['MaintainHistory']
+    #swagger.summary = 'Routes de l’historique de maintenance'
+  */
   createProxyMiddleware({
     target: "http://localhost:5005/maintainHistory",
     changeOrigin: true,
@@ -118,24 +122,33 @@ app.use(
 );
 app.use(
   "/pushToken",
+  /* 
+    #swagger.tags = ['PushToken']
+    #swagger.summary = 'Routes de gestion des tokens de push'
+  */
   createProxyMiddleware({
     target: "http://localhost:5001/pushToken",
     changeOrigin: true,
   })
 );
 
-app.use("/navigate", (req, res, next) => {
-  res.setHeader(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate"
-  );
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  next();
-});
+// app.use("/navigate", (req, res, next) => {
+//   res.setHeader(
+//     "Cache-Control",
+//     "no-store, no-cache, must-revalidate, proxy-revalidate"
+//   );
+//   res.setHeader("Pragma", "no-cache");
+//   res.setHeader("Expires", "0");
+//  // res.removeHeader("ETag");
+//   next();
+// });
 
 app.use(
   "/navigate",
+  /* 
+    #swagger.tags = ['Navigate']
+    #swagger.summary = 'Routes de navigation'
+  */
   createProxyMiddleware({
     target: "http://localhost:5006/navigate", // Navigate service
     changeOrigin: true,
@@ -153,6 +166,10 @@ app.use("/favorite-addressese", (req, res, next) => {
 
 app.use(
   "/favorite-addresses",
+  /* 
+    #swagger.tags = ['FavoriteAddresses']
+    #swagger.summary = 'Routes des adresses favorites'
+  */
   createProxyMiddleware({
     target: "http://localhost:5006/favorite-addresses", // Favorite addresses service
     changeOrigin: true,

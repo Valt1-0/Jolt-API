@@ -1,0 +1,3422 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Jolt-API",
+    "description": "Documentation de l’API Jolt (microservices)",
+    "version": "1.0.0"
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentification"
+    },
+    {
+      "name": "Users",
+      "description": "Gestion des utilisateurs"
+    },
+    {
+      "name": "Vehicles",
+      "description": "Gestion des véhicules"
+    },
+    {
+      "name": "Maintains",
+      "description": "Gestion des maintenances"
+    },
+    {
+      "name": "Notifications",
+      "description": "Notifications"
+    },
+    {
+      "name": "Navigate",
+      "description": "Navigation"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Token d'authentification (Bearer <token>) ou dans les cookies"
+    }
+  },
+  "paths": {
+    "/uploads/maintains/{filename}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/getToken": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Connexion utilisateur",
+        "description": "Connexion d\\'un utilisateur avec email et mot de passe",
+        "parameters": [
+          {
+            "name": "x-client-type",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connexion réussie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "test@joltz.fr"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "testuser"
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Connexion réussie"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données manquantes",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email et mot de passe requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Identifiants invalides",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email ou mot de passe incorrect"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "test@joltz.fr"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "motdepasse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/refreshToken": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Rafraîchir le token d\\'accès",
+        "description": "Génère un nouveau token d\\'accès à partir du refresh token",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token rafraîchi avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token rafraîchi avec succès"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Refresh token invalide",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Refresh token invalide ou expiré"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Inscription d\\'un nouvel utilisateur",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Utilisateur créé avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john@doe.com"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur créé avec succès"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email déjà utilisé"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "john@doe.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "motdepasse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Déconnexion de l\\'utilisateur",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "x-client-type",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Déconnexion réussie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Déconnexion réussie"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resendVerificationEmail": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Renvoyer l\\'email de vérification",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Email de vérification renvoyé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email de vérification renvoyé"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Utilisateur non trouvé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur non trouvé"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "john@doe.com"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des navigations",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "507f1f77bcf86cd799439011"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "JohnDoe"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "john@doe.com"
+                      },
+                      "role": {
+                        "type": "string",
+                        "example": "member"
+                      },
+                      "profilePicture": {
+                        "type": "string",
+                        "example": "http://localhost:5000/uploads/profile.jpg"
+                      },
+                      "brand": {
+                        "type": "string",
+                        "example": "Tesla"
+                      },
+                      "model": {
+                        "type": "string",
+                        "example": "Model 3"
+                      },
+                      "year": {
+                        "type": "number",
+                        "example": 2023
+                      },
+                      "mileage": {
+                        "type": "number",
+                        "example": 1234
+                      },
+                      "imageUrl": {
+                        "type": "string",
+                        "example": "http://localhost:5000/uploads/vehicles/image.jpg"
+                      },
+                      "owner": {
+                        "type": "string",
+                        "example": "507f1f77bcf86cd799439012"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Trajet vers le travail"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Changement d'huile moteur"
+                      },
+                      "periodicity": {
+                        "type": "object",
+                        "properties": {
+                          "km": {
+                            "type": "number",
+                            "example": 10000
+                          },
+                          "days": {
+                            "type": "number",
+                            "example": 365
+                          }
+                        }
+                      },
+                      "wearPercentage": {
+                        "type": "number",
+                        "example": 75
+                      },
+                      "isPublic": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "totalDistance": {
+                        "type": "number",
+                        "example": 15.5
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigations retrieved successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Navigation créée avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "brand": {
+                      "type": "string",
+                      "example": "Tesla"
+                    },
+                    "model": {
+                      "type": "string",
+                      "example": "Model 3"
+                    },
+                    "year": {
+                      "type": "number",
+                      "example": 2023
+                    },
+                    "mileage": {
+                      "type": "number",
+                      "example": 1234
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "example": "http://localhost:5000/uploads/vehicles/image.jpg"
+                    },
+                    "owner": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439012"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Trajet vers le travail"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Changement d'huile moteur"
+                    },
+                    "periodicity": {
+                      "type": "object",
+                      "properties": {
+                        "km": {
+                          "type": "number",
+                          "example": 10000
+                        },
+                        "days": {
+                          "type": "number",
+                          "example": 365
+                        }
+                      }
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "startLocation": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "Point"
+                        },
+                        "coordinates": {
+                          "type": "array",
+                          "example": [
+                            2.3522,
+                            48.8566
+                          ],
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation created successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Données de navigation invalides"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "default": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Trajet vers le travail"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "gpxPoints": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "lat": {
+                          "type": "number",
+                          "example": 48.8566
+                        },
+                        "lon": {
+                          "type": "number",
+                          "example": 2.3522
+                        },
+                        "alt": {
+                          "type": "number",
+                          "example": 35
+                        },
+                        "time": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "speed": {
+                          "type": "number",
+                          "example": 50
+                        }
+                      }
+                    }
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "totalDistance": {
+                    "type": "number",
+                    "example": 15.5
+                  },
+                  "speedMax": {
+                    "type": "number",
+                    "example": 90
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Récupérer un utilisateur via son ID ou email",
+        "description": "",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "ID ou email de l'utilisateur à rechercher",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilisateur trouvé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "JohnDoe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john@doe.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "member"
+                    },
+                    "profilePicture": {
+                      "type": "string",
+                      "example": "http://localhost:5000/uploads/profile.jpg"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur trouvé"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Utilisateur non trouvé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur non trouvé"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verifyEmail": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Vérifier le token d\\'activation de compte",
+        "description": "",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Token de vérification d'email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email vérifié avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email vérifié avec succès"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Token invalide ou expiré",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token invalide ou expiré"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Créer un nouvel utilisateur",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Utilisateur créé avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "JohnDoe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john@doe.com"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur créé avec succès"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email déjà utilisé"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "JohnDoe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "john@doe.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                },
+                "required": [
+                  "username",
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Vérifier les identifiants de connexion",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Connexion réussie",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "JohnDoe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john@doe.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "member"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Connexion réussie"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Identifiants invalides",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email ou mot de passe incorrect"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "john@doe.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/updateVerificationToken": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Mettre à jour le token de vérification",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Token mis à jour",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token de vérification mis à jour"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Utilisateur introuvable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur introuvable"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "john@doe.com"
+                  },
+                  "verificationToken": {
+                    "type": "string",
+                    "example": "newToken123"
+                  },
+                  "verificationTokenExpires": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-06-30T12:00:00Z"
+                  }
+                },
+                "required": [
+                  "email",
+                  "verificationToken"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delete": {
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Supprimer un utilisateur",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilisateur supprimé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur supprimé avec succès"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "userId requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Utilisateur introuvable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur introuvable"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "example": "userId123"
+                  }
+                },
+                "required": [
+                  "userId"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update/{id}": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Modifier les informations d\\'un utilisateur",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de l'utilisateur à modifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilisateur mis à jour",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "JaneDoe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "jane@doe.com"
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur mis à jour avec succès"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Données invalides"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Utilisateur introuvable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Utilisateur introuvable"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Erreur interne du serveur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "example": {
+                  "username": "JaneDoe",
+                  "email": "jane@doe.com"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{id}": {
+      "get": {
+        "tags": [
+          "Navigate"
+        ],
+        "summary": "Récupérer une navigation par ID",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la navigation"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Navigation trouvée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "brand": {
+                      "type": "string",
+                      "example": "Tesla"
+                    },
+                    "model": {
+                      "type": "string",
+                      "example": "Model 3"
+                    },
+                    "year": {
+                      "type": "number",
+                      "example": 2023
+                    },
+                    "mileage": {
+                      "type": "number",
+                      "example": 1234
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "example": "http://localhost:5000/uploads/vehicles/image.jpg"
+                    },
+                    "owner": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439012"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Trajet vers le travail"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Changement d'huile moteur"
+                    },
+                    "periodicity": {
+                      "type": "object",
+                      "properties": {
+                        "km": {
+                          "type": "number",
+                          "example": 10000
+                        },
+                        "days": {
+                          "type": "number",
+                          "example": 365
+                        }
+                      }
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "isOwner": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "gpxPoints": {
+                      "type": "array",
+                      "example": [],
+                      "items": {}
+                    },
+                    "notes": {
+                      "type": "array",
+                      "example": [],
+                      "items": {}
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation retrieved successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Accès interdit",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Navigation non trouvée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Navigation mise à jour",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "brand": {
+                      "type": "string",
+                      "example": "Tesla"
+                    },
+                    "model": {
+                      "type": "string",
+                      "example": "Model 3"
+                    },
+                    "year": {
+                      "type": "number",
+                      "example": 2023
+                    },
+                    "mileage": {
+                      "type": "number",
+                      "example": 1234
+                    },
+                    "imageUrl": {
+                      "type": "string",
+                      "example": "http://localhost:5000/uploads/vehicles/image.jpg"
+                    },
+                    "owner": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439012"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Nouveau nom de trajet"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Description mise à jour"
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation updated successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Accès interdit",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Navigation non trouvée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "default": {
+            "description": ""
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Nouveau nom de trajet"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "gpxPoints": {
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Navigation supprimée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation deleted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Accès interdit",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Navigation non trouvée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/count": {
+      "post": {
+        "tags": [
+          "Maintains"
+        ],
+        "summary": "Obtenir le nombre de maintenances en attente par véhicule",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Liste des IDs de véhicules",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "required": {
+                  "type": "array",
+                  "example": [
+                    "vehicleIds"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "vehicleIds": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            }
+                          }
+                        },
+                        "example": {
+                          "type": "array",
+                          "example": [
+                            "507f1f77bcf86cd799439011",
+                            "507f1f77bcf86cd799439012"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Nombre de maintenances en attente",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "vehicleId": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                  },
+                  "pendingMaintenances": {
+                    "type": "number",
+                    "example": 3
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "vehicleIds must be an array"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/push-token": {
+      "post": {
+        "tags": [
+          "PushToken"
+        ],
+        "summary": "Enregistrer un token de notification push",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Token push enregistré avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Push token saved"
+                },
+                "token": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "expoPushToken": {
+                      "type": "string",
+                      "example": "ExponentPushToken[xxxxx]"
+                    },
+                    "deviceId": {
+                      "type": "string",
+                      "example": "device123"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439012"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données manquantes",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "expoPushToken et deviceId sont requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Error saving push token"
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Détail de l'erreur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "expoPushToken",
+                  "deviceId"
+                ],
+                "properties": {
+                  "expoPushToken": {
+                    "type": "string",
+                    "example": "ExponentPushToken[xxxxx]"
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "example": "device123"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/send-push": {
+      "post": {
+        "tags": [
+          "PushToken"
+        ],
+        "summary": "Envoyer une notification push à un utilisateur",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Notification envoyée avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Push sent"
+                },
+                "tickets": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données manquantes",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Missing fields"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Aucun token trouvé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "No push tokens found for user"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur lors de l'envoi",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Error sending push"
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Détail de l'erreur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "userId",
+                  "title",
+                  "body"
+                ],
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Notification importante"
+                  },
+                  "body": {
+                    "type": "string",
+                    "example": "Votre maintenance est due"
+                  },
+                  "data": {
+                    "type": "object",
+                    "example": {
+                      "action": "maintenance",
+                      "vehicleId": "123"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/send-push-many": {
+      "post": {
+        "tags": [
+          "PushToken"
+        ],
+        "summary": "Envoyer une notification push à plusieurs utilisateurs",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Notifications envoyées avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Push envoyé"
+                },
+                "tickets": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "userIds (array) ou toAll requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Aucun token trouvé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Aucun push token trouvé"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur lors de l'envoi",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Erreur envoi push"
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Détail de l'erreur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "body"
+                ],
+                "properties": {
+                  "userIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "507f1f77bcf86cd799439011",
+                      "507f1f77bcf86cd799439012"
+                    ]
+                  },
+                  "toAll": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Notification de masse"
+                  },
+                  "body": {
+                    "type": "string",
+                    "example": "Message pour tous les utilisateurs"
+                  },
+                  "data": {
+                    "type": "object",
+                    "example": {
+                      "type": "announcement"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attach-user": {
+      "post": {
+        "tags": [
+          "PushToken"
+        ],
+        "summary": "Associer un utilisateur à un appareil",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Utilisateur associé à l'appareil",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "UserId attached to device"
+                },
+                "token": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "deviceId": {
+                      "type": "string",
+                      "example": "device123"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439012"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Données manquantes",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "deviceId et userId sont requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Error attaching userId"
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Détail de l'erreur"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "deviceId",
+                  "userId"
+                ],
+                "properties": {
+                  "deviceId": {
+                    "type": "string",
+                    "example": "device123"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{id}/visibility": {
+      "patch": {
+        "tags": [
+          "Navigate"
+        ],
+        "summary": "Changer la visibilité d\\'une navigation",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la navigation"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Visibilité mise à jour",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation visibility updated"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Accès interdit",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Navigation non trouvée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{id}/rate": {
+      "post": {
+        "tags": [
+          "Navigate"
+        ],
+        "summary": "Noter une navigation publique",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la navigation"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note ajoutée avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "notes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439012"
+                          },
+                          "rating": {
+                            "type": "number",
+                            "example": 4
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigation rated successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Navigation non trouvée ou non publique",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Not found or not public"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "rating"
+                ],
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "example": 4
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/group": {
+      "post": {
+        "tags": [
+          "Navigate"
+        ],
+        "summary": "Créer une navigation de groupe",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Navigation de groupe créée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Sortie groupe dimanche"
+                    },
+                    "isGroup": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "groupMembers": {
+                      "type": "array",
+                      "example": [
+                        "507f1f77bcf86cd799439012"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Group navigation created successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sortie groupe dimanche"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "gpxPoints": {
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/group/{id}/join": {
+      "post": {
+        "tags": [
+          "Navigate"
+        ],
+        "summary": "Rejoindre un groupe de navigation",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID de la navigation de groupe"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Groupe rejoint avec succès",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "507f1f77bcf86cd799439011"
+                    },
+                    "groupMembers": {
+                      "type": "array",
+                      "example": [
+                        "507f1f77bcf86cd799439012",
+                        "507f1f77bcf86cd799439013"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Joined group navigation successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Groupe non trouvé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Not found or not group"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": [
+          "Navigate"
+        ],
+        "summary": "Rechercher des navigations par géolocalisation",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "type": "number",
+            "description": "Latitude de recherche"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": true,
+            "type": "number",
+            "description": "Longitude de recherche"
+          },
+          {
+            "name": "radius",
+            "in": "query",
+            "type": "number",
+            "description": "Rayon de recherche en mètres (défaut: 5000)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Navigations trouvées dans le rayon",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "507f1f77bcf86cd799439011"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Trajet proche"
+                      },
+                      "startLocation": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "example": "Point"
+                          },
+                          "coordinates": {
+                            "type": "array",
+                            "example": [
+                              2.3522,
+                              48.8566
+                            ],
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Navigations retrieved successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token d'authentification requis"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/{id}/position": {
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "position": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                },
+                "example": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                }
+              }
+            },
+            "message": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "success": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "boolean"
+                },
+                "example": {
+                  "type": "boolean",
+                  "example": false
+                }
+              }
+            },
+            "message": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
