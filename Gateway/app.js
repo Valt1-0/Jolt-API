@@ -29,6 +29,20 @@ app.use(
   })
 );
 app.use(helmet());
+
+
+
+app.use("/api-docs", (req, res, next) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  // res.removeHeader("ETag");
+  next();
+});
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 // Proxy vers les microservices
 app.use(
