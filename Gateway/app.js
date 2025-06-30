@@ -7,9 +7,10 @@ const http = require("http");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output.json");
 const app = express();
+
 const allowedOrigins = [
   "http://localhost:8000",
-  "http://localhost:5000", 
+  "http://localhost:5000",
   "http://192.168.1.88",
 ];
 
@@ -18,7 +19,6 @@ app.use(morgan("dev"));
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Autorise les requêtes sans origin (ex: curl, mobile) ou si l'origin est dans la liste
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, origin);
       } else {
@@ -30,8 +30,7 @@ app.use(
 );
 app.use(helmet());
 
-
-
+// Swagger docs
 app.use("/api-docs", (req, res, next) => {
   res.setHeader(
     "Cache-Control",
@@ -39,58 +38,82 @@ app.use("/api-docs", (req, res, next) => {
   );
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
-  // res.removeHeader("ETag");
   next();
 });
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+
 // Proxy vers les microservices
 app.use(
   "/auth",
-  /* 
-    #swagger.tags = ['Auth']
-    #swagger.summary = 'Routes d’authentification'
-  */
   createProxyMiddleware({
-    target: "http://localhost:5002/auth", // Auth service
+    target: "http://localhost:5002/auth",
     changeOrigin: true,
   })
 );
+
 app.use(
   "/users",
-  /* 
-    #swagger.tags = ['Users']
-    #swagger.summary = 'Routes des utilisateurs'
-  */
   createProxyMiddleware({
-    target: "http://localhost:5003/users", // Users service
+    target: "http://localhost:5003/users",
     changeOrigin: true,
   })
 );
 
 app.use(
   "/vehicle",
-  /* 
-    #swagger.tags = ['Vehicle']
-    #swagger.summary = 'Routes des véhicules'
-  */
   createProxyMiddleware({
-    target: "http://localhost:5004/vehicle", // Vehicle service
+    target: "http://localhost:5004/vehicle",
     changeOrigin: true,
   })
 );
+/* 
+#swagger.tags = ['Maintain']
+#swagger.path = '/maintain'
+*/
 app.use(
   "/maintain",
-  /* 
-    #swagger.tags = ['Maintain']
-    #swagger.summary = 'Routes de maintenance'
-  */
   createProxyMiddleware({
     target: "http://localhost:5005/maintain",
     changeOrigin: true,
   })
 );
+/* 
+#swagger.tags = ['maintainHistory']  
+#swagger.path = '/maintainHistory'
+*/
+app.use(
+  "/maintainHistory",
+  createProxyMiddleware({
+    target: "http://localhost:5005/maintainHistory",
+    changeOrigin: true,
+  })
+);
 
+app.use(
+  "/pushToken",
+  createProxyMiddleware({
+    target: "http://localhost:5001/pushToken",
+    changeOrigin: true,
+  })
+);
+
+app.use(
+  "/navigate",
+  createProxyMiddleware({
+    target: "http://localhost:5006/navigate",
+    changeOrigin: true,
+  })
+);
+
+app.use(
+  "/favorite-addresses",
+  createProxyMiddleware({
+    target: "http://localhost:5006/favorite-addresses",
+    changeOrigin: true,
+  })
+);
+
+// Gestion des fichiers statiques
 app.get("/uploads/maintains/:filename", (req, res) => {
   const { filename } = req.params;
   const options = {
@@ -105,9 +128,7 @@ app.get("/uploads/maintains/:filename", (req, res) => {
       res.status(proxyRes.statusCode).send("Fichier non trouvé");
       return;
     }
-
     res.writeHead(proxyRes.statusCode, proxyRes.headers);
-
     proxyRes.pipe(res);
   });
 
@@ -119,77 +140,9 @@ app.get("/uploads/maintains/:filename", (req, res) => {
   proxyReq.end();
 });
 
-app.listen(5000, () => {
-  console.log("Gateway en écoute sur le port 5000");
-});
-
-app.use(
-  "/maintainHistory",
-  /* 
-    #swagger.tags = ['MaintainHistory']
-    #swagger.summary = 'Routes de l’historique de maintenance'
-  */
-  createProxyMiddleware({
-    target: "http://localhost:5005/maintainHistory",
-    changeOrigin: true,
-  })
-);
-app.use(
-  "/pushToken",
-  /* 
-    #swagger.tags = ['PushToken']
-    #swagger.summary = 'Routes de gestion des tokens de push'
-  */
-  createProxyMiddleware({
-    target: "http://localhost:5001/pushToken",
-    changeOrigin: true,
-  })
-);
-
-// app.use("/navigate", (req, res, next) => {
-//   res.setHeader(
-//     "Cache-Control",
-//     "no-store, no-cache, must-revalidate, proxy-revalidate"
-//   );
-//   res.setHeader("Pragma", "no-cache");
-//   res.setHeader("Expires", "0");
-//  // res.removeHeader("ETag");
-//   next();
-// });
-
-app.use(
-  "/navigate",
-  /* 
-    #swagger.tags = ['Navigate']
-    #swagger.summary = 'Routes de navigation'
-  */
-  createProxyMiddleware({
-    target: "http://localhost:5006/navigate", // Navigate service
-    changeOrigin: true,
-  })
-);
-app.use("/favorite-addressese", (req, res, next) => {
-  res.setHeader(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate"
-  );
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  next();
-});
-
-app.use(
-  "/favorite-addresses",
-  /* 
-    #swagger.tags = ['FavoriteAddresses']
-    #swagger.summary = 'Routes des adresses favorites'
-  */
-  createProxyMiddleware({
-    target: "http://localhost:5006/favorite-addresses", // Favorite addresses service
-    changeOrigin: true,
-  })
-);
-//app.use(express.json());
+// ✅ UN SEUL app.listen
 app.listen(5000, () => {
   console.log("API Gateway running on port 5000");
 });
+
+module.exports = app;

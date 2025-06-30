@@ -7,19 +7,17 @@ router.post(
   /* 
     #swagger.tags = ['PushToken']
     #swagger.summary = 'Enregistrer un token de notification push'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données du token push',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["expoPushToken", "deviceId"],
-            properties: {
-              expoPushToken: { type: "string", example: "ExponentPushToken[xxxxx]" },
-              deviceId: { type: "string", example: "device123" },
-              userId: { type: "string", example: "507f1f77bcf86cd799439011" }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["expoPushToken", "deviceId"],
+        properties: {
+          expoPushToken: { type: "string", example: "ExponentPushToken[xxxxx]" },
+          deviceId: { type: "string", example: "device123" },
+          userId: { type: "string", example: "507f1f77bcf86cd799439011" }
         }
       }
     }
@@ -52,20 +50,18 @@ router.post(
   /* 
     #swagger.tags = ['PushToken']
     #swagger.summary = 'Envoyer une notification push à un utilisateur'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données de notification',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["userId", "title", "body"],
-            properties: {
-              userId: { type: "string", example: "507f1f77bcf86cd799439011" },
-              title: { type: "string", example: "Notification importante" },
-              body: { type: "string", example: "Votre maintenance est due" },
-              data: { type: "object", example: { action: "maintenance", vehicleId: "123" } }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["userId", "title", "body"],
+        properties: {
+          userId: { type: "string", example: "507f1f77bcf86cd799439011" },
+          title: { type: "string", example: "Notification importante" },
+          body: { type: "string", example: "Votre maintenance est due" },
+          data: { type: "object", example: { action: "maintenance", vehicleId: "123" } }
         }
       }
     }
@@ -97,25 +93,23 @@ router.post(
   /* 
     #swagger.tags = ['PushToken']
     #swagger.summary = 'Envoyer une notification push à plusieurs utilisateurs'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données de notification de masse',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["title", "body"],
-            properties: {
-              userIds: {
-                type: "array",
-                items: { type: "string" },
-                example: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"]
-              },
-              toAll: { type: "boolean", example: false },
-              title: { type: "string", example: "Notification de masse" },
-              body: { type: "string", example: "Message pour tous les utilisateurs" },
-              data: { type: "object", example: { type: "announcement" } }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["title", "body"],
+        properties: {
+          userIds: {
+            type: "array",
+            items: { type: "string" },
+            example: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"]
+          },
+          toAll: { type: "boolean", example: false },
+          title: { type: "string", example: "Notification de masse" },
+          body: { type: "string", example: "Message pour tous les utilisateurs" },
+          data: { type: "object", example: { type: "announcement" } }
         }
       }
     }
@@ -147,18 +141,16 @@ router.post(
   /* 
     #swagger.tags = ['PushToken']
     #swagger.summary = 'Associer un utilisateur à un appareil'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données d\'association',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["deviceId", "userId"],
-            properties: {
-              deviceId: { type: "string", example: "device123" },
-              userId: { type: "string", example: "507f1f77bcf86cd799439011" }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["deviceId", "userId"],
+        properties: {
+          deviceId: { type: "string", example: "device123" },
+          userId: { type: "string", example: "507f1f77bcf86cd799439011" }
         }
       }
     }

@@ -6,41 +6,40 @@ const {
 } = require("../middlewares/authMiddleware");
 const navigationController = require("../controllers/NavigateController");
 
+
 router.post(
   "/",
   /* 
     #swagger.tags = ['Navigate']
     #swagger.summary = 'Créer une nouvelle navigation'
     #swagger.security = [{ "bearerAuth": [] }]
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données de navigation',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["name"],
-            properties: {
-              name: { type: "string", example: "Trajet vers le travail" },
-              isPublic: { type: "boolean", example: false },
-              gpxPoints: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    lat: { type: "number", example: 48.8566 },
-                    lon: { type: "number", example: 2.3522 },
-                    alt: { type: "number", example: 35 },
-                    time: { type: "string", format: "date-time" },
-                    speed: { type: "number", example: 50 }
-                  }
-                }
-              },
-              startTime: { type: "string", format: "date-time" },
-              endTime: { type: "string", format: "date-time" },
-              totalDistance: { type: "number", example: 15.5 },
-              speedMax: { type: "number", example: 90 }
+      schema: {
+        type: "object",
+        required: ["name"],
+        properties: {
+          name: { type: "string", example: "Trajet vers le travail" },
+          isPublic: { type: "boolean", example: false },
+          gpxPoints: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                lat: { type: "number", example: 48.8566 },
+                lon: { type: "number", example: 2.3522 },
+                alt: { type: "number", example: 35 },
+                time: { type: "string", format: "date-time" },
+                speed: { type: "number", example: 50 }
+              }
             }
-          }
+          },
+          startTime: { type: "string", format: "date-time" },
+          endTime: { type: "string", format: "date-time" },
+          totalDistance: { type: "number", example: 15.5 },
+          speedMax: { type: "number", example: 90 }
         }
       }
     }
@@ -122,6 +121,87 @@ router.get(
   navigationController.getAllNavigation
 );
 
+
+router.post(
+  "/group",
+  /* 
+    #swagger.tags = ['Navigate']
+    #swagger.summary = 'Créer une navigation de groupe'
+    #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données de navigation de groupe',
+      required: true,
+      schema: {
+        type: "object",
+        required: ["name"],
+        properties: {
+          name: { type: "string", example: "Sortie groupe dimanche" },
+          startTime: { type: "string", format: "date-time" },
+          gpxPoints: { type: "array" }
+        }
+      }
+    }
+    #swagger.responses[201] = {
+      description: 'Navigation de groupe créée',
+      schema: {
+        success: true,
+        data: {
+          _id: "507f1f77bcf86cd799439011",
+          name: "Sortie groupe dimanche",
+          isGroup: true,
+          groupMembers: ["507f1f77bcf86cd799439012"]
+        },
+        message: "Group navigation created successfully"
+      }
+    }
+    #swagger.responses[401] = {
+      description: 'Non autorisé',
+      schema: { success: false, message: 'Token d\'authentification requis' }
+    }
+  */
+  authenticateToken,
+  navigationController.createGroupNavigation
+);
+
+
+router.post(
+  "/group/:id/join",
+  /* 
+    #swagger.tags = ['Navigate']
+    #swagger.summary = 'Rejoindre un groupe de navigation'
+    #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['id'] = {
+      in: 'path',
+      required: true,
+      type: 'string',
+      description: 'ID de la navigation de groupe'
+    }
+    #swagger.responses[200] = {
+      description: 'Groupe rejoint avec succès',
+      schema: {
+        success: true,
+        data: {
+          _id: "507f1f77bcf86cd799439011",
+          groupMembers: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+        },
+        message: "Joined group navigation successfully"
+      }
+    }
+    #swagger.responses[404] = {
+      description: 'Groupe non trouvé',
+      schema: { error: 'Not found or not group' }
+    }
+    #swagger.responses[401] = {
+      description: 'Non autorisé',
+      schema: { success: false, message: 'Token d\'authentification requis' }
+    }
+  */
+  authenticateToken,
+  navigationController.joinGroupNavigation
+);
+
+
 router.get(
   "/:id",
   /* 
@@ -175,18 +255,16 @@ router.put(
       type: 'string',
       description: 'ID de la navigation'
     }
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données à mettre à jour',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              name: { type: "string", example: "Nouveau nom de trajet" },
-              isPublic: { type: "boolean", example: true },
-              gpxPoints: { type: "array" }
-            }
-          }
+      schema: {
+        type: "object",
+        properties: {
+          name: { type: "string", example: "Nouveau nom de trajet" },
+          isPublic: { type: "boolean", example: true },
+          gpxPoints: { type: "array" }
         }
       }
     }
@@ -255,6 +333,7 @@ router.delete(
   navigationController.deleteNavigation
 );
 
+
 router.patch(
   "/:id/visibility",
   /* 
@@ -307,17 +386,15 @@ router.post(
       type: 'string',
       description: 'ID de la navigation'
     }
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Note à attribuer',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["rating"],
-            properties: {
-              rating: { type: "number", minimum: 1, maximum: 5, example: 4 }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["rating"],
+        properties: {
+          rating: { type: "number", minimum: 1, maximum: 5, example: 4 }
         }
       }
     }
@@ -345,135 +422,6 @@ router.post(
   */
   authenticateToken,
   navigationController.rateNavigation
-);
-
-router.post(
-  "/group",
-  /* 
-    #swagger.tags = ['Navigate']
-    #swagger.summary = 'Créer une navigation de groupe'
-    #swagger.security = [{ "bearerAuth": [] }]
-    #swagger.requestBody = {
-      required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["name"],
-            properties: {
-              name: { type: "string", example: "Sortie groupe dimanche" },
-              startTime: { type: "string", format: "date-time" },
-              gpxPoints: { type: "array" }
-            }
-          }
-        }
-      }
-    }
-    #swagger.responses[201] = {
-      description: 'Navigation de groupe créée',
-      schema: {
-        success: true,
-        data: {
-          _id: "507f1f77bcf86cd799439011",
-          name: "Sortie groupe dimanche",
-          isGroup: true,
-          groupMembers: ["507f1f77bcf86cd799439012"]
-        },
-        message: "Group navigation created successfully"
-      }
-    }
-    #swagger.responses[401] = {
-      description: 'Non autorisé',
-      schema: { success: false, message: 'Token d\'authentification requis' }
-    }
-  */
-  authenticateToken,
-  navigationController.createGroupNavigation
-);
-
-router.post(
-  "/group/:id/join",
-  /* 
-    #swagger.tags = ['Navigate']
-    #swagger.summary = 'Rejoindre un groupe de navigation'
-    #swagger.security = [{ "bearerAuth": [] }]
-    #swagger.parameters['id'] = {
-      in: 'path',
-      required: true,
-      type: 'string',
-      description: 'ID de la navigation de groupe'
-    }
-    #swagger.responses[200] = {
-      description: 'Groupe rejoint avec succès',
-      schema: {
-        success: true,
-        data: {
-          _id: "507f1f77bcf86cd799439011",
-          groupMembers: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
-        },
-        message: "Joined group navigation successfully"
-      }
-    }
-    #swagger.responses[404] = {
-      description: 'Groupe non trouvé',
-      schema: { error: 'Not found or not group' }
-    }
-    #swagger.responses[401] = {
-      description: 'Non autorisé',
-      schema: { success: false, message: 'Token d\'authentification requis' }
-    }
-  */
-  authenticateToken,
-  navigationController.joinGroupNavigation
-);
-
-router.get(
-  "/search",
-  /* 
-    #swagger.tags = ['Navigate']
-    #swagger.summary = 'Rechercher des navigations par géolocalisation'
-    #swagger.security = [{ "bearerAuth": [] }]
-    #swagger.parameters['lat'] = {
-      in: 'query',
-      required: true,
-      type: 'number',
-      description: 'Latitude de recherche'
-    }
-    #swagger.parameters['lon'] = {
-      in: 'query',
-      required: true,
-      type: 'number',
-      description: 'Longitude de recherche'
-    }
-    #swagger.parameters['radius'] = {
-      in: 'query',
-      type: 'number',
-      description: 'Rayon de recherche en mètres (défaut: 5000)'
-    }
-    #swagger.responses[200] = {
-      description: 'Navigations trouvées dans le rayon',
-      schema: {
-        success: true,
-        data: [
-          {
-            _id: "507f1f77bcf86cd799439011",
-            name: "Trajet proche",
-            startLocation: {
-              type: "Point",
-              coordinates: [2.3522, 48.8566]
-            }
-          }
-        ],
-        message: "Navigations retrieved successfully"
-      }
-    }
-    #swagger.responses[401] = {
-      description: 'Non autorisé',
-      schema: { success: false, message: 'Token d\'authentification requis' }
-    }
-  */
-  authenticateToken,
-  navigationController.searchNavigations
 );
 
 module.exports = router;

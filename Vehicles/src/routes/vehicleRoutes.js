@@ -7,9 +7,14 @@ const { authenticateToken } = require("../middlewares/authMiddleware");
 router.get(
   "/",
   /* 
-    #swagger.tags = ['Vehicles']
+    #swagger.tags = ['Vehicle']
     #swagger.summary = 'Récupérer la liste des véhicules'
     #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['userId'] = {
+      in: 'query',
+      type: 'string',
+      description: 'ID de l\'utilisateur (admin/pro seulement)'
+    }
     #swagger.responses[200] = {
       description: 'Liste des véhicules récupérée avec succès',
       schema: {
@@ -32,6 +37,10 @@ router.get(
       description: 'Non autorisé',
       schema: { success: false, message: 'Token d\'authentification requis' }
     }
+    #swagger.responses[403] = {
+      description: 'Accès interdit',
+      schema: { success: false, message: 'Vous n\'avez pas le droit d\'accéder à ces véhicules' }
+    }
   */
   authenticateToken,
   vehicleController.getAllVehicles
@@ -40,7 +49,7 @@ router.get(
 router.get(
   "/:id",
   /* 
-    #swagger.tags = ['Vehicles']
+    #swagger.tags = ['Vehicle']
     #swagger.summary = 'Récupérer un véhicule par ID'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {
@@ -81,7 +90,7 @@ router.get(
 router.post(
   "/",
   /* 
-    #swagger.tags = ['Vehicles']
+    #swagger.tags = ['Vehicle']
     #swagger.summary = 'Créer un nouveau véhicule'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.consumes = ['multipart/form-data']
@@ -108,6 +117,12 @@ router.post(
       required: true,
       type: 'integer',
       description: 'Kilométrage du véhicule'
+    }
+    #swagger.parameters['firstPurchaseDate'] = {
+      in: 'formData',
+      type: 'string',
+      format: 'date',
+      description: 'Date d\'achat du véhicule'
     }
     #swagger.parameters['image'] = {
       in: 'formData',
@@ -147,7 +162,7 @@ router.post(
 router.put(
   "/:id",
   /* 
-    #swagger.tags = ['Vehicles']
+    #swagger.tags = ['Vehicle']
     #swagger.summary = 'Mettre à jour un véhicule'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {
@@ -216,10 +231,98 @@ router.put(
   vehicleController.updateVehicle
 );
 
+router.patch(
+  "/:id/mileage",
+  /* 
+    #swagger.tags = ['Vehicle']
+    #swagger.summary = 'Mettre à jour le kilométrage d\'un véhicule'
+    #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['id'] = {
+      in: 'path',
+      required: true,
+      type: 'string',
+      description: 'ID du véhicule'
+    }
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Nouveau kilométrage',
+      required: true,
+      schema: {
+        type: 'object',
+        required: ['mileage'],
+        properties: {
+          mileage: { type: 'number', example: 15000 }
+        }
+      }
+    }
+    #swagger.responses[200] = {
+      description: 'Kilométrage mis à jour avec succès',
+      schema: {
+        success: true,
+        data: {
+          _id: '507f1f77bcf86cd799439011',
+          mileage: 15000
+        },
+        message: 'Kilométrage mis à jour avec succès'
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Données invalides',
+      schema: { success: false, message: 'mileage must be a number' }
+    }
+    #swagger.responses[404] = {
+      description: 'Véhicule non trouvé',
+      schema: { success: false, message: 'Véhicule introuvable' }
+    }
+    #swagger.responses[401] = {
+      description: 'Non autorisé',
+      schema: { success: false, message: 'Token d\'authentification requis' }
+    }
+  */
+  authenticateToken,
+  vehicleController.updateVehicleMileage
+);
+
+router.patch(
+  "/:id/favorite",
+  /* 
+    #swagger.tags = ['Vehicle']
+    #swagger.summary = 'Définir un véhicule comme favori'
+    #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['id'] = {
+      in: 'path',
+      required: true,
+      type: 'string',
+      description: 'ID du véhicule'
+    }
+    #swagger.responses[200] = {
+      description: 'Véhicule favori défini avec succès',
+      schema: {
+        success: true,
+        data: {
+          _id: '507f1f77bcf86cd799439011',
+          isFavorite: true
+        },
+        message: 'Véhicule favori mis à jour avec succès'
+      }
+    }
+    #swagger.responses[404] = {
+      description: 'Véhicule non trouvé',
+      schema: { success: false, message: 'Véhicule introuvable' }
+    }
+    #swagger.responses[401] = {
+      description: 'Non autorisé',
+      schema: { success: false, message: 'Token d\'authentification requis' }
+    }
+  */
+  authenticateToken,
+  vehicleController.setFavoriteVehicle
+);
+
 router.delete(
   "/:id",
   /* 
-    #swagger.tags = ['Vehicles']
+    #swagger.tags = ['Vehicle']
     #swagger.summary = 'Supprimer un véhicule'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {

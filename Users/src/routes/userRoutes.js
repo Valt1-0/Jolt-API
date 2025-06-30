@@ -126,20 +126,18 @@ router.post(
   /* 
     #swagger.tags = ['Users']
     #swagger.summary = 'Créer un nouvel utilisateur'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données de l\'utilisateur',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            properties: {
-              username: { type: 'string', example: 'JohnDoe' },
-              email: { type: 'string', example: 'john@doe.com' },
-              password: { type: 'string', example: 'password123' }
-            },
-            required: ['username', 'email', 'password']
-          }
-        }
+      schema: {
+        type: 'object',
+        properties: {
+          username: { type: 'string', example: 'JohnDoe' },
+          email: { type: 'string', example: 'john@doe.com' },
+          password: { type: 'string', example: 'password123' }
+        },
+        required: ['username', 'email', 'password']
       }
     }
     #swagger.responses[201] = {
@@ -171,19 +169,17 @@ router.post(
   /* 
     #swagger.tags = ['Users']
     #swagger.summary = 'Vérifier les identifiants de connexion'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Identifiants à vérifier',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            properties: {
-              email: { type: 'string', example: 'john@doe.com' },
-              password: { type: 'string', example: 'password123' }
-            },
-            required: ['email', 'password']
-          }
-        }
+      schema: {
+        type: 'object',
+        properties: {
+          email: { type: 'string', example: 'john@doe.com' },
+          password: { type: 'string', example: 'password123' }
+        },
+        required: ['email', 'password']
       }
     }
     #swagger.responses[200] = {
@@ -216,24 +212,22 @@ router.put(
   /* 
     #swagger.tags = ['Users']
     #swagger.summary = 'Mettre à jour le token de vérification'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données de mise à jour du token',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            properties: {
-              email: { type: 'string', example: 'john@doe.com' },
-              verificationToken: { type: 'string', example: 'newToken123' },
-              verificationTokenExpires: { 
-                type: 'string', 
-                format: 'date-time', 
-                example: '2025-06-30T12:00:00Z' 
-              }
-            },
-            required: ['email', 'verificationToken']
+      schema: {
+        type: 'object',
+        properties: {
+          email: { type: 'string', example: 'john@doe.com' },
+          verificationToken: { type: 'string', example: 'newToken123' },
+          verificationTokenExpires: { 
+            type: 'string', 
+            format: 'date-time', 
+            example: '2025-06-30T12:00:00Z' 
           }
-        }
+        },
+        required: ['email', 'verificationToken']
       }
     }
     #swagger.responses[200] = {
@@ -258,18 +252,16 @@ router.delete(
     #swagger.tags = ['Users']
     #swagger.summary = 'Supprimer un utilisateur'
     #swagger.security = [{ "bearerAuth": [] }]
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'ID de l\'utilisateur à supprimer',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            properties: {
-              userId: { type: 'string', example: 'userId123' }
-            },
-            required: ['userId']
-          }
-        }
+      schema: {
+        type: 'object',
+        properties: {
+          userId: { type: 'string', example: 'userId123' }
+        },
+        required: ['userId']
       }
     }
     #swagger.responses[200] = {
@@ -309,18 +301,16 @@ router.patch(
       required: true,
       type: 'string'
     }
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données à mettre à jour',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            additionalProperties: true,
-            example: {
-              username: 'JaneDoe',
-              email: 'jane@doe.com'
-            }
-          }
+      schema: {
+        type: 'object',
+        additionalProperties: true,
+        example: {
+          username: 'JaneDoe',
+          email: 'jane@doe.com'
         }
       }
     }

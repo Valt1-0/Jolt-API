@@ -18,6 +18,7 @@
   <img src="https://img.shields.io/badge/MongoDB-5%2B-brightgreen" alt="MongoDB" />
   <img src="https://img.shields.io/badge/RabbitMQ-AMQP-orange" alt="RabbitMQ" />
   <img src="https://img.shields.io/badge/Redis-OK-red" alt="Redis" />
+  <img src="https://img.shields.io/badge/Swagger-API%20Docs-85EA2D" alt="Swagger" />
   <img src="https://img.shields.io/badge/status-en%20développement-yellow" alt="Status" />
 </p>
 
@@ -29,6 +30,8 @@
   <a href="#-installation-rapide">Installation</a>
   <span> · </span>
   <a href="#-configuration">Configuration</a>
+  <span> · </span>
+  <a href="#-documentation-api">Documentation API</a>
   <span> · </span>
   <a href="#-modèles-principaux-des-bases-mongodb">Modèles</a>
   <span> · </span>
@@ -60,7 +63,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 
 ---
 
-## 🚦 Badges d’état
+## 🚦 Badges d'état
 
 | Service       | Port | Statut                                                                      |
 | ------------- | ---- | --------------------------------------------------------------------------- |
@@ -106,6 +109,16 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
    ```
 
 3. **Configurer les fichiers `.env` pour chaque microservice (voir exemples ci-dessous).**
+
+4. **Démarrer les services :**
+
+   ```bash
+   # Lancer les dépendances (MongoDB, RabbitMQ, Redis)
+   docker-compose up -d
+   
+   # Lancer tous les microservices
+   node start-all.js
+   ```
 
 ---
 
@@ -216,6 +229,119 @@ USER_SERVICE_QUEUE=user_service
 
 ---
 
+## 📚 Documentation API
+
+### 🌐 Interface Swagger
+
+Une documentation interactive complète de l'API est disponible via **Swagger UI** :
+
+📖 **[Documentation API - http://localhost:5000/api-docs](http://localhost:5000/api-docs)**
+
+### 📋 Aperçu des endpoints
+
+| Service | Endpoints | Description |
+|---------|-----------|-------------|
+| **Auth** | `/auth/*` | Authentification, tokens JWT, sessions |
+| **Users** | `/users/*` | Gestion des utilisateurs, profils, rôles |
+| **Vehicles** | `/vehicle/*` | CRUD véhicules, images, historique |
+| **Navigate** | `/navigate/*` | Trajets, groupes, géolocalisation, notes |
+| **Maintains** | `/maintain/*` | Types de maintenance, calcul d'usure |
+| **MaintainHistory** | `/maintainHistory/*` | Historique des maintenances effectuées |
+| **Notifications** | `/pushToken/*` | Gestion des tokens push, envoi notifications |
+| **FavoriteAddress** | `/favorite-addresses/*` | Adresses favorites pour navigation |
+
+### 🔐 Authentification
+
+La plupart des endpoints nécessitent un **token Bearer JWT** :
+
+```http
+Authorization: Bearer <votre_token_jwt>
+```
+
+1. **Obtenir un token** : `POST /auth/getToken`
+2. **Utiliser le token** dans le header `Authorization`
+3. **Renouveler** : `POST /auth/refreshToken`
+
+### 💡 Exemples d'utilisation
+
+<details>
+<summary><strong>🔑 Connexion utilisateur</strong></summary>
+
+```http
+POST /auth/getToken
+Content-Type: application/json
+
+{
+  "email": "user@joltz.fr",
+  "password": "motdepasse"
+}
+```
+
+**Réponse :**
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": { "id": "...", "email": "user@joltz.fr" }
+  }
+}
+```
+</details>
+
+<details>
+<summary><strong>🚗 Créer un véhicule</strong></summary>
+
+```http
+POST /vehicle/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "brand": "Tesla",
+  "model": "Model 3",
+  "year": 2023,
+  "mileage": 15000
+}
+```
+</details>
+
+<details>
+<summary><strong>🗺️ Créer une navigation</strong></summary>
+
+```http
+POST /navigate/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Trajet Paris-Lyon",
+  "isPublic": true,
+  "startLocation": {
+    "type": "Point",
+    "coordinates": [2.3522, 48.8566]
+  },
+  "gpxPoints": [
+    { "lat": 48.8566, "lon": 2.3522, "alt": 35, "time": "2024-01-01T10:00:00Z" }
+  ]
+}
+```
+</details>
+
+### 🔧 Génération de la documentation
+
+Pour régénérer la documentation Swagger :
+
+```bash
+cd Gateway
+npm run swagger
+```
+
+La documentation est générée automatiquement à partir des annotations dans les fichiers de routes de chaque microservice.
+
+---
+
 ## 🗂 Modèles principaux des bases MongoDB
 
 ### Auth
@@ -308,6 +434,8 @@ USER_SERVICE_QUEUE=user_service
     "invoiceUrl": [String],
     "notes": String
   }
+  ```
+
 ### Notifications
 
 - **PushToken** :
@@ -325,7 +453,7 @@ USER_SERVICE_QUEUE=user_service
 
 ## 🐳 docker-compose.yml
 
-Le fichier `docker-compose.yml` fourni permet de lancer :
+Le fichier `docker-compose.yml` fourni permet de lancer :
 
 - **MongoDB** (avec persistance des données)
 - **RabbitMQ** (avec interface de management)
@@ -366,7 +494,7 @@ RABBITMQ_PASS=monmotdepasseultrasecret
 
 ## 🚦 Script de démarrage global
 
-Le fichier [`start-all.js`](./start-all.js) permet de lancer tous les microservices en parallèle avec `nodemon` :
+Le fichier [`start-all.js`](./start-all.js) permet de lancer tous les microservices en parallèle avec `nodemon` :
 
 ```bash
 node start-all.js
@@ -381,10 +509,11 @@ Chaque service affiche ses logs préfixés par son nom.
 - **Gestion des utilisateurs** : inscription, connexion, rôles, projection, recherche.
 - **Gestion des véhicules** : ajout, modification, suppression, images, historique.
 - **Gestion des navigations** : création de trajets, groupes, géolocalisation, notes, favoris.
-- **Gestion des maintenances** : planification, historique, calcul d’usure, notifications.
+- **Gestion des maintenances** : planification, historique, calcul d'usure, notifications.
 - **Notifications** : confirmation, alertes.
 - **Sécurité** : JWT, blacklist tokens, CSRF, CORS.
 - **Communication inter-services** : RabbitMQ (AMQP), HTTP REST, projections, REDIS.
+- **Documentation interactive** : Swagger UI pour tous les endpoints.
 
 ---
 
@@ -394,13 +523,14 @@ Chaque service affiche ses logs préfixés par son nom.
 - **Ne partage jamais tes secrets (.env) publiquement.**
 - **Utilise Docker pour faciliter le déploiement.**
 - **RabbitMQ ainsi que REDIS doit être lancé avant les microservices pour la communication.**
+- **Consulte la documentation Swagger** pour connaître tous les endpoints disponibles.
 
 ---
 
 ## 📦 Exemple de requête API
 
 ```http
-POST /auth/login
+POST /auth/getToken
 Content-Type: application/json
 
 {
@@ -423,11 +553,11 @@ Content-Type: application/json
 
 ## 📄 Licence
 
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus d’informations.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus d'informations.
 
 ---
 
 <p align="center">
-Pour toute question, contacte l’équipe Jolt à <a href="mailto:contact@joltz.fr">contact@joltz.fr</a>
+📖 <a href="http://localhost:5000/api-docs"><strong>Documentation API Swagger</strong></a> | 
+📧 <a href="mailto:contact@joltz.fr">contact@joltz.fr</a>
 </p>

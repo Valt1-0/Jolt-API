@@ -9,18 +9,16 @@ router.post(
     #swagger.tags = ['Auth']
     #swagger.summary = 'Connexion utilisateur'
     #swagger.description = 'Connexion d\'un utilisateur avec email et mot de passe'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Identifiants de connexion',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["email", "password"],
-            properties: {
-              email: { type: "string", example: "test@joltz.fr" },
-              password: { type: "string", example: "motdepasse" }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["email", "password"],
+        properties: {
+          email: { type: "string", example: "test@joltz.fr" },
+          password: { type: "string", example: "motdepasse" }
         }
       }
     }
@@ -58,16 +56,14 @@ router.post(
     #swagger.tags = ['Auth']
     #swagger.summary = 'Rafraîchir le token d\'accès'
     #swagger.description = 'Génère un nouveau token d\'accès à partir du refresh token'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Refresh token (optionnel si dans cookies)',
       required: false,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              refreshToken: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
-            }
-          }
+      schema: {
+        type: "object",
+        properties: {
+          refreshToken: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
         }
       }
     }
@@ -94,19 +90,17 @@ router.post(
   /* 
     #swagger.tags = ['Auth']
     #swagger.summary = 'Inscription d\'un nouvel utilisateur'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Données d\'inscription',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["username", "email", "password"],
-            properties: {
-              username: { type: "string", example: "John" },
-              email: { type: "string", example: "john@doe.com" },
-              password: { type: "string", example: "motdepasse" }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["username", "email", "password"],
+        properties: {
+          username: { type: "string", example: "John" },
+          email: { type: "string", example: "john@doe.com" },
+          password: { type: "string", example: "motdepasse" }
         }
       }
     }
@@ -136,16 +130,14 @@ router.post(
     #swagger.tags = ['Auth']
     #swagger.summary = 'Déconnexion de l\'utilisateur'
     #swagger.security = [{ "bearerAuth": [] }]
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Refresh token (optionnel si dans cookies)',
       required: false,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              refreshToken: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
-            }
-          }
+      schema: {
+        type: "object",
+        properties: {
+          refreshToken: { type: "string", example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }
         }
       }
     }
@@ -167,17 +159,15 @@ router.post(
   /* 
     #swagger.tags = ['Auth']
     #swagger.summary = 'Renvoyer l\'email de vérification'
-    #swagger.requestBody = {
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Email de l\'utilisateur',
       required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            required: ["email"],
-            properties: {
-              email: { type: "string", example: "john@doe.com" }
-            }
-          }
+      schema: {
+        type: "object",
+        required: ["email"],
+        properties: {
+          email: { type: "string", example: "john@doe.com" }
         }
       }
     }

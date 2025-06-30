@@ -4,12 +4,13 @@ const { upload } = require("../utils");
 const { authenticateToken } = require("../middlewares/authMiddleware");
 const maintainController = require("../controllers/maintainController");
 
+
 router.post(
   "/",
   /* 
-    #swagger.tags = ['Maintains']
-    #swagger.summary = Créer un nouveau type de maintenance
-    #swagger.description = Endpoint pour créer un nouveau type de maintenance
+    #swagger.tags = ['Maintain']
+    #swagger.summary = 'Créer un nouveau type de maintenance'
+    #swagger.description = 'Endpoint pour créer un nouveau type de maintenance'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['body'] = {
       in: 'body',
@@ -57,11 +58,12 @@ router.post(
   maintainController.createMaintain
 );
 
+
 router.get(
   "/",
   /* 
-    #swagger.tags = ['Maintains']
-    #swagger.summary = Récupérer la liste des types de maintenance
+    #swagger.tags = ['Maintain']
+    #swagger.summary = 'Récupérer la liste des types de maintenance'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['vehicleId'] = {
       in: 'query',
@@ -96,49 +98,12 @@ router.get(
   maintainController.getMaintains
 );
 
-router.get(
-  "/:id",
-  /* 
-    #swagger.tags = ['Maintains']
-    #swagger.summary = Récupérer un type de maintenance par ID
-    #swagger.security = [{ "bearerAuth": [] }]
-    #swagger.parameters['id'] = {
-      in: 'path',
-      required: true,
-      type: 'string',
-      description: 'ID du type de maintenance'
-    }
-    #swagger.responses[200] = {
-      description: 'Type de maintenance trouvé',
-      schema: {
-        success: true,
-        data: {
-          _id: '507f1f77bcf86cd799439011',
-          name: 'Vidange moteur',
-          description: 'Changement d\'huile moteur',
-          periodicity: { km: 10000, days: 365 }
-        },
-        message: 'Maintenance retrieved successfully'
-      }
-    }
-    #swagger.responses[404] = {
-      description: 'Type de maintenance non trouvé',
-      schema: { success: false, message: 'Maintenance not found' }
-    }
-    #swagger.responses[401] = {
-      description: 'Non autorisé',
-      schema: { success: false, message: 'Token d\'authentification requis' }
-    }
-  */
-  authenticateToken,
-  maintainController.getMaintainById
-);
 
 router.post(
   "/count",
   /* 
-    #swagger.tags = ['Maintains']
-    #swagger.summary = Obtenir le nombre de maintenances en attente par véhicule
+    #swagger.tags = ['Maintain']
+    #swagger.summary = 'Obtenir le nombre de maintenances en attente par véhicule'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['body'] = {
       in: 'body',
@@ -176,11 +141,49 @@ router.post(
   maintainController.getMaintenanceCount
 );
 
+router.get(
+  "/:id",
+  /* 
+    #swagger.tags = ['Maintain']
+    #swagger.summary = 'Récupérer un type de maintenance par ID'
+    #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['id'] = {
+      in: 'path',
+      required: true,
+      type: 'string',
+      description: 'ID du type de maintenance'
+    }
+    #swagger.responses[200] = {
+      description: 'Type de maintenance trouvé',
+      schema: {
+        success: true,
+        data: {
+          _id: '507f1f77bcf86cd799439011',
+          name: 'Vidange moteur',
+          description: 'Changement d\'huile moteur',
+          periodicity: { km: 10000, days: 365 }
+        },
+        message: 'Maintenance retrieved successfully'
+      }
+    }
+    #swagger.responses[404] = {
+      description: 'Type de maintenance non trouvé',
+      schema: { success: false, message: 'Maintenance not found' }
+    }
+    #swagger.responses[401] = {
+      description: 'Non autorisé',
+      schema: { success: false, message: 'Token d\'authentification requis' }
+    }
+  */
+  authenticateToken,
+  maintainController.getMaintainById
+);
+
 router.put(
   "/:id",
   /* 
-    #swagger.tags = ['Maintains']
-    #swagger.summary = Mettre à jour un type de maintenance
+    #swagger.tags = ['Maintain']
+    #swagger.summary = 'Mettre à jour un type de maintenance'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {
       in: 'path',
@@ -235,8 +238,8 @@ router.put(
 router.delete(
   "/:id",
   /* 
-    #swagger.tags = ['Maintains']
-    #swagger.summary = Supprimer un type de maintenance
+    #swagger.tags = ['Maintain']
+    #swagger.summary = 'Supprimer un type de maintenance'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.parameters['id'] = {
       in: 'path',
