@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const pushTokenSchema = new mongoose.Schema({
   expoPushToken: { type: String, required: true },
   deviceId: { type: String, required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, required: false },
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -1,21 +1,52 @@
-# Jolt-API - Architecture Microservices
+<h1 align="center">
+  <img src="https://img.icons8.com/color/96/000000/electric-scooter.png" width="48" alt="Jolt Logo"/>
+  <br>
+  Jolt-Microservices - Architecture Microservices
+</h1>
 
-![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)
-![MongoDB](https://img.shields.io/badge/MongoDB-5%2B-brightgreen)
-![RabbitMQ](https://img.shields.io/badge/RabbitMQ-AMQP-orange)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Status](https://img.shields.io/badge/status-en%20développement-yellow)
+<p align="center">
+  <strong>Plateforme Node.js modulaire basée sur une architecture microservices.</strong><br>
+  Gestion des utilisateurs, véhicules, navigations, maintenances, notifications email et push.<br>
+  <a href="https://github.com/MitryDim/Jolt-Helm">Déploiement Kubernetes (Helm)</a>
+</p>
+
+<p align="center">
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" />
+  </a>
+  <img src="https://img.shields.io/badge/Node.js-18%2B-green" alt="Node.js" />
+  <img src="https://img.shields.io/badge/MongoDB-5%2B-brightgreen" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/RabbitMQ-AMQP-orange" alt="RabbitMQ" />
+  <img src="https://img.shields.io/badge/Redis-OK-red" alt="Redis" />
+  <img src="https://img.shields.io/badge/status-en%20développement-yellow" alt="Status" />
+</p>
+
+<h3 align="center">
+  <a href="#-présentation">Présentation</a>
+  <span> · </span>
+  <a href="#-architecture-des-microservices">Architecture</a>
+  <span> · </span>
+  <a href="#-installation-rapide">Installation</a>
+  <span> · </span>
+  <a href="#-configuration">Configuration</a>
+  <span> · </span>
+  <a href="#-modèles-principaux-des-bases-mongodb">Modèles</a>
+  <span> · </span>
+  <a href="#-fonctionnalités-principales">Fonctionnalités</a>
+  <span> · </span>
+  <a href="#-contribution">Contribution</a>
+</h3>
 
 ---
 
-## Présentation
+## ✨ Présentation
 
 **Jolt-API** est une plateforme modulaire basée sur une architecture microservices, permettant la gestion complète d'utilisateurs, de véhicules, de navigations (trajets), de maintenances, et de notifications par email ou push.  
 Chaque domaine métier est isolé dans un microservice indépendant, facilitant la scalabilité, la maintenance et le déploiement.
 
 ---
 
-## Architecture des microservices
+## 🏗️ Architecture des microservices
 
 - **Gateway** : Point d'entrée unique (API Gateway) qui route les requêtes vers les bons microservices.
 - **Auth** : Authentification, gestion des tokens JWT, sécurité, sessions.
@@ -29,7 +60,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 
 ---
 
-## Badges d’état
+## 🚦 Badges d’état
 
 | Service       | Port | Statut                                                                      |
 | ------------- | ---- | --------------------------------------------------------------------------- |
@@ -43,7 +74,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 
 ---
 
-## Prérequis
+## 📋 Prérequis
 
 - **Node.js** (v18+ recommandé)
 - **MongoDB** (v5+)
@@ -53,7 +84,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 
 ---
 
-## Installation rapide
+## 🚀 Installation rapide
 
 1. **Cloner le dépôt principal :**
 
@@ -78,29 +109,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 
 ---
 
-## Lancement rapide
-
-### Avec Docker Compose
-
-Lance MongoDB, RabbitMQ et Redis en un seul clic :
-
-```bash
-docker-compose up -d
-```
-
-### Avec le script Node.js
-
-Pour lancer tous les microservices en parallèle :
-
-```bash
-node start-all.js
-```
-
-> Le script `start-all.js` utilise `nodemon` pour chaque service et affiche les logs dans la console.
-
----
-
-## Exemples de fichiers `.env`
+## ⚙️ Configuration
 
 > **Adapte les valeurs à ton environnement local.**
 
@@ -121,7 +130,6 @@ EXCHANGE_NAME=Jolt
 NOTIFICATION_SERVICE_QUEUE=notification_service
 USER_SERVICE_QUEUE=user_service
 ```
-
 </details>
 
 <details>
@@ -137,7 +145,6 @@ EXCHANGE_NAME=Jolt
 NOTIFICATION_SERVICE_QUEUE=notification_service
 USER_SERVICE_QUEUE=user_service
 ```
-
 </details>
 
 <details>
@@ -155,7 +162,6 @@ USER_SERVICE_QUEUE=user_service
 IMAGE_BASE_URL=http://localhost:5000/uploads/vehicles/
 IMAGE_UPLOAD_PATH=uploads/vehicles/
 ```
-
 </details>
 
 <details>
@@ -171,7 +177,6 @@ EXCHANGE_NAME=Jolt
 NODE_ENV=development
 GATEWAY_URL=http://localhost:5000
 ```
-
 </details>
 
 <details>
@@ -192,7 +197,6 @@ IMAGE_UPLOAD_PATH=uploads/maintains/
 VEHICLE_SERVICE_URL=http://localhost:5004
 GATEWAY_URL=http://localhost:5000
 ```
-
 </details>
 
 <details>
@@ -208,12 +212,11 @@ EXCHANGE_NAME=Jolt
 NOTIFICATION_SERVICE_QUEUE=notification_service
 USER_SERVICE_QUEUE=user_service
 ```
-
 </details>
 
 ---
 
-## Modèles principaux des bases MongoDB
+## 🗂 Modèles principaux des bases MongoDB
 
 ### Auth
 
@@ -292,9 +295,19 @@ USER_SERVICE_QUEUE=user_service
     "createdAt": Date
   }
   ```
-- **MaintainHistory** :  
-  `{ _id, maintainId, action, date, userId }`
-
+- **MaintainHistory** :
+  ```json
+  {
+    "_id": ObjectId,
+    "vehicle": ObjectId,
+    "type": ObjectId,
+    "date": Date,
+    "mileage": Number,
+    "performedBy": "user" | "pro",
+    "proName": String,
+    "invoiceUrl": [String],
+    "notes": String
+  }
 ### Notifications
 
 - **PushToken** :
@@ -310,7 +323,7 @@ USER_SERVICE_QUEUE=user_service
 
 ---
 
-## docker-compose.yml
+## 🐳 docker-compose.yml
 
 Le fichier `docker-compose.yml` fourni permet de lancer :
 
@@ -345,13 +358,13 @@ volumes:
   mongo-data:
 ```
 
-Et dans un .env
-RABBITMQ_USER=monuserfort
+Et dans un .env  
+RABBITMQ_USER=monuserfort  
 RABBITMQ_PASS=monmotdepasseultrasecret
 
 ---
 
-## Script de démarrage global
+## 🚦 Script de démarrage global
 
 Le fichier [`start-all.js`](./start-all.js) permet de lancer tous les microservices en parallèle avec `nodemon` :
 
@@ -363,7 +376,7 @@ Chaque service affiche ses logs préfixés par son nom.
 
 ---
 
-## Fonctionnalités principales
+## 🛠 Fonctionnalités principales
 
 - **Gestion des utilisateurs** : inscription, connexion, rôles, projection, recherche.
 - **Gestion des véhicules** : ajout, modification, suppression, images, historique.
@@ -371,11 +384,11 @@ Chaque service affiche ses logs préfixés par son nom.
 - **Gestion des maintenances** : planification, historique, calcul d’usure, notifications.
 - **Notifications** : confirmation, alertes.
 - **Sécurité** : JWT, blacklist tokens, CSRF, CORS.
-- **Communication inter-services** : RabbitMQ (AMQP), HTTP REST, projections,REDIS.
+- **Communication inter-services** : RabbitMQ (AMQP), HTTP REST, projections, REDIS.
 
 ---
 
-## Bonnes pratiques
+## 💡 Bonnes pratiques
 
 - **Sépare bien chaque microservice** (base de code, base de données, .env).
 - **Ne partage jamais tes secrets (.env) publiquement.**
@@ -384,7 +397,7 @@ Chaque service affiche ses logs préfixés par son nom.
 
 ---
 
-## Exemple de requête API
+## 📦 Exemple de requête API
 
 ```http
 POST /auth/login
@@ -398,7 +411,7 @@ Content-Type: application/json
 
 ---
 
-## Contribution
+## 🤝 Contribution
 
 1. Fork le projet
 2. Crée une branche (`git checkout -b feature/ma-feature`)
@@ -408,10 +421,13 @@ Content-Type: application/json
 
 ---
 
-## Licence
+## 📄 Licence
 
-Projet sous licence MIT.
+
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus d’informations.
 
 ---
 
-**Pour toute question, contacte l’équipe Jolt à contact@joltz.fr**
+<p align="center">
+Pour toute question, contacte l’équipe Jolt à <a href="mailto:contact@joltz.fr">contact@joltz.fr</a>
+</p>
