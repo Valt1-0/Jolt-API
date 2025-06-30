@@ -104,10 +104,12 @@ exports.deleteById = async (userId) => {
 };
 
 exports.updateUser = async (userId, userData) => {
+  console.log("userData in updateUser:", userData);
   const user = await userRepository.findUserById(userId);
   if (!user) {
     throw new utils.NotFoundError("User not found");
   }
   const updatedUser = await userRepository.updateUserById(userId, userData);
+  console.log("Updated user:", updatedUser);
   return updatedUser;
 };

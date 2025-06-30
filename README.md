@@ -10,7 +10,7 @@
 
 ## Présentation
 
-**Jolt-API** est une plateforme modulaire basée sur une architecture microservices, permettant la gestion complète d'utilisateurs, de véhicules, de navigations (trajets), de maintenances, et de notifications par email.  
+**Jolt-API** est une plateforme modulaire basée sur une architecture microservices, permettant la gestion complète d'utilisateurs, de véhicules, de navigations (trajets), de maintenances, et de notifications par email ou push.  
 Chaque domaine métier est isolé dans un microservice indépendant, facilitant la scalabilité, la maintenance et le déploiement.
 
 ---
@@ -23,7 +23,7 @@ Chaque domaine métier est isolé dans un microservice indépendant, facilitant 
 - **Vehicles** : Gestion des véhicules, informations, images, historique.
 - **Navigate** : Gestion des trajets, groupes, géolocalisation, notes, favoris.
 - **Maintains** : Gestion des maintenances, historiques, usure, notifications associées.
-- **Mail** : Envoi d'emails transactionnels (confirmation, notifications, etc.).
+- **Notifications** : Envoi d'emails transactionnels (confirmation, notifications, etc.) **et** notifications push Expo (gestion des push tokens, envoi de messages push).
 
 Chaque microservice possède sa propre base MongoDB et communique via HTTP et RabbitMQ (AMQP).
 
@@ -31,15 +31,15 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 
 ## Badges d’état
 
-| Service    | Port  | Statut      |
-|------------|-------|-------------|
-| Gateway    | 5000  | ![Gateway](https://img.shields.io/badge/Gateway-OK-brightgreen) |
-| Auth       | 5002  | ![Auth](https://img.shields.io/badge/Auth-OK-brightgreen) |
-| Users      | 5003  | ![Users](https://img.shields.io/badge/Users-OK-brightgreen) |
-| Vehicles   | 5004  | ![Vehicles](https://img.shields.io/badge/Vehicles-OK-brightgreen) |
-| Maintains  | 5005  | ![Maintains](https://img.shields.io/badge/Maintains-OK-brightgreen) |
-| Navigate   | 5006  | ![Navigate](https://img.shields.io/badge/Navigate-OK-brightgreen) |
-| Mail       | 5001  | ![Mail](https://img.shields.io/badge/Mail-OK-brightgreen) |
+| Service       | Port | Statut                                                                      |
+| ------------- | ---- | --------------------------------------------------------------------------- |
+| Gateway       | 5000 | ![Gateway](https://img.shields.io/badge/Gateway-OK-brightgreen)             |
+| Auth          | 5002 | ![Auth](https://img.shields.io/badge/Auth-OK-brightgreen)                   |
+| Users         | 5003 | ![Users](https://img.shields.io/badge/Users-OK-brightgreen)                 |
+| Vehicles      | 5004 | ![Vehicles](https://img.shields.io/badge/Vehicles-OK-brightgreen)           |
+| Maintains     | 5005 | ![Maintains](https://img.shields.io/badge/Maintains-OK-brightgreen)         |
+| Navigate      | 5006 | ![Navigate](https://img.shields.io/badge/Navigate-OK-brightgreen)           |
+| Notifications | 5001 | ![Notifications](https://img.shields.io/badge/Notifications-OK-brightgreen) |
 
 ---
 
@@ -56,19 +56,21 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 ## Installation rapide
 
 1. **Cloner le dépôt principal :**
+
    ```bash
    git clone https://github.com/votre-utilisateur/jolt-api.git
    cd jolt-api
    ```
 
 2. **Installer les dépendances pour chaque microservice :**
+
    ```bash
    cd Auth && npm install
    cd ../Users && npm install
    cd ../Vehicles && npm install
    cd ../Navigate && npm install
    cd ../Maintains && npm install
-   cd ../Mail && npm install
+   cd ../Notifications && npm install
    cd ../Gateway && npm install
    ```
 
@@ -119,6 +121,7 @@ EXCHANGE_NAME=Jolt
 NOTIFICATION_SERVICE_QUEUE=notification_service
 USER_SERVICE_QUEUE=user_service
 ```
+
 </details>
 
 <details>
@@ -134,6 +137,7 @@ EXCHANGE_NAME=Jolt
 NOTIFICATION_SERVICE_QUEUE=notification_service
 USER_SERVICE_QUEUE=user_service
 ```
+
 </details>
 
 <details>
@@ -151,6 +155,7 @@ USER_SERVICE_QUEUE=user_service
 IMAGE_BASE_URL=http://localhost:5000/uploads/vehicles/
 IMAGE_UPLOAD_PATH=uploads/vehicles/
 ```
+
 </details>
 
 <details>
@@ -166,6 +171,7 @@ EXCHANGE_NAME=Jolt
 NODE_ENV=development
 GATEWAY_URL=http://localhost:5000
 ```
+
 </details>
 
 <details>
@@ -186,20 +192,23 @@ IMAGE_UPLOAD_PATH=uploads/maintains/
 VEHICLE_SERVICE_URL=http://localhost:5004
 GATEWAY_URL=http://localhost:5000
 ```
+
 </details>
 
 <details>
-<summary><strong>Mail (.env)</strong></summary>
+<summary><strong>Notifications (.env)</strong></summary>
 
 ```env
 API_PORT=5001
 IONOS_EMAIL=contact@joltz.fr
 IONOS_PASSWORD=mot_de_passe_exemple
+MONGODB_URI=mongodb://localhost:27017/Jolt
 MSG_QUEUE_URL=amqp://user:password@localhost:5672
 EXCHANGE_NAME=Jolt
 NOTIFICATION_SERVICE_QUEUE=notification_service
 USER_SERVICE_QUEUE=user_service
 ```
+
 </details>
 
 ---
@@ -207,11 +216,13 @@ USER_SERVICE_QUEUE=user_service
 ## Modèles principaux des bases MongoDB
 
 ### Auth
+
 - **Sessions** : `{ userId, token, createdAt, expiresAt }`
 - **BlacklistedTokens** : `{ token, expiresAt }`
 
 ### Users
-- **User** :  
+
+- **User** :
   ```json
   {
     "_id": ObjectId,
@@ -228,7 +239,8 @@ USER_SERVICE_QUEUE=user_service
   `{ _id, username, profilePicture, email, role, region }`
 
 ### Vehicles
-- **Vehicle** :  
+
+- **Vehicle** :
   ```json
   {
     "_id": ObjectId,
@@ -243,7 +255,8 @@ USER_SERVICE_QUEUE=user_service
   ```
 
 ### Navigate
-- **Navigation** :  
+
+- **Navigation** :
   ```json
   {
     "_id": ObjectId,
@@ -265,7 +278,8 @@ USER_SERVICE_QUEUE=user_service
   ```
 
 ### Maintains
-- **Maintain** :  
+
+- **Maintain** :
   ```json
   {
     "_id": ObjectId,
@@ -281,9 +295,18 @@ USER_SERVICE_QUEUE=user_service
 - **MaintainHistory** :  
   `{ _id, maintainId, action, date, userId }`
 
-### Mail
-- **MailLog** :  
-  `{ _id, to, subject, body, sentAt, status }`
+### Notifications
+
+- **PushToken** :
+  ```json
+  {
+    "_id": ObjectId,
+    "expoPushToken": String,
+    "deviceId": String,
+    "userId": ObjectId,
+    "createdAt": Date
+  }
+  ```
 
 ---
 
@@ -321,9 +344,11 @@ services:
 volumes:
   mongo-data:
 ```
+
 Et dans un .env
 RABBITMQ_USER=monuserfort
 RABBITMQ_PASS=monmotdepasseultrasecret
+
 ---
 
 ## Script de démarrage global
@@ -344,7 +369,7 @@ Chaque service affiche ses logs préfixés par son nom.
 - **Gestion des véhicules** : ajout, modification, suppression, images, historique.
 - **Gestion des navigations** : création de trajets, groupes, géolocalisation, notes, favoris.
 - **Gestion des maintenances** : planification, historique, calcul d’usure, notifications.
-- **Notifications email** : confirmation, alertes, rappels.
+- **Notifications** : confirmation, alertes.
 - **Sécurité** : JWT, blacklist tokens, CSRF, CORS.
 - **Communication inter-services** : RabbitMQ (AMQP), HTTP REST, projections,REDIS.
 

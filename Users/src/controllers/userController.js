@@ -186,6 +186,9 @@ exports.updateUser = async (req, res, next) => {
     if (!id) {
       throw new ValidationError("ID is required for update");
     }
+    if (!req.body || Object.keys(req.body).length === 0) {
+      throw new ValidationError("User data is required for update");
+    }
     const updatedUser = await userService.updateUser(id, req.body);
     const successResponse = new OkSuccess(
       "User updated successfully",

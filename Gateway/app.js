@@ -117,9 +117,9 @@ app.use(
   })
 );
 app.use(
-  "/mail",
+  "/pushToken",
   createProxyMiddleware({
-    target: "http://localhost:5001/mail",
+    target: "http://localhost:5001/pushToken",
     changeOrigin: true,
   })
 );
