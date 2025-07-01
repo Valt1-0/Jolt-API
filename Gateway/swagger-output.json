@@ -11474,6 +11474,4004 @@
           }
         }
       }
+    },
+    "/payment/checkout": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "Créer une session de paiement Stripe",
+        "description": "Crée une session Stripe Checkout pour effectuer un paiement",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Données pour créer la session de paiement",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "required": {
+                  "type": "array",
+                  "example": [
+                    "productId"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "productId": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "ID du produit à acheter"
+                        }
+                      }
+                    },
+                    "successUrl": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "https://yourapp.com/payment/success"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "URL de redirection en cas de succès (optionnel)"
+                        }
+                      }
+                    },
+                    "cancelUrl": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "https://yourapp.com/payment/cancel"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "URL de redirection en cas d annulation (optionnel)"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Session de paiement créée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "sessionId": {
+                          "type": "string",
+                          "example": "cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Checkout session created successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "sessionId": {
+                          "type": "string",
+                          "example": "cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+                        },
+                        "url": {
+                          "type": "string",
+                          "example": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Checkout session created successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product ID is required"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product ID is required"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produit non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "example": "any"
+                  },
+                  "successUrl": {
+                    "example": "any"
+                  },
+                  "cancelUrl": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/": {
+      "get": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "Récupérer tous les paiements de l utilisateur",
+        "description": "Récupère l historique des paiements de l utilisateur connecté",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des paiements récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439012"
+                          },
+                          "productId": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "507f1f77bcf86cd799439013"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Plan Premium"
+                              },
+                              "price": {
+                                "type": "number",
+                                "example": 999
+                              },
+                              "currency": {
+                                "type": "string",
+                                "example": "eur"
+                              }
+                            }
+                          },
+                          "amount": {
+                            "type": "number",
+                            "example": 999
+                          },
+                          "currency": {
+                            "type": "string",
+                            "example": "eur"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "completed"
+                          },
+                          "method": {
+                            "type": "string",
+                            "example": "credit_card"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2023-12-01T10:00:00.000Z"
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Payments retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439012"
+                          },
+                          "productId": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "507f1f77bcf86cd799439013"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Plan Premium"
+                              },
+                              "price": {
+                                "type": "number",
+                                "example": 999
+                              },
+                              "currency": {
+                                "type": "string",
+                                "example": "eur"
+                              }
+                            }
+                          },
+                          "amount": {
+                            "type": "number",
+                            "example": 999
+                          },
+                          "currency": {
+                            "type": "string",
+                            "example": "eur"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "completed"
+                          },
+                          "method": {
+                            "type": "string",
+                            "example": "credit_card"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2023-12-01T10:00:00.000Z"
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Payments retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/payment/{id}": {
+      "get": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "Récupérer un paiement par ID",
+        "description": "Récupère les détails d un paiement spécifique",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID du paiement",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paiement récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "507f1f77bcf86cd799439013"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Plan Premium"
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 999
+                            },
+                            "currency": {
+                              "type": "string",
+                              "example": "eur"
+                            }
+                          }
+                        },
+                        "amount": {
+                          "type": "number",
+                          "example": 999
+                        },
+                        "currency": {
+                          "type": "string",
+                          "example": "eur"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "completed"
+                        },
+                        "method": {
+                          "type": "string",
+                          "example": "credit_card"
+                        },
+                        "stripeSessionId": {
+                          "type": "string",
+                          "example": "cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Payment retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "507f1f77bcf86cd799439013"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Plan Premium"
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 999
+                            },
+                            "currency": {
+                              "type": "string",
+                              "example": "eur"
+                            }
+                          }
+                        },
+                        "amount": {
+                          "type": "number",
+                          "example": 999
+                        },
+                        "currency": {
+                          "type": "string",
+                          "example": "eur"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "completed"
+                        },
+                        "method": {
+                          "type": "string",
+                          "example": "credit_card"
+                        },
+                        "stripeSessionId": {
+                          "type": "string",
+                          "example": "cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Payment retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paiement non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Payment not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Payment not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/product/": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Récupérer tous les produits",
+        "description": "Récupère la liste de tous les produits actifs (plans d\\'abonnement)",
+        "responses": {
+          "200": {
+            "description": "Liste des produits récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Plan Basic"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Plan de base avec 2 favoris"
+                          },
+                          "price": {
+                            "type": "number",
+                            "example": 500
+                          },
+                          "currency": {
+                            "type": "string",
+                            "example": "eur"
+                          },
+                          "interval": {
+                            "type": "string",
+                            "example": "monthly"
+                          },
+                          "features": {
+                            "type": "object",
+                            "properties": {
+                              "maxFavorites": {
+                                "type": "number",
+                                "example": 2
+                              },
+                              "maxVehicles": {
+                                "type": "number",
+                                "example": 1
+                              },
+                              "premiumSupport": {
+                                "type": "boolean",
+                                "example": false
+                              },
+                              "advancedAnalytics": {
+                                "type": "boolean",
+                                "example": false
+                              }
+                            }
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Products retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Plan Basic"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Plan de base avec 2 favoris"
+                          },
+                          "price": {
+                            "type": "number",
+                            "example": 500
+                          },
+                          "currency": {
+                            "type": "string",
+                            "example": "eur"
+                          },
+                          "interval": {
+                            "type": "string",
+                            "example": "monthly"
+                          },
+                          "features": {
+                            "type": "object",
+                            "properties": {
+                              "maxFavorites": {
+                                "type": "number",
+                                "example": 2
+                              },
+                              "maxVehicles": {
+                                "type": "number",
+                                "example": 1
+                              },
+                              "premiumSupport": {
+                                "type": "boolean",
+                                "example": false
+                              },
+                              "advancedAnalytics": {
+                                "type": "boolean",
+                                "example": false
+                              }
+                            }
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Products retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Créer un nouveau produit",
+        "description": "Crée un nouveau plan d\\'abonnement",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Données du produit",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "required": {
+                  "type": "array",
+                  "example": [
+                    "name",
+                    "description",
+                    "price",
+                    "interval"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "Plan Premium"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Nom du plan"
+                        }
+                      }
+                    },
+                    "description": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "Plan premium avec toutes les fonctionnalités"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Description du plan"
+                        }
+                      }
+                    },
+                    "price": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "number"
+                        },
+                        "minimum": {
+                          "type": "number",
+                          "example": 50
+                        },
+                        "example": {
+                          "type": "number",
+                          "example": 999
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Prix en centimes (minimum 50 centimes pour EUR)"
+                        }
+                      }
+                    },
+                    "currency": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "eur"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Devise (défaut: eur)"
+                        }
+                      }
+                    },
+                    "interval": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "enum": {
+                          "type": "array",
+                          "example": [
+                            "monthly",
+                            "yearly",
+                            "one-time"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "monthly"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Fréquence de facturation"
+                        }
+                      }
+                    },
+                    "features": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "object"
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "number"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 5
+                                }
+                              }
+                            },
+                            "maxVehicles": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "number"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 3
+                                }
+                              }
+                            },
+                            "premiumSupport": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "boolean"
+                                },
+                                "example": {
+                                  "type": "boolean",
+                                  "example": true
+                                }
+                              }
+                            },
+                            "advancedAnalytics": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "boolean"
+                                },
+                                "example": {
+                                  "type": "boolean",
+                                  "example": true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Produit créé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Plan Premium"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Plan premium avec toutes les fonctionnalités"
+                        },
+                        "price": {
+                          "type": "number",
+                          "example": 999
+                        },
+                        "currency": {
+                          "type": "string",
+                          "example": "eur"
+                        },
+                        "interval": {
+                          "type": "string",
+                          "example": "monthly"
+                        },
+                        "features": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 3
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "advancedAnalytics": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "isActive": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product created successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Plan Premium"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Plan premium avec toutes les fonctionnalités"
+                        },
+                        "price": {
+                          "type": "number",
+                          "example": 999
+                        },
+                        "currency": {
+                          "type": "string",
+                          "example": "eur"
+                        },
+                        "interval": {
+                          "type": "string",
+                          "example": "monthly"
+                        },
+                        "features": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 3
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "advancedAnalytics": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "isActive": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product created successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Le prix minimum est de 0.50 EUR"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Le prix minimum est de 0.50 EUR"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/product/{id}": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Récupérer un produit par ID",
+        "description": "Récupère les détails d\\'un produit spécifique",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID du produit",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produit récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Plan Premium"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Plan premium avec 5 favoris et support"
+                        },
+                        "price": {
+                          "type": "number",
+                          "example": 999
+                        },
+                        "currency": {
+                          "type": "string",
+                          "example": "eur"
+                        },
+                        "interval": {
+                          "type": "string",
+                          "example": "monthly"
+                        },
+                        "features": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 3
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "advancedAnalytics": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "isActive": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Plan Premium"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Plan premium avec 5 favoris et support"
+                        },
+                        "price": {
+                          "type": "number",
+                          "example": 999
+                        },
+                        "currency": {
+                          "type": "string",
+                          "example": "eur"
+                        },
+                        "interval": {
+                          "type": "string",
+                          "example": "monthly"
+                        },
+                        "features": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 3
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "advancedAnalytics": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "isActive": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produit non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Mettre à jour un produit",
+        "description": "Met à jour les données d\\'un produit existant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID du produit à mettre à jour",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Données à mettre à jour",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "Plan Premium v2"
+                        }
+                      }
+                    },
+                    "description": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "Nouvelle description"
+                        }
+                      }
+                    },
+                    "price": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "number"
+                        },
+                        "example": {
+                          "type": "number",
+                          "example": 1299
+                        }
+                      }
+                    },
+                    "features": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "object"
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "number"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 10
+                                }
+                              }
+                            },
+                            "maxVehicles": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "number"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 5
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produit mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Plan Premium v2"
+                        },
+                        "price": {
+                          "type": "number",
+                          "example": 1299
+                        },
+                        "features": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 10
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 5
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Plan Premium v2"
+                        },
+                        "price": {
+                          "type": "number",
+                          "example": 1299
+                        },
+                        "features": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 10
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 5
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produit non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "Supprimer un produit",
+        "description": "Désactive un produit (le rend inactif au lieu de le supprimer)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID du produit à supprimer",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produit supprimé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product deleted successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product deleted successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Produit non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Product not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/subscription/": {
+      "get": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Récupérer l\\'abonnement actuel de l\\'utilisateur",
+        "description": "Récupère l\\'abonnement actif de l\\'utilisateur connecté avec ses features",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abonnement récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "507f1f77bcf86cd799439013"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Plan Premium"
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 999
+                            },
+                            "features": {
+                              "type": "object",
+                              "properties": {
+                                "maxFavorites": {
+                                  "type": "number",
+                                  "example": 5
+                                },
+                                "maxVehicles": {
+                                  "type": "number",
+                                  "example": 3
+                                },
+                                "premiumSupport": {
+                                  "type": "boolean",
+                                  "example": true
+                                },
+                                "advancedAnalytics": {
+                                  "type": "boolean",
+                                  "example": true
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "active"
+                        },
+                        "currentFeatures": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 3
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "advancedAnalytics": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "example": "2024-01-01T10:00:00.000Z"
+                        },
+                        "autoRenew": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "507f1f77bcf86cd799439013"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Plan Premium"
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 999
+                            },
+                            "features": {
+                              "type": "object",
+                              "properties": {
+                                "maxFavorites": {
+                                  "type": "number",
+                                  "example": 5
+                                },
+                                "maxVehicles": {
+                                  "type": "number",
+                                  "example": 3
+                                },
+                                "premiumSupport": {
+                                  "type": "boolean",
+                                  "example": true
+                                },
+                                "advancedAnalytics": {
+                                  "type": "boolean",
+                                  "example": true
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "active"
+                        },
+                        "currentFeatures": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 3
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "advancedAnalytics": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "example": "2024-01-01T10:00:00.000Z"
+                        },
+                        "autoRenew": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/subscription/create": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Créer un abonnement",
+        "description": "Crée un nouvel abonnement (généralement utilisé par les webhooks Stripe)",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Données de l'abonnement",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "required": {
+                  "type": "array",
+                  "example": [
+                    "userId",
+                    "productId"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "ID de l utilisateur"
+                        }
+                      }
+                    },
+                    "productId": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439013"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "ID du produit"
+                        }
+                      }
+                    },
+                    "stripeSubscriptionId": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "sub_1J2Y3Z4A5B6C7D8E9F0G1H2I3J"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "ID de l abonnement Stripe (optionnel)"
+                        }
+                      }
+                    },
+                    "status": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "enum": {
+                          "type": "array",
+                          "example": [
+                            "active",
+                            "inactive",
+                            "cancelled",
+                            "past_due"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "active"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Abonnement créé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439013"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "active"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription created successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439013"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "active"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription created successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/subscription/cancel": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Annuler l\\'abonnement",
+        "description": "Annule l\\'abonnement actif de l\\'utilisateur",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abonnement annulé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "cancelled"
+                        },
+                        "autoRenew": {
+                          "type": "boolean",
+                          "example": false
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription cancelled successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "cancelled"
+                        },
+                        "autoRenew": {
+                          "type": "boolean",
+                          "example": false
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription cancelled successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucun abonnement actif trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Active subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Active subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/subscription/update": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Mettre à jour l\\'abonnement",
+        "description": "Met à jour les données de l\\'abonnement de l\\'utilisateur",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Données à mettre à jour",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "autoRenew": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "boolean"
+                        },
+                        "example": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "Renouvellement automatique"
+                        }
+                      }
+                    },
+                    "currentFeatures": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "object"
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "number"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 10
+                                }
+                              }
+                            },
+                            "maxVehicles": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "number"
+                                },
+                                "example": {
+                                  "type": "number",
+                                  "example": 5
+                                }
+                              }
+                            },
+                            "premiumSupport": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "boolean"
+                                },
+                                "example": {
+                                  "type": "boolean",
+                                  "example": true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abonnement mis à jour avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "autoRenew": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "currentFeatures": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 10
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription updated successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "autoRenew": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "currentFeatures": {
+                          "type": "object",
+                          "properties": {
+                            "maxFavorites": {
+                              "type": "number",
+                              "example": 10
+                            },
+                            "maxVehicles": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "premiumSupport": {
+                              "type": "boolean",
+                              "example": true
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription updated successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Abonnement non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/subscription/history": {
+      "get": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Historique des abonnements",
+        "description": "Récupère l\\'historique complet des abonnements de l\\'utilisateur",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historique récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439012"
+                          },
+                          "productId": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "example": "Plan Premium"
+                              },
+                              "price": {
+                                "type": "number",
+                                "example": 999
+                              }
+                            }
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "cancelled"
+                          },
+                          "startDate": {
+                            "type": "string",
+                            "example": "2023-11-01T10:00:00.000Z"
+                          },
+                          "endDate": {
+                            "type": "string",
+                            "example": "2023-12-01T10:00:00.000Z"
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription history retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439012"
+                          },
+                          "productId": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "example": "Plan Premium"
+                              },
+                              "price": {
+                                "type": "number",
+                                "example": 999
+                              }
+                            }
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "cancelled"
+                          },
+                          "startDate": {
+                            "type": "string",
+                            "example": "2023-11-01T10:00:00.000Z"
+                          },
+                          "endDate": {
+                            "type": "string",
+                            "example": "2023-12-01T10:00:00.000Z"
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription history retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/subscription/{subscriptionId}": {
+      "get": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Récupérer un abonnement par ID",
+        "description": "Récupère les détails d\\'un abonnement spécifique",
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID de l'abonnement",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abonnement récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "example": "Plan Premium"
+                            },
+                            "features": {
+                              "type": "object",
+                              "properties": {
+                                "maxFavorites": {
+                                  "type": "number",
+                                  "example": 5
+                                },
+                                "maxVehicles": {
+                                  "type": "number",
+                                  "example": 3
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "active"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "userId": {
+                          "type": "string",
+                          "example": "507f1f77bcf86cd799439012"
+                        },
+                        "productId": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "example": "Plan Premium"
+                            },
+                            "features": {
+                              "type": "object",
+                              "properties": {
+                                "maxFavorites": {
+                                  "type": "number",
+                                  "example": 5
+                                },
+                                "maxVehicles": {
+                                  "type": "number",
+                                  "example": 3
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "active"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "example": "2023-12-01T10:00:00.000Z"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription retrieved successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Abonnement non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Supprimer un abonnement",
+        "description": "Supprime définitivement un abonnement",
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID de l'abonnement à supprimer",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abonnement supprimé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription deleted successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription deleted successfully"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token d'authentification requis"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Abonnement non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Subscription not found"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/webhook/": {
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Webhook Stripe",
+        "description": "Gère les événements webhook de Stripe (paiements, abonnements, etc.)",
+        "parameters": [
+          {
+            "name": "stripe-signature",
+            "in": "header",
+            "description": "Signature Stripe pour vérifier l authenticité du webhook",
+            "required": true,
+            "example": "t=1492774577,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Données de l événement Stripe",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "evt_1J2Y3Z4A5B6C7D8E9F0G1H2I3J"
+                        }
+                      }
+                    },
+                    "object": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "event"
+                        }
+                      }
+                    },
+                    "type": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "enum": {
+                          "type": "array",
+                          "example": [
+                            "checkout.session.completed",
+                            "payment_intent.succeeded",
+                            "customer.subscription.created",
+                            "customer.subscription.updated",
+                            "customer.subscription.deleted"
+                          ],
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "checkout.session.completed"
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "object"
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "object": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "object"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "example": "Objet de l événement (session, subscription, etc.)"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "created": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "integer"
+                        },
+                        "example": {
+                          "type": "number",
+                          "example": 1492774577
+                        }
+                      }
+                    },
+                    "livemode": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "boolean"
+                        },
+                        "example": {
+                          "type": "boolean",
+                          "example": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook traité avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "received": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "received": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de traitement du webhook",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid signature"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid signature"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur interne",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  },
+                  "xml": {
+                    "name": "main"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11517,6 +15515,22 @@
     {
       "name": "FavoriteAddress",
       "description": "Gestion FavoriteAddress"
+    },
+    {
+      "name": "Payment",
+      "description": "Gestion Payment"
+    },
+    {
+      "name": "Product",
+      "description": "Gestion Product"
+    },
+    {
+      "name": "Subscription",
+      "description": "Gestion Subscription"
+    },
+    {
+      "name": "Webhook",
+      "description": "Gestion Webhook"
     }
   ]
 }

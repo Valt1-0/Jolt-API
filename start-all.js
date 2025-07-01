@@ -12,6 +12,7 @@ const services = [
   { name: "Vehicles", cwd: "Vehicles", script: "app.js" },
   { name: "Maintains", cwd: "Maintains", script: "app.js" },
   { name: "Navigate", cwd: "Navigate", script: "app.js" },
+  { name: "Payment", cwd: "Payment", script: "app.js" },
 ];
 
 services.forEach(({ name, cwd, script }) => {

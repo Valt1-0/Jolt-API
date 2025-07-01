@@ -117,6 +117,37 @@ app.use(
   })
 );
 
+app.use(
+  "/payment",
+  createProxyMiddleware({
+    target: "http://localhost:5007/payment",
+    changeOrigin: true,
+  })
+);
+
+app.use(
+  "/webhook",
+  createProxyMiddleware({
+    target: "http://localhost:5007/webhook",
+    changeOrigin: true,
+  })
+);
+
+app.use(
+  "/product",
+  createProxyMiddleware({
+    target: "http://localhost:5007/product",
+    changeOrigin: true,
+  })
+);
+app.use(
+  "/subscription",
+  createProxyMiddleware({
+    target: "http://localhost:5007/subscription",
+    changeOrigin: true,
+  })
+);
+
 // Gestion des fichiers statiques
 app.get("/uploads/maintains/:filename", (req, res) => {
   const { filename } = req.params;

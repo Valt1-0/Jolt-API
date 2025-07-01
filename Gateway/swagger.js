@@ -144,6 +144,30 @@ const main = async () => {
       tag: "FavoriteAddress", // Tag unique pour éviter les conflits
       prefix: "/favorite-addresses",
     },
+    {
+      name: "Payment",
+      file: "../Payment/src/routes/paymentRoutes.js",
+      tag: "Payment",
+      prefix: "/payment",
+    },
+    {
+      name: "Product",
+      file: "../Payment/src/routes/productRoutes.js",
+      tag: "Product",
+      prefix: "/product",
+    },
+    {
+      name: "Subscription",
+      file: "../Payment/src/routes/subscriptionRoutes.js",
+      tag: "Subscription",
+      prefix: "/subscription",
+    },
+    {
+      name: "Webhook",
+      file: "../Payment/src/routes/webhookRoutes.js",
+      tag: "Webhook",
+      prefix: "/webhook",
+    },
   ];
 
   //  Génération par service

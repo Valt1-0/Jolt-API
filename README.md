@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Plateforme Node.js modulaire basée sur une architecture microservices.</strong><br>
-  Gestion des utilisateurs, véhicules, navigations, maintenances, notifications email et push.<br>
+  Gestion des utilisateurs, véhicules, navigations, maintenances, notifications et paiements.<br>
   <a href="https://github.com/MitryDim/Jolt-Helm">Déploiement Kubernetes (Helm)</a>
 </p>
 
@@ -18,6 +18,7 @@
   <img src="https://img.shields.io/badge/MongoDB-5%2B-brightgreen" alt="MongoDB" />
   <img src="https://img.shields.io/badge/RabbitMQ-AMQP-orange" alt="RabbitMQ" />
   <img src="https://img.shields.io/badge/Redis-OK-red" alt="Redis" />
+  <img src="https://img.shields.io/badge/Stripe-Payments-6772E5" alt="Stripe" />
   <img src="https://img.shields.io/badge/Swagger-API%20Docs-85EA2D" alt="Swagger" />
   <img src="https://img.shields.io/badge/status-en%20développement-yellow" alt="Status" />
 </p>
@@ -44,7 +45,7 @@
 
 ## ✨ Présentation
 
-**Jolt-API** est une plateforme modulaire basée sur une architecture microservices, permettant la gestion complète d'utilisateurs, de véhicules, de navigations (trajets), de maintenances, et de notifications par email ou push.  
+**Jolt-API** est une plateforme modulaire basée sur une architecture microservices, permettant la gestion complète d'utilisateurs, de véhicules, de navigations (trajets), de maintenances, de paiements et de notifications par email ou push.  
 Chaque domaine métier est isolé dans un microservice indépendant, facilitant la scalabilité, la maintenance et le déploiement.
 
 ---
@@ -57,6 +58,7 @@ Chaque domaine métier est isolé dans un microservice indépendant, facilitant 
 - **Vehicles** : Gestion des véhicules, informations, images, historique.
 - **Navigate** : Gestion des trajets, groupes, géolocalisation, notes, favoris.
 - **Maintains** : Gestion des maintenances, historiques, usure, notifications associées.
+- **Payment** : Gestion des paiements Stripe, abonnements, produits, webhooks.
 - **Notifications** : Envoi d'emails transactionnels (confirmation, notifications, etc.) **et** notifications push Expo (gestion des push tokens, envoi de messages push).
 
 Chaque microservice possède sa propre base MongoDB et communique via HTTP et RabbitMQ (AMQP).
@@ -73,6 +75,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 | Vehicles      | 5004 | ![Vehicles](https://img.shields.io/badge/Vehicles-OK-brightgreen)           |
 | Maintains     | 5005 | ![Maintains](https://img.shields.io/badge/Maintains-OK-brightgreen)         |
 | Navigate      | 5006 | ![Navigate](https://img.shields.io/badge/Navigate-OK-brightgreen)           |
+| Payment       | 5007 | ![Payment](https://img.shields.io/badge/Payment-OK-brightgreen)             |
 | Notifications | 5001 | ![Notifications](https://img.shields.io/badge/Notifications-OK-brightgreen) |
 
 ---
@@ -84,6 +87,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
 - **RabbitMQ** (pour la communication inter-services)
 - **npm** ou **yarn**
 - **Redis** (pour Auth, optionnel)
+- **Compte Stripe** (pour les paiements)
 
 ---
 
@@ -104,6 +108,7 @@ Chaque microservice possède sa propre base MongoDB et communique via HTTP et Ra
    cd ../Vehicles && npm install
    cd ../Navigate && npm install
    cd ../Maintains && npm install
+   cd ../Payment && npm install
    cd ../Notifications && npm install
    cd ../Gateway && npm install
    ```
@@ -213,6 +218,29 @@ GATEWAY_URL=http://localhost:5000
 </details>
 
 <details>
+<summary><strong>Payment (.env)</strong></summary>
+
+```env
+API_PORT=5007
+MONGODB_URI=mongodb://localhost:27017/Jolt
+JWT_ACCESS_KEY=your_access_token_secret
+JWT_REFRESH_KEY=your_refresh_token_secret
+MSG_QUEUE_URL=amqp://user:password@localhost:5672
+EXCHANGE_NAME=Jolt
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_fake
+STRIPE_WEBHOOK_SECRET=whsec_fake
+
+# URLs
+GATEWAY_URL=http://localhost:5000
+FRONTEND_URL=http://localhost:3000
+
+NODE_ENV=development
+```
+</details>
+
+<details>
 <summary><strong>Notifications (.env)</strong></summary>
 
 ```env
@@ -247,6 +275,10 @@ Une documentation interactive complète de l'API est disponible via **Swagger UI
 | **Navigate** | `/navigate/*` | Trajets, groupes, géolocalisation, notes |
 | **Maintains** | `/maintain/*` | Types de maintenance, calcul d'usure |
 | **MaintainHistory** | `/maintainHistory/*` | Historique des maintenances effectuées |
+| **Payment** | `/payment/*` | Sessions de paiement, historique des transactions |
+| **Product** | `/product/*` | Gestion des plans d'abonnement et produits |
+| **Subscription** | `/subscription/*` | Gestion des abonnements utilisateurs |
+| **Webhook** | `/webhook/*` | Webhooks Stripe pour traitement des événements |
 | **Notifications** | `/pushToken/*` | Gestion des tokens push, envoi notifications |
 | **FavoriteAddress** | `/favorite-addresses/*` | Adresses favorites pour navigation |
 
@@ -329,6 +361,58 @@ Content-Type: application/json
 ```
 </details>
 
+<details>
+<summary><strong>💳 Créer une session de paiement</strong></summary>
+
+```http
+POST /payment/checkout
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "productId": "507f1f77bcf86cd799439011",
+  "successUrl": "https://yourapp.com/payment/success",
+  "cancelUrl": "https://yourapp.com/payment/cancel"
+}
+```
+
+**Réponse :**
+```json
+{
+  "success": true,
+  "data": {
+    "sessionId": "cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0",
+    "url": "https://checkout.stripe.com/pay/cs_test_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0"
+  },
+  "message": "Checkout session created successfully"
+}
+```
+</details>
+
+<details>
+<summary><strong>📦 Créer un produit/plan</strong></summary>
+
+```http
+POST /product/
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Plan Premium",
+  "description": "Plan premium avec toutes les fonctionnalités",
+  "price": 999,
+  "currency": "eur",
+  "interval": "monthly",
+  "features": {
+    "maxFavorites": 5,
+    "maxVehicles": 3,
+    "premiumSupport": true,
+    "advancedAnalytics": true
+  }
+}
+```
+</details>
+
 ### 🔧 Génération de la documentation
 
 Pour régénérer la documentation Swagger :
@@ -357,7 +441,7 @@ La documentation est générée automatiquement à partir des annotations dans l
     "_id": ObjectId,
     "username": String,
     "email": String,
-    "password": String (hash),
+    "password": String,
     "role": String,
     "profilePicture": String,
     "createdAt": Date,
@@ -436,6 +520,55 @@ La documentation est générée automatiquement à partir des annotations dans l
   }
   ```
 
+### Payment
+
+- **Product** :
+  ```json
+  {
+    "_id": ObjectId,
+    "name": String,
+    "description": String,
+    "price": Number,
+    "currency": String,
+    "interval": "monthly" | "yearly" | "one-time",
+    "features": {
+      "maxFavorites": Number,
+      "maxVehicles": Number,
+      "premiumSupport": Boolean,
+      "advancedAnalytics": Boolean
+    },
+    "isActive": Boolean
+  }
+  ```
+- **Payment** :
+  ```json
+  {
+    "_id": ObjectId,
+    "userId": ObjectId,
+    "productId": ObjectId,
+    "amount": Number,
+    "currency": String,
+    "status": "pending" | "completed" | "failed",
+    "stripeSessionId": String,
+    "method": String,
+    "createdAt": Date
+  }
+  ```
+- **Subscription** :
+  ```json
+  {
+    "_id": ObjectId,
+    "userId": ObjectId,
+    "productId": ObjectId,
+    "stripeSubscriptionId": String,
+    "status": "active" | "inactive" | "cancelled",
+    "currentFeatures": Object,
+    "startDate": Date,
+    "endDate": Date,
+    "autoRenew": Boolean
+  }
+  ```
+
 ### Notifications
 
 - **PushToken** :
@@ -510,10 +643,52 @@ Chaque service affiche ses logs préfixés par son nom.
 - **Gestion des véhicules** : ajout, modification, suppression, images, historique.
 - **Gestion des navigations** : création de trajets, groupes, géolocalisation, notes, favoris.
 - **Gestion des maintenances** : planification, historique, calcul d'usure, notifications.
-- **Notifications** : confirmation, alertes.
+- **Gestion des paiements** : intégration Stripe, abonnements, webhooks, produits.
+- **Notifications** : confirmation, alertes, push notifications.
 - **Sécurité** : JWT, blacklist tokens, CSRF, CORS.
 - **Communication inter-services** : RabbitMQ (AMQP), HTTP REST, projections, REDIS.
 - **Documentation interactive** : Swagger UI pour tous les endpoints.
+
+---
+
+## 💳 Configuration Stripe
+
+### 🔧 Configuration requise
+
+1. **Créer un compte Stripe** : [https://stripe.com](https://stripe.com)
+2. **Récupérer les clés API** :
+   - Secret Key : `sk_test_...` (pour le backend)
+   - Publishable Key : `pk_test_...` (pour le frontend)
+   - Webhook Secret : `whsec_...` (pour vérifier les webhooks)
+
+### 🎯 Configuration des webhooks
+
+Dans votre Dashboard Stripe :
+
+1. Aller dans **Développeurs > Webhooks**
+2. Ajouter un endpoint : `http://localhost:5000/webhook`
+3. Sélectionner les événements :
+   - `checkout.session.completed`
+   - `payment_intent.succeeded`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+
+  /**
+   * Cette fonction/code utilise l'environnement de développement Stripe.
+   * Pour configurer et tester Stripe en mode développement, veuillez consulter la documentation officielle :
+   * https://docs.stripe.com/get-started/development-environment
+   *
+   * Vous y trouverez des instructions pour obtenir des clés API de test, simuler des paiements, et utiliser les outils Stripe CLI.
+   */
+
+### 💰 Produits par défaut
+
+Le système inclut des plans d'abonnement configurables :
+
+- **Plan Basic** : 2 favoris, 1 véhicule (5€/mois)
+- **Plan Premium** : 5 favoris, 3 véhicules, support premium (9,99€/mois)
+- **Plan Pro** : Illimité, analytics avancés (19,99€/mois)
 
 ---
 
@@ -524,6 +699,7 @@ Chaque service affiche ses logs préfixés par son nom.
 - **Utilise Docker pour faciliter le déploiement.**
 - **RabbitMQ ainsi que REDIS doit être lancé avant les microservices pour la communication.**
 - **Consulte la documentation Swagger** pour connaître tous les endpoints disponibles.
+- **Configure correctement Stripe** en mode test avant la production.
 
 ---
 
@@ -559,5 +735,6 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus d
 
 <p align="center">
 📖 <a href="http://localhost:5000/api-docs"><strong>Documentation API Swagger</strong></a> | 
+💳 <a href="https://stripe.com/docs"><strong>Documentation Stripe</strong></a> | 
 📧 <a href="mailto:contact@joltz.fr">contact@joltz.fr</a>
 </p>
