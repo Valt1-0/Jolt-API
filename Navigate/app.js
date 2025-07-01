@@ -5,7 +5,7 @@ const http = require("http");
 const cookieParser = require("cookie-parser");
 const config = require("./src/Config");
 const navigateRoutes = require("./src/routes/NavigateRoutes");
-const FavoriteAddressRoutes = require("./src/routes/FavoriteAddressRoutes"); // Assuming you have a FavoriteAddressRoutes.js file
+const FavoriteAddressRoutes = require("./src/routes/FavoriteAddressRoutes");
 const API_PORT = config.API_PORT || console.log("No port defined in .env file");
 
 const cors = require("cors");
@@ -27,7 +27,7 @@ const startServer = async () => {
     // Routes
 
     app.use("/navigate", navigateRoutes);
-    app.use("/favorite-addresses", FavoriteAddressRoutes); // Assuming you have a FavoriteAddressRoutes.js file
+    app.use("/favorite-addresses", FavoriteAddressRoutes); 
 
     // Error handling middleware
     app.use(handleErrorWithLogger);
