@@ -27,7 +27,7 @@ const startServer = async () => {
     // Routes
 
     app.use("/navigate", navigateRoutes);
-    app.use("/favorite-addresses", FavoriteAddressRoutes); // Assuming you have a FavoriteAddressRoutes.js file
+    app.use("/favorite-addresses", FavoriteAddressRoutes); 
 
     // Error handling middleware
     app.use(handleErrorWithLogger);
